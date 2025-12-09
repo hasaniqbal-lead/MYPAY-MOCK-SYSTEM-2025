@@ -1,0 +1,404 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "MyPay Payout API",
+    "version": "1.0.0",
+    "description": "Pakistani Payment Gateway API for sending money to banks and mobile wallets",
+    "contact": {
+      "name": "API Support",
+      "email": "support@mycodigital.io"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://sandbox.mycodigital.io/api/v1",
+      "description": "Production Server"
+    }
+  ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Check API Health",
+        "description": "Verify that the API is running and accessible",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "healthy"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/directory": {
+      "get": {
+        "summary": "Get Banks and Wallets",
+        "description": "Get list of all supported banks and mobile wallets",
+        "responses": {
+          "200": {
+            "description": "List of banks and wallets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "banks": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/DirectoryItem"
+                          }
+                        },
+                        "wallets": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/DirectoryItem"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/balance": {
+      "get": {
+        "summary": "Get Account Balance",
+        "description": "Check your current balance and available funds",
+        "responses": {
+          "200": {
+            "description": "Balance information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BalanceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payouts": {
+      "post": {
+        "summary": "Create Payout",
+        "description": "Send money to a bank account or mobile wallet",
+        "parameters": [
+          {
+            "name": "X-IDEMPOTENCY-KEY",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Unique UUID for idempotency"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePayoutRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Payout created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayoutResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List Payouts",
+        "description": "Get list of all your payouts with pagination",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of payouts"
+          }
+        }
+      }
+    },
+    "/payouts/{id}": {
+      "get": {
+        "summary": "Get Payout Details",
+        "description": "Get details and status of a specific payout",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payout details"
+          }
+        }
+      }
+    },
+    "/verify-account": {
+      "post": {
+        "summary": "Verify Account",
+        "description": "Verify if account details are valid before creating payout",
+        "parameters": [
+          {
+            "name": "X-IDEMPOTENCY-KEY",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyAccountRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account verification result"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-KEY"
+      }
+    },
+    "schemas": {
+      "DirectoryItem": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "HBL"
+          },
+          "name": {
+            "type": "string",
+            "example": "Habib Bank Limited"
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "BalanceResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "balance": {
+                "type": "string",
+                "example": "1000000.00"
+              },
+              "lockedBalance": {
+                "type": "string",
+                "example": "5000.00"
+              },
+              "availableBalance": {
+                "type": "string",
+                "example": "995000.00"
+              }
+            }
+          }
+        }
+      },
+      "CreatePayoutRequest": {
+        "type": "object",
+        "required": [
+          "merchantReference",
+          "amount",
+          "destType",
+          "accountNumber",
+          "accountTitle"
+        ],
+        "properties": {
+          "merchantReference": {
+            "type": "string",
+            "description": "Your unique reference ID",
+            "example": "ORDER-12345"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Amount in PKR",
+            "example": 5000
+          },
+          "currency": {
+            "type": "string",
+            "default": "PKR",
+            "example": "PKR"
+          },
+          "destType": {
+            "type": "string",
+            "enum": [
+              "BANK",
+              "WALLET"
+            ],
+            "example": "BANK"
+          },
+          "bankCode": {
+            "type": "string",
+            "description": "Required if destType is BANK",
+            "example": "HBL"
+          },
+          "walletCode": {
+            "type": "string",
+            "description": "Required if destType is WALLET",
+            "example": "EASYPAISA"
+          },
+          "accountNumber": {
+            "type": "string",
+            "description": "10-16 digit account number",
+            "example": "1234567890123"
+          },
+          "accountTitle": {
+            "type": "string",
+            "description": "Account holder name",
+            "example": "Ahmed Ali"
+          }
+        }
+      },
+      "PayoutResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "merchantReference": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "PENDING",
+                  "PROCESSING",
+                  "SUCCESS",
+                  "FAILED",
+                  "RETRY",
+                  "IN_REVIEW",
+                  "ON_HOLD"
+                ]
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      },
+      "VerifyAccountRequest": {
+        "type": "object",
+        "required": [
+          "destType",
+          "accountNumber"
+        ],
+        "properties": {
+          "destType": {
+            "type": "string",
+            "enum": [
+              "BANK",
+              "WALLET"
+            ]
+          },
+          "bankCode": {
+            "type": "string"
+          },
+          "walletCode": {
+            "type": "string"
+          },
+          "accountNumber": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
+
+

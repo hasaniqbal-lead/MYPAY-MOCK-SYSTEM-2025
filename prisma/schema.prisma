@@ -1,0 +1,305 @@
+// ============================================
+// MyPay Mock Platform - Unified Prisma Schema
+// ============================================
+// This schema combines both Payout and Payment services
+// into a single unified database schema.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// SHARED MODELS (Used by both services)
+// ============================================
+
+// Unified Merchant model for both Payout and Payment APIs
+model Merchant {
+  id            Int       @id @default(autoincrement())
+  uuid          String    @unique @default(uuid())
+  name          String    // Used by Payout API
+  company_name  String?   // Used by Payment API portal
+  email         String    @unique
+  password_hash String?   // For portal login
+  apiKey        String    @unique // Hashed API key for Payout API
+  webhookUrl    String?
+  isActive      Boolean   @default(true)
+  status        String    @default("active") // For portal: active, inactive, suspended
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Payout API relations
+  balances          MerchantBalance[]
+  payouts           Payout[]
+  ledgerEntries     LedgerEntry[]
+  outboxEvents      OutboxEvent[]
+  webhookDeliveries WebhookDelivery[]
+
+  // Payment API relations
+  apiKeys           ApiKey[]
+  transactions      PaymentTransaction[]
+
+  @@map("merchants")
+}
+
+// ============================================
+// PAYOUT API MODELS
+// ============================================
+
+model MerchantBalance {
+  id            String   @id @default(uuid())
+  merchantId    Int
+  balance       Decimal  @default(0) @db.Decimal(15, 2)
+  lockedBalance Decimal  @default(0) @db.Decimal(15, 2)
+  version       Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  merchant      Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@unique([merchantId])
+  @@map("merchant_balances")
+}
+
+model Payout {
+  id                String    @id @default(uuid())
+  merchantId        Int
+  merchantReference String
+  amount            Decimal   @db.Decimal(15, 2)
+  currency          String    @default("PKR")
+  destType          String    // BANK, WALLET
+  bankCode          String?
+  walletCode        String?
+  accountNumber     String
+  accountTitle      String
+  status            String    @default("PENDING")
+  failureReason     String?
+  pspReference      String?
+  processedAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  merchant          Merchant  @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  ledgerEntries     LedgerEntry[]
+
+  @@unique([merchantId, merchantReference])
+  @@index([merchantId])
+  @@index([status])
+  @@map("payouts")
+}
+
+model LedgerEntry {
+  id          String   @id @default(uuid())
+  merchantId  Int
+  payoutId    String?
+  type        String   // DEBIT, CREDIT
+  amount      Decimal  @db.Decimal(15, 2)
+  balance     Decimal  @db.Decimal(15, 2)
+  description String
+  metadata    String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  payout      Payout?  @relation(fields: [payoutId], references: [id], onDelete: SetNull)
+
+  @@index([merchantId])
+  @@index([payoutId])
+  @@map("ledger_entries")
+}
+
+model OutboxEvent {
+  id          String    @id @default(uuid())
+  merchantId  Int
+  eventType   String
+  payload     String    @db.Text
+  processed   Boolean   @default(false)
+  processedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  merchant    Merchant  @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@index([processed])
+  @@map("outbox_events")
+}
+
+model PayoutIdempotencyKey {
+  id          String   @id @default(uuid())
+  merchantId  Int
+  key         String
+  requestHash String
+  response    String?  @db.Text
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+
+  @@unique([merchantId, key])
+  @@index([expiresAt])
+  @@map("payout_idempotency_keys")
+}
+
+model WebhookDelivery {
+  id          String    @id @default(uuid())
+  merchantId  Int
+  eventType   String
+  payload     String    @db.Text
+  signature   String
+  status      String    @default("PENDING")
+  statusCode  Int?
+  response    String?   @db.Text
+  attempts    Int       @default(0)
+  deliveredAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  merchant    Merchant  @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@index([merchantId])
+  @@index([status])
+  @@map("webhook_deliveries")
+}
+
+model BankDirectory {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("bank_directory")
+}
+
+model WalletDirectory {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("wallet_directory")
+}
+
+// ============================================
+// PAYMENT API MODELS
+// ============================================
+
+// API Keys for checkout authentication (Payment API)
+model ApiKey {
+  id          Int      @id @default(autoincrement())
+  vendor_id   String   @unique
+  api_key     String   @unique
+  api_secret  String   @db.Text
+  merchant_id Int?
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+
+  merchant    Merchant? @relation(fields: [merchant_id], references: [id], onDelete: SetNull)
+
+  @@map("payment_api_keys")
+}
+
+// Payment transactions
+model PaymentTransaction {
+  id               Int       @id @default(autoincrement())
+  checkout_id      String    @unique
+  vendor_id        String?
+  reference        String
+  amount           Decimal   @db.Decimal(10, 2)
+  payment_method   String
+  payment_type     String
+  success_url      String    @db.Text
+  return_url       String    @db.Text
+  status           String    @default("pending")
+  status_code      String?
+  mobile_number    String?
+  user_data        Json?
+  webhook_status   String    @default("pending")
+  webhook_attempts Int       @default(0)
+  merchant_id      Int?
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  merchant         Merchant? @relation(fields: [merchant_id], references: [id], onDelete: SetNull)
+
+  @@index([checkout_id])
+  @@index([reference])
+  @@index([status])
+  @@index([merchant_id])
+  @@map("payment_transactions")
+}
+
+// Test scenario mappings for mobile numbers
+model ScenarioMapping {
+  id            Int      @id @default(autoincrement())
+  mobile_number String   @unique
+  scenario      String
+  status        String
+  status_code   String
+  description   String   @db.Text
+  created_at    DateTime @default(now())
+
+  @@map("scenario_mappings")
+}
+
+// Payment webhook delivery logs
+model PaymentWebhookLog {
+  id              Int      @id @default(autoincrement())
+  checkout_id     String
+  url             String   @db.Text
+  payload         Json?
+  response_status Int?
+  response_body   String?  @db.Text
+  error_message   String?  @db.Text
+  attempt_number  Int      @default(1)
+  created_at      DateTime @default(now())
+
+  @@index([checkout_id])
+  @@map("payment_webhook_logs")
+}
+
+// ============================================
+// ADMIN MODELS (For Admin Portal)
+// ============================================
+
+model AdminUser {
+  id            Int       @id @default(autoincrement())
+  email         String    @unique
+  password_hash String
+  name          String
+  role          String    @default("admin") // admin, super_admin
+  is_active     Boolean   @default(true)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  @@map("admin_users")
+}
+
+model SystemConfig {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  value       String   @db.Text
+  description String?
+  updated_at  DateTime @updatedAt
+
+  @@map("system_config")
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  user_type   String   // admin, merchant
+  user_id     Int
+  action      String
+  resource    String
+  resource_id String?
+  details     Json?
+  ip_address  String?
+  created_at  DateTime @default(now())
+
+  @@index([user_type, user_id])
+  @@index([action])
+  @@index([created_at])
+  @@map("audit_logs")
+}

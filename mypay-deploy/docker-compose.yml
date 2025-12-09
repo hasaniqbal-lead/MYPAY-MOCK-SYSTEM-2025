@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: mypay-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-mypay_secure_password}
+      MYSQL_DATABASE: ${DB_NAME:-mypay_mock_db}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - mypay-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Payout API
+  payout-api:
+    build:
+      context: .
+      dockerfile: services/payout-api/Dockerfile
+    container_name: mypay-payout-api
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=4001
+      - DATABASE_URL=mysql://root:${DB_PASSWORD:-mypay_secure_password}@mysql:3306/${DB_NAME:-mypay_mock_db}
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET:-default-webhook-secret-key}
+    ports:
+      - "4001:4001"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mypay-network
+
+  # Payment API
+  payment-api:
+    build:
+      context: .
+      dockerfile: services/payment-api/Dockerfile
+    container_name: mypay-payment-api
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=4002
+      - DATABASE_URL=mysql://root:${DB_PASSWORD:-mypay_secure_password}@mysql:3306/${DB_NAME:-mypay_mock_db}
+      - JWT_SECRET=${JWT_SECRET:-supersecretjwtkey}
+      - API_KEY_SECRET=${API_KEY_SECRET:-supersecretapikey}
+    ports:
+      - "4002:4002"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mypay-network
+
+  # Merchant Portal
+  merchant-portal:
+    build:
+      context: .
+      dockerfile: services/merchant-portal/Dockerfile
+    container_name: mypay-merchant-portal
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=4010
+      - NEXT_PUBLIC_API_URL=https://sandbox.mycodigital.io
+    ports:
+      - "4010:4010"
+    depends_on:
+      - payment-api
+    networks:
+      - mypay-network
+
+  # Admin Portal
+  admin-portal:
+    build:
+      context: .
+      dockerfile: services/admin-portal/Dockerfile
+    container_name: mypay-admin-portal
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=4011
+      - NEXT_PUBLIC_API_URL=https://sandbox.mycodigital.io
+    ports:
+      - "4011:4011"
+    depends_on:
+      - payment-api
+      - payout-api
+    networks:
+      - mypay-network
+
+networks:
+  mypay-network:
+    driver: bridge
+
+volumes:
+  mysql_data:

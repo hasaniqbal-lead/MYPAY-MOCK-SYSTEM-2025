@@ -1,0 +1,55 @@
+version: '3.8'
+
+# ============================================
+# MyPay Mock Platform - Development Overrides
+# ============================================
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  mysql:
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: dev_password
+      MYSQL_DATABASE: mypay_dev_db
+
+  payout-api:
+    build:
+      context: ../services/payout-api
+    volumes:
+      - ../services/payout-api/src:/app/src:ro
+    environment:
+      DATABASE_URL: mysql://root:dev_password@mysql:3306/mypay_dev_db
+      NODE_ENV: development
+    command: npm run dev
+
+  payment-api:
+    build:
+      context: ../services/payment-api
+    volumes:
+      - ../services/payment-api/src:/app/src:ro
+    environment:
+      DATABASE_URL: mysql://root:dev_password@mysql:3306/mypay_dev_db
+      NODE_ENV: development
+    command: npm run dev
+
+  merchant-portal:
+    build:
+      context: ../services/merchant-portal
+    volumes:
+      - ../services/merchant-portal/src:/app/src:ro
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:4002
+      NODE_ENV: development
+    command: npm run dev
+
+  admin-portal:
+    build:
+      context: ../services/admin-portal
+    volumes:
+      - ../services/admin-portal/src:/app/src:ro
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:4002
+      NODE_ENV: development
+    command: npm run dev
+

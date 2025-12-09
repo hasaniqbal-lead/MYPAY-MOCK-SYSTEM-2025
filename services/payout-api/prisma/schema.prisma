@@ -1,0 +1,163 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Merchant {
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  apiKey      String   @unique
+  webhookUrl  String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  balances    MerchantBalance[]
+  payouts     Payout[]
+  ledgerEntries LedgerEntry[]
+  outboxEvents OutboxEvent[]
+  webhookDeliveries WebhookDelivery[]
+
+  @@map("merchants")
+}
+
+model MerchantBalance {
+  id          String   @id @default(uuid())
+  merchantId  String
+  balance     Decimal  @default(0) @db.Decimal(15, 2)
+  lockedBalance Decimal @default(0) @db.Decimal(15, 2)
+  version     Int      @default(0) // Optimistic locking
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@unique([merchantId])
+  @@map("merchant_balances")
+}
+
+model Payout {
+  id                String   @id @default(uuid())
+  merchantId        String
+  merchantReference String
+  amount            Decimal  @db.Decimal(15, 2)
+  currency          String   @default("PKR")
+  destType          String   // BANK, WALLET
+  bankCode          String?
+  walletCode        String?
+  accountNumber     String
+  accountTitle      String
+  status            String   @default("PENDING") // PENDING, PROCESSING, SUCCESS, FAILED, RETRY, IN_REVIEW, ON_HOLD
+  failureReason     String?
+  pspReference      String?
+  processedAt       DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  merchant          Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  ledgerEntries     LedgerEntry[]
+
+  @@unique([merchantId, merchantReference])
+  @@index([merchantId])
+  @@index([status])
+  @@map("payouts")
+}
+
+model LedgerEntry {
+  id          String   @id @default(uuid())
+  merchantId  String
+  payoutId    String?
+  type        String   // DEBIT, CREDIT
+  amount      Decimal  @db.Decimal(15, 2)
+  balance     Decimal  @db.Decimal(15, 2)
+  description String
+  metadata    String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  payout      Payout?  @relation(fields: [payoutId], references: [id], onDelete: SetNull)
+
+  @@index([merchantId])
+  @@index([payoutId])
+  @@map("ledger_entries")
+}
+
+model OutboxEvent {
+  id          String   @id @default(uuid())
+  merchantId  String
+  eventType   String   // PAYOUT_CREATED, PAYOUT_UPDATED, PAYOUT_FAILED
+  payload     String   @db.Text
+  processed   Boolean  @default(false)
+  processedAt DateTime?
+  createdAt   DateTime @default(now())
+
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@index([processed])
+  @@map("outbox_events")
+}
+
+model IdempotencyKey {
+  id          String   @id @default(uuid())
+  merchantId  String
+  key         String
+  requestHash String
+  response    String?  @db.Text
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+
+  @@unique([merchantId, key])
+  @@index([expiresAt])
+  @@map("idempotency_keys")
+}
+
+model WebhookDelivery {
+  id          String   @id @default(uuid())
+  merchantId  String
+  eventType   String
+  payload     String   @db.Text
+  signature   String
+  status      String   @default("PENDING") // PENDING, SUCCESS, FAILED
+  statusCode  Int?
+  response    String?  @db.Text
+  attempts    Int      @default(0)
+  deliveredAt DateTime?
+  createdAt   DateTime @default(now())
+
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@index([merchantId])
+  @@index([status])
+  @@map("webhook_deliveries")
+}
+
+model BankDirectory {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("bank_directory")
+}
+
+model WalletDirectory {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("wallet_directory")
+}
+

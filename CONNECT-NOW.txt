@@ -1,0 +1,97 @@
+================================================================
+HOW TO CONNECT TO VPS - Step by Step
+================================================================
+
+VPS CREDENTIALS:
+IP Address: 72.60.110.249
+Username: root
+Password: -v9(Q158qCwKk4--5/WY
+
+================================================================
+METHOD 1: Using PuTTY (Easiest for Windows)
+================================================================
+
+1. Download PuTTY:
+   https://www.putty.org/
+
+2. Open PuTTY
+
+3. In the "Session" category:
+   - Host Name: 72.60.110.249
+   - Port: 22
+   - Connection type: SSH
+
+4. Click "Open"
+
+5. If security alert appears, click "Accept"
+
+6. Login as: root
+   Press Enter
+
+7. Password: -v9(Q158qCwKk4--5/WY
+   (Password won't show while typing - this is normal)
+   Press Enter
+
+8. You should see command prompt like:
+   root@hostname:~#
+
+================================================================
+METHOD 2: Using Windows Terminal/PowerShell
+================================================================
+
+1. Open PowerShell or Windows Terminal
+
+2. Type:
+   ssh root@72.60.110.249
+
+3. If prompted about authenticity, type: yes
+
+4. Enter password when prompted:
+   -v9(Q158qCwKk4--5/WY
+
+================================================================
+METHOD 3: Using Windows Command Prompt
+================================================================
+
+1. Open Command Prompt (cmd)
+
+2. Type:
+   ssh root@72.60.110.249
+
+3. Enter password when prompted
+
+================================================================
+TROUBLESHOOTING
+================================================================
+
+If connection fails:
+
+1. Test if VPS is reachable:
+   ping 72.60.110.249
+
+   If no response: VPS might be down
+
+2. Test if SSH port is open:
+   telnet 72.60.110.249 22
+
+   If fails: Port 22 might be blocked
+
+3. Check your internet connection
+
+4. Try from different network (mobile hotspot)
+
+5. Contact VPS provider if still not working
+
+================================================================
+ONCE CONNECTED - WHAT TO DO NEXT
+================================================================
+
+When you see the command prompt (root@hostname:~#), run:
+
+# First, check what's there
+ls -la /opt/
+
+# We need to upload the deployment files
+# Tell me when you're connected and I'll give you the next commands!
+
+================================================================

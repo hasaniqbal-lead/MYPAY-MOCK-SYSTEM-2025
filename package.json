@@ -1,0 +1,56 @@
+{
+  "name": "mypay-mock-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Centralized Mock Payment & Payout Platform for Pakistani FinTech",
+  "workspaces": [
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rimraf node_modules",
+    "dev:payout": "pnpm --filter @mypay/payout-api run dev",
+    "dev:payment": "pnpm --filter @mypay/payment-api run dev",
+    "dev:merchant-portal": "pnpm --filter @mypay/merchant-portal run dev",
+    "dev:admin-portal": "pnpm --filter @mypay/admin-portal run dev",
+    "build:payout": "pnpm --filter @mypay/payout-api run build",
+    "build:payment": "pnpm --filter @mypay/payment-api run build",
+    "build:merchant-portal": "pnpm --filter @mypay/merchant-portal run build",
+    "build:admin-portal": "pnpm --filter @mypay/admin-portal run build",
+    "db:generate": "prisma generate --schema=./prisma/schema.prisma",
+    "db:migrate": "prisma migrate dev --schema=./prisma/schema.prisma",
+    "db:push": "prisma db push --schema=./prisma/schema.prisma",
+    "db:seed": "ts-node prisma/seed.ts",
+    "db:studio": "prisma studio --schema=./prisma/schema.prisma",
+    "docker:up": "docker-compose -f docker/docker-compose.yml up -d",
+    "docker:down": "docker-compose -f docker/docker-compose.yml down",
+    "docker:logs": "docker-compose -f docker/docker-compose.yml logs -f",
+    "docker:build": "docker-compose -f docker/docker-compose.yml build"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/node": "^20.10.0",
+    "bcrypt": "^5.1.1",
+    "prisma": "^5.7.0",
+    "ts-node": "^10.9.2",
+    "turbo": "^2.0.0",
+    "typescript": "^5.3.3",
+    "rimraf": "^5.0.5"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.7.0"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}

@@ -1,0 +1,102 @@
+// Payment API Prisma Schema
+// This will be merged with payout schema in Phase 4
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Merchants table for portal authentication
+model Merchant {
+  id            Int       @id @default(autoincrement())
+  company_name  String
+  email         String    @unique
+  password_hash String
+  status        String    @default("active")
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  apiKeys       ApiKey[]
+  transactions  Transaction[]
+
+  @@map("merchants")
+}
+
+// API Keys for checkout authentication
+model ApiKey {
+  id          Int      @id @default(autoincrement())
+  vendor_id   String   @unique
+  api_key     String   @unique
+  api_secret  String   @db.Text
+  merchant_id Int?
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+
+  merchant    Merchant? @relation(fields: [merchant_id], references: [id], onDelete: SetNull)
+
+  @@map("api_keys")
+}
+
+// Payment transactions
+model Transaction {
+  id               Int       @id @default(autoincrement())
+  checkout_id      String    @unique
+  vendor_id        String?
+  reference        String
+  amount           Decimal   @db.Decimal(10, 2)
+  payment_method   String
+  payment_type     String
+  success_url      String    @db.Text
+  return_url       String    @db.Text
+  status           String    @default("pending")
+  status_code      String?
+  mobile_number    String?
+  user_data        String?   @db.Json
+  webhook_status   String    @default("pending")
+  webhook_attempts Int       @default(0)
+  merchant_id      Int?
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  merchant         Merchant? @relation(fields: [merchant_id], references: [id], onDelete: SetNull)
+
+  @@index([checkout_id])
+  @@index([reference])
+  @@index([status])
+  @@index([merchant_id])
+  @@map("transactions")
+}
+
+// Test scenario mappings for mobile numbers
+model ScenarioMapping {
+  id            Int      @id @default(autoincrement())
+  mobile_number String   @unique
+  scenario      String
+  status        String
+  status_code   String
+  description   String   @db.Text
+  created_at    DateTime @default(now())
+
+  @@map("scenario_mappings")
+}
+
+// Webhook delivery logs
+model WebhookLog {
+  id              Int      @id @default(autoincrement())
+  checkout_id     String
+  url             String   @db.Text
+  payload         String?  @db.Json
+  response_status Int?
+  response_body   String?  @db.Text
+  error_message   String?  @db.Text
+  attempt_number  Int      @default(1)
+  created_at      DateTime @default(now())
+
+  @@index([checkout_id])
+  @@map("webhook_logs")
+}
+

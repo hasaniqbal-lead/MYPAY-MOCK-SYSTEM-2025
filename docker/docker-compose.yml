@@ -1,0 +1,155 @@
+version: '3.8'
+
+# ============================================
+# MyPay Mock Platform - Docker Compose
+# ============================================
+# Master orchestration for all services
+
+services:
+  # ============================================
+  # DATABASE
+  # ============================================
+  mysql:
+    image: mysql:8.0
+    container_name: mypay-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-mypay_secret}
+      MYSQL_DATABASE: ${DB_NAME:-mypay_mock_db}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-mypay_secret}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - mypay-network
+    restart: unless-stopped
+
+  # ============================================
+  # PAYOUT API SERVICE
+  # ============================================
+  payout-api:
+    build:
+      context: ../services/payout-api
+      dockerfile: Dockerfile
+    container_name: mypay-payout-api
+    ports:
+      - "4001:3000"
+    environment:
+      DATABASE_URL: mysql://root:${DB_PASSWORD:-mypay_secret}@mysql:3306/${DB_NAME:-mypay_mock_db}
+      PORT: 3000
+      NODE_ENV: production
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:-your-webhook-secret}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mypay-network
+    restart: unless-stopped
+
+  payout-worker:
+    build:
+      context: ../services/payout-api
+      dockerfile: Dockerfile
+    container_name: mypay-payout-worker
+    command: npm run start:worker
+    environment:
+      DATABASE_URL: mysql://root:${DB_PASSWORD:-mypay_secret}@mysql:3306/${DB_NAME:-mypay_mock_db}
+      NODE_ENV: production
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:-your-webhook-secret}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mypay-network
+    restart: unless-stopped
+
+  # ============================================
+  # PAYMENT API SERVICE
+  # ============================================
+  payment-api:
+    build:
+      context: ../services/payment-api
+      dockerfile: Dockerfile
+    container_name: mypay-payment-api
+    ports:
+      - "4002:3000"
+    environment:
+      DATABASE_URL: mysql://root:${DB_PASSWORD:-mypay_secret}@mysql:3306/${DB_NAME:-mypay_mock_db}
+      PORT: 3000
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET:-your-jwt-secret}
+      CHECKOUT_BASE_URL: https://sandbox.mycodigital.io/payment
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mypay-network
+    restart: unless-stopped
+
+  # ============================================
+  # MERCHANT PORTAL
+  # ============================================
+  merchant-portal:
+    build:
+      context: ../services/merchant-portal
+      dockerfile: Dockerfile
+    container_name: mypay-merchant-portal
+    ports:
+      - "4010:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: https://sandbox.mycodigital.io
+      NEXT_PUBLIC_PORTAL_URL: https://devportal.mycodigital.io
+      NODE_ENV: production
+    networks:
+      - mypay-network
+    restart: unless-stopped
+
+  # ============================================
+  # ADMIN PORTAL
+  # ============================================
+  admin-portal:
+    build:
+      context: ../services/admin-portal
+      dockerfile: Dockerfile
+    container_name: mypay-admin-portal
+    ports:
+      - "4011:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: https://sandbox.mycodigital.io
+      NEXT_PUBLIC_ADMIN_PORTAL_URL: https://devadmin.mycodigital.io
+      NODE_ENV: production
+    networks:
+      - mypay-network
+    restart: unless-stopped
+
+  # ============================================
+  # NGINX GATEWAY
+  # ============================================
+  nginx:
+    image: nginx:alpine
+    container_name: mypay-gateway
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - payout-api
+      - payment-api
+      - merchant-portal
+      - admin-portal
+    networks:
+      - mypay-network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+
+networks:
+  mypay-network:
+    driver: bridge
+

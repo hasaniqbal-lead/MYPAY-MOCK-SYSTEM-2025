@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyPay Payout API - Developer Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: -2rem auto 2rem;
+            padding: 0 2rem;
+        }
+
+        .quick-start {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .quick-start h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-card h3 {
+            color: #667eea;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card p {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .endpoint-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .endpoint-section h2 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .endpoint {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e0e0e0;
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .method {
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .method-get {
+            background: #10b981;
+            color: white;
+        }
+
+        .method-post {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .endpoint-path {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .endpoint-description {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .use-case {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .use-case strong {
+            color: #856404;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .code-block pre {
+            margin: 0;
+        }
+
+        .params-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .params-table th,
+        .params-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .params-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .required {
+            color: #ef4444;
+            font-size: 0.85rem;
+        }
+
+        .optional {
+            color: #10b981;
+            font-size: 0.85rem;
+        }
+
+        .download-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .download-btn {
+            background: white;
+            color: #667eea;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .test-scenarios {
+            background: #e0f2fe;
+            border: 1px solid #38bdf8;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .test-scenarios h3 {
+            color: #0369a1;
+            margin-bottom: 1rem;
+        }
+
+        .test-scenarios table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .test-scenarios td {
+            padding: 0.5rem;
+            border-bottom: 1px solid #bae6fd;
+        }
+
+        .test-scenarios td:first-child {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #0369a1;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .endpoint-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 MyPay Payout API</h1>
+        <p>Developer Documentation - Pakistani Payment Gateway</p>
+        <span class="badge">✅ Live & Ready</span>
+    </div>
+
+    <div class="container">
+        <!-- Quick Start Section -->
+        <div class="quick-start">
+            <h2>⚡ Quick Start</h2>
+            <p>Get started with MyPay Payout API in minutes. Send money to bank accounts and mobile wallets across Pakistan.</p>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Base URL</h3>
+                    <p>https://sandbox.mycodigital.io/api/v1</p>
+                </div>
+                <div class="info-card">
+                    <h3>Authentication</h3>
+                    <p>X-API-KEY header required</p>
+                </div>
+                <div class="info-card">
+                    <h3>Response Format</h3>
+                    <p>JSON</p>
+                </div>
+                <div class="info-card">
+                    <h3>Currency</h3>
+                    <p>PKR (Pakistani Rupee)</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <h3 style="margin-bottom: 1rem;">Required Headers:</h3>
+                <div class="code-block">
+<pre>X-API-KEY: your-api-key-here
+X-IDEMPOTENCY-KEY: unique-uuid-per-request
+Content-Type: application/json</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Authentication Section -->
+        <div class="endpoint-section">
+            <h2>🔐 Authentication</h2>
+            <p>All API requests require an API key. Include it in the request header:</p>
+            
+            <div class="code-block">
+<pre>X-API-KEY: mypay_your_api_key_here</pre>
+            </div>
+
+            <div class="use-case">
+                <strong>💡 When to use:</strong> Every API request requires authentication. Contact your account manager to get your API key.
+            </div>
+        </div>
+
+        <!-- Check Health Section -->
+        <div class="endpoint-section">
+            <h2>🏥 Check API Status</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method method-get">GET</span>
+                    <span class="endpoint-path">/health</span>
+                </div>
+                <p class="endpoint-description">Check if the API is running and accessible.</p>
+                
+                <div class="use-case">
+                    <strong>💡 When to use:</strong> Use this to verify your API connection before making actual transactions.
+                </div>
+
+                <div class="code-block">
+<pre>curl https://sandbox.mycodigital.io/api/v1/health</pre>
+                </div>
+
+                <p><strong>Response:</strong></p>
+                <div class="code-block">
+<pre>{
+  "status": "healthy"
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Get Banks & Wallets -->
+        <div class="endpoint-section">
+            <h2>🏦 Get Available Banks & Wallets</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method method-get">GET</span>
+                    <span class="endpoint-path">/directory</span>
+                </div>
+                <p class="endpoint-description">Get list of all supported banks and mobile wallets in Pakistan.</p>
+                
+                <div class="use-case">
+                    <strong>💡 When to use:</strong> Use this to show available banks/wallets to your users before they create a payout.
+                </div>
+
+                <div class="code-block">
+<pre>curl -H "X-API-KEY: your-key" \
+  https://sandbox.mycodigital.io/api/v1/directory</pre>
+                </div>
+
+                <p><strong>Response includes:</strong></p>
+                <ul style="margin: 1rem 0; padding-left: 2rem;">
+                    <li>14 Pakistani Banks (HBL, UBL, MCB, ABL, etc.)</li>
+                    <li>4 Mobile Wallets (Easypaisa, JazzCash, SadaPay, NayaPay)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Check Balance -->
+        <div class="endpoint-section">
+            <h2>💰 Check Your Balance</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method method-get">GET</span>
+                    <span class="endpoint-path">/balance</span>
+                </div>
+                <p class="endpoint-description">Check your current account balance and available funds.</p>
+                
+                <div class="use-case">
+                    <strong>💡 When to use:</strong> Check this before creating payouts to ensure you have sufficient funds.
+                </div>
+
+                <div class="code-block">
+<pre>curl -H "X-API-KEY: your-key" \
+  https://sandbox.mycodigital.io/api/v1/balance</pre>
+                </div>
+
+                <p><strong>Response:</strong></p>
+                <div class="code-block">
+<pre>{
+  "success": true,
+  "data": {
+    "balance": "1000000.00",
+    "lockedBalance": "5000.00",
+    "availableBalance": "995000.00"
+  }
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Payout -->
+        <div class="endpoint-section">
+            <h2>💸 Send Money (Create Payout)</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method method-post">POST</span>
+                    <span class="endpoint-path">/payouts</span>
+                </div>
+                <p class="endpoint-description">Send money to a bank account or mobile wallet.</p>
+                
+                <div class="use-case">
+                    <strong>💡 When to use:</strong> Use this to send money to vendors, employees, or customers. Each payout is processed automatically within 5-10 seconds.
+                </div>
+
+                <h3 style="margin-top: 1.5rem;">Request Parameters:</h3>
+                <table class="params-table">
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Type</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><code>merchantReference</code></td>
+                        <td>string</td>
+                        <td><span class="required">Required</span></td>
+                        <td>Your unique reference ID for this payout</td>
+                    </tr>
+                    <tr>
+                        <td><code>amount</code></td>
+                        <td>number</td>
+                        <td><span class="required">Required</span></td>
+                        <td>Amount in PKR (e.g., 1000 for Rs. 1,000)</td>
+                    </tr>
+                    <tr>
+                        <td><code>currency</code></td>
+                        <td>string</td>
+                        <td><span class="optional">Optional</span></td>
+                        <td>Currency code (default: "PKR")</td>
+                    </tr>
+                    <tr>
+                        <td><code>destType</code></td>
+                        <td>string</td>
+                        <td><span class="required">Required</span></td>
+                        <td>"BANK" or "WALLET"</td>
+                    </tr>
+                    <tr>
+                        <td><code>bankCode</code></td>
+                        <td>string</td>
+                        <td><span class="optional">Required if BANK</span></td>
+                        <td>Bank code (e.g., "HBL", "UBL")</td>
+                    </tr>
+                    <tr>
+                        <td><code>walletCode</code></td>
+                        <td>string</td>
+                        <td><span class="optional">Required if WALLET</span></td>
+                        <td>Wallet code (e.g., "EASYPAISA")</td>
+                    </tr>
+                    <tr>
+                        <td><code>accountNumber</code></td>
+                        <td>string</td>
+                        <td><span class="required">Required</span></td>
+                        <td>Account number (10-16 digits)</td>
+                    </tr>
+                    <tr>
+                        <td><code>accountTitle</code></td>
+                        <td>string</td>
+                        <td><span class="required">Required</span></td>
+                        <td>Account holder name</td>
+                    </tr>
+                </table>
+
+                <h3 style="margin-top: 1.5rem;">Example: Send to Bank</h3>
+                <div class="code-block">
+<pre>curl -X POST https://sandbox.mycodigital.io/api/v1/payouts \
+  -H "X-API-KEY: your-key" \
+  -H "X-IDEMPOTENCY-KEY: unique-uuid" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "merchantReference": "ORDER-12345",
+    "amount": 5000,
+    "currency": "PKR",
+    "destType": "BANK",
+    "bankCode": "HBL",
+    "accountNumber": "1234567890123",
+    "accountTitle": "Ahmed Ali"
+  }'</pre>
+                </div>
+
+                <h3 style="margin-top: 1.5rem;">Example: Send to Mobile Wallet</h3>
+                <div class="code-block">
+<pre>curl -X POST https://sandbox.mycodigital.io/api/v1/payouts \
+  -H "X-API-KEY: your-key" \
+  -H "X-IDEMPOTENCY-KEY: unique-uuid" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "merchantReference": "SALARY-67890",
+    "amount": 15000,
+    "currency": "PKR",
+    "destType": "WALLET",
+    "walletCode": "EASYPAISA",
+    "accountNumber": "03001234567",
+    "accountTitle": "Fatima Khan"
+  }'</pre>
+                </div>
+
+                <p><strong>Response:</strong></p>
+                <div class="code-block">
+<pre>{
+  "success": true,
+  "message": "Payout created successfully",
+  "data": {
+    "id": "payout-uuid",
+    "merchantReference": "ORDER-12345",
+    "amount": "5000.00",
+    "status": "PENDING",
+    "createdAt": "2025-11-26T10:00:00Z"
+  }
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Check Payout Status -->
+        <div class="endpoint-section">
+            <h2>📊 Check Payout Status</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method method-get">GET</span>
+                    <span class="endpoint-path">/payouts/:id</span>
+                </div>
+                <p class="endpoint-description">Check the status of a specific payout.</p>
+                
+                <div class="use-case">
+                    <strong>💡 When to use:</strong> After creating a payout, use this to check if it was successful, failed, or still pending.
+                </div>
+
+                <div class="code-block">
+<pre>curl -H "X-API-KEY: your-key" \
+  https://sandbox.mycodigital.io/api/v1/payouts/payout-uuid</pre>
+                </div>
+
+                <p><strong>Possible Status Values:</strong></p>
+                <ul style="margin: 1rem 0; padding-left: 2rem;">
+                    <li><strong>PENDING</strong> - Payout created, waiting to be processed</li>
+                    <li><strong>PROCESSING</strong> - Currently being processed</li>
+                    <li><strong>SUCCESS</strong> - Money sent successfully ✅</li>
+                    <li><strong>FAILED</strong> - Payout failed (check failureReason) ❌</li>
+                    <li><strong>IN_REVIEW</strong> - Large amount under review</li>
+                    <li><strong>ON_HOLD</strong> - Account blocked or restricted</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Verify Account -->
+        <div class="endpoint-section">
+            <h2>✅ Verify Account Before Sending</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method method-post">POST</span>
+                    <span class="endpoint-path">/verify-account</span>
+                </div>
+                <p class="endpoint-description">Verify if a bank account or mobile wallet number is valid before creating a payout.</p>
+                
+                <div class="use-case">
+                    <strong>💡 When to use:</strong> Use this to validate account details before creating a payout to avoid failed transactions.
+                </div>
+
+                <div class="code-block">
+<pre>curl -X POST https://sandbox.mycodigital.io/api/v1/verify-account \
+  -H "X-API-KEY: your-key" \
+  -H "X-IDEMPOTENCY-KEY: unique-uuid" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "destType": "BANK",
+    "bankCode": "HBL",
+    "accountNumber": "1234567890123"
+  }'</pre>
+                </div>
+
+                <p><strong>Response:</strong></p>
+                <div class="code-block">
+<pre>{
+  "success": true,
+  "data": {
+    "isValid": true,
+    "accountTitle": "Ahmed Ali",
+    "message": "Account verified successfully"
+  }
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Scenarios -->
+        <div class="endpoint-section">
+            <h2>🧪 Testing in Sandbox</h2>
+            <p>Use these special account numbers to test different scenarios without real transactions:</p>
+            
+            <div class="test-scenarios">
+                <h3>Test Account Numbers</h3>
+                <table>
+                    <tr>
+                        <td>*******0001</td>
+                        <td>✅ Will succeed immediately</td>
+                    </tr>
+                    <tr>
+                        <td>*******0002</td>
+                        <td>🔄 Will retry then succeed</td>
+                    </tr>
+                    <tr>
+                        <td>*******0003</td>
+                        <td>❌ Will fail with validation error</td>
+                    </tr>
+                    <tr>
+                        <td>*******0004</td>
+                        <td>⏳ Will stay in PENDING status</td>
+                    </tr>
+                    <tr>
+                        <td>*******0005</td>
+                        <td>🚫 Will go ON_HOLD (blocked account)</td>
+                    </tr>
+                </table>
+                
+                <p style="margin-top: 1rem;"><strong>Note:</strong> Any account ending with these 4 digits will trigger the test scenario. Also, amounts ≥ 100,000 PKR will automatically go to IN_REVIEW status.</p>
+            </div>
+        </div>
+
+        <!-- Webhooks -->
+        <div class="endpoint-section">
+            <h2>🔔 Webhook Notifications</h2>
+            <p>Get real-time notifications when payout status changes.</p>
+            
+            <div class="endpoint">
+                <h3>How Webhooks Work:</h3>
+                <ol style="margin: 1rem 0; padding-left: 2rem;">
+                    <li>You provide us your webhook URL when signing up</li>
+                    <li>When a payout status changes, we send a POST request to your URL</li>
+                    <li>Your server receives the notification instantly</li>
+                    <li>You update your system accordingly</li>
+                </ol>
+
+                <h3 style="margin-top: 1.5rem;">Webhook Payload:</h3>
+                <div class="code-block">
+<pre>{
+  "event": "PAYOUT_UPDATED",
+  "payout": {
+    "id": "payout-uuid",
+    "merchantReference": "ORDER-12345",
+    "amount": "5000.00",
+    "status": "SUCCESS",
+    "pspReference": "PSP1234567890",
+    "processedAt": "2025-11-26T10:05:00Z"
+  },
+  "timestamp": "2025-11-26T10:05:00Z"
+}</pre>
+                </div>
+
+                <h3 style="margin-top: 1.5rem;">Webhook Headers:</h3>
+                <div class="code-block">
+<pre>X-MyPay-Signature: hmac-sha256-signature
+X-MyPay-Event: PAYOUT_UPDATED
+Content-Type: application/json</pre>
+                </div>
+
+                <div class="use-case">
+                    <strong>💡 Security:</strong> Always verify the X-MyPay-Signature header to ensure the webhook is from MyPay.
+                </div>
+            </div>
+        </div>
+
+        <!-- Download Section -->
+        <div class="download-section">
+            <h2 style="margin-bottom: 1rem;">📥 Download Postman Collection</h2>
+            <p>Test all API endpoints instantly with our pre-configured Postman collection.</p>
+            <button class="download-btn" onclick="downloadPostman()">Download Postman Collection (JSON)</button>
+        </div>
+
+        <!-- Error Codes -->
+        <div class="endpoint-section">
+            <h2>⚠️ Common Error Codes</h2>
+            <table class="params-table">
+                <tr>
+                    <th>Error Code</th>
+                    <th>Description</th>
+                    <th>Solution</th>
+                </tr>
+                <tr>
+                    <td><code>MISSING_API_KEY</code></td>
+                    <td>API key not provided</td>
+                    <td>Add X-API-KEY header to your request</td>
+                </tr>
+                <tr>
+                    <td><code>INVALID_API_KEY</code></td>
+                    <td>API key is incorrect</td>
+                    <td>Check your API key and try again</td>
+                </tr>
+                <tr>
+                    <td><code>INSUFFICIENT_BALANCE</code></td>
+                    <td>Not enough funds</td>
+                    <td>Add funds to your account</td>
+                </tr>
+                <tr>
+                    <td><code>VALIDATION_ERROR</code></td>
+                    <td>Invalid parameters</td>
+                    <td>Check account number format and required fields</td>
+                </tr>
+                <tr>
+                    <td><code>DUPLICATE_REFERENCE</code></td>
+                    <td>Merchant reference already used</td>
+                    <td>Use a unique reference for each payout</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Support Section -->
+        <div class="endpoint-section">
+            <h2>💬 Need Help?</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>📧 Email Support</h3>
+                    <p>support@mycodigital.io</p>
+                </div>
+                <div class="info-card">
+                    <h3>📞 Phone Support</h3>
+                    <p>+92-XXX-XXXXXXX</p>
+                </div>
+                <div class="info-card">
+                    <h3>📚 Documentation</h3>
+                    <p>Available 24/7</p>
+                </div>
+                <div class="info-card">
+                    <h3>⏰ Response Time</h3>
+                    <p>Within 2 hours</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 MyPay - MYCO Digital. All rights reserved.</p>
+        <p style="margin-top: 0.5rem;">Pakistani Payment Gateway | Secure & Reliable</p>
+    </div>
+
+    <script>
+        function downloadPostman() {
+            // This will download the Postman collection
+            window.location.href = '/doc/payout/MyPay_Payout_API.postman_collection.json';
+        }
+    </script>
+</body>
+</html>
+

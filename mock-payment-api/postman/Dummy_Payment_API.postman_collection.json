@@ -1,0 +1,266 @@
+{
+    "info": {
+        "name": "Dummy Payment API - Sandbox",
+        "description": "Collection for testing Dummy Payment API endpoints on sandbox.mycodigital.io\n\nBase URL: https://sandbox.mycodigital.io\nAPI Key: test-api-key-123\n\nAll endpoints are configured to use the production sandbox environment with HTTPS enabled.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "https://sandbox.mycodigital.io",
+            "type": "string"
+        },
+        {
+            "key": "apiKey",
+            "value": "test-api-key-123",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Health Check",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{baseUrl}}/health",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["health"]
+                }
+            }
+        },
+        {
+            "name": "Create Checkout - Success Scenario",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "X-Api-Key",
+                        "value": "{{apiKey}}",
+                        "type": "text"
+                    },
+                    {
+                        "key": "X-Api-Signature",
+                        "value": "dummy-signature",
+                        "type": "text"
+                    },
+                    {
+                        "key": "X-Timestamp",
+                        "value": "{{timestamp}}",
+                        "type": "text"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"reference\": \"TEST-{{$timestamp}}\",\n    \"amount\": 1000.00,\n    \"paymentMethod\": \"jazzcash\",\n    \"paymentType\": \"onetime\",\n    \"successUrl\": \"https://merchant.com/webhook\",\n    \"returnUrl\": \"https://merchant.com/return\",\n    \"user\": {\n        \"id\": \"user123\",\n        \"email\": \"user@example.com\",\n        \"name\": \"Test User\"\n    }\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/checkouts",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["checkouts"]
+                }
+            },
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "exec": [
+                            "pm.variables.set('timestamp', new Date().toISOString());"
+                        ],
+                        "type": "text/javascript"
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "",
+                            "pm.test(\"Response has checkout URL\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData).to.have.property('checkoutUrl');",
+                            "    pm.collectionVariables.set('checkoutId', jsonData.checkoutId);",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Create Checkout - Easypaisa",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "X-Api-Key",
+                        "value": "{{apiKey}}",
+                        "type": "text"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"reference\": \"EP-{{$timestamp}}\",\n    \"amount\": 2500.50,\n    \"paymentMethod\": \"easypaisa\",\n    \"paymentType\": \"onetime\",\n    \"successUrl\": \"https://merchant.com/webhook\",\n    \"returnUrl\": \"https://merchant.com/return\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/checkouts",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["checkouts"]
+                }
+            }
+        },
+        {
+            "name": "Create Checkout - Invalid Payment Method",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "X-Api-Key",
+                        "value": "{{apiKey}}",
+                        "type": "text"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"reference\": \"INVALID-{{$timestamp}}\",\n    \"amount\": 1000,\n    \"paymentMethod\": \"invalid\",\n    \"paymentType\": \"onetime\",\n    \"successUrl\": \"https://merchant.com/webhook\",\n    \"returnUrl\": \"https://merchant.com/return\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/checkouts",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["checkouts"]
+                }
+            }
+        },
+        {
+            "name": "Get Checkout Details",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "X-Api-Key",
+                        "value": "{{apiKey}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/checkouts/{{checkoutId}}",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["checkouts", "{{checkoutId}}"]
+                }
+            }
+        },
+        {
+            "name": "Get Transaction Status",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "X-Api-Key",
+                        "value": "{{apiKey}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/transactions/TEST-123",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["transactions", "TEST-123"]
+                }
+            }
+        },
+        {
+            "name": "Get Test Scenarios",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{baseUrl}}/test-scenarios",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["test-scenarios"]
+                }
+            }
+        },
+        {
+            "name": "Test Webhook",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"checkoutId\": \"{{checkoutId}}\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/webhooks/test",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["webhooks", "test"]
+                }
+            }
+        },
+        {
+            "name": "Complete Payment - Success",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"mobileNumber\": \"03030000000\",\n    \"pin\": \"1234\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/payment/{{checkoutId}}/complete",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["payment", "{{checkoutId}}", "complete"]
+                }
+            }
+        },
+        {
+            "name": "Complete Payment - Failed",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"mobileNumber\": \"03021111111\",\n    \"pin\": \"1234\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/payment/{{checkoutId}}/complete",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["payment", "{{checkoutId}}", "complete"]
+                }
+            }
+        }
+    ]
+}

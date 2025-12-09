@@ -1,0 +1,38 @@
+{
+  "name": "@mypay/payout-api",
+  "version": "1.0.0",
+  "description": "Mock Payout API Service for Pakistani FinTech",
+  "main": "dist/api/main.js",
+  "scripts": {
+    "start": "node dist/api/main.js",
+    "start:api": "ts-node src/api/main.ts",
+    "start:worker": "ts-node src/worker/worker.ts",
+    "start:ipn": "ts-node src/ipn/main.ts",
+    "dev": "npx nodemon --watch src --ext ts --exec \"npx ts-node src/api/main.ts\"",
+    "dev:worker": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/worker/worker.ts",
+    "build": "tsc",
+    "clean": "rimraf dist",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "ts-node prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.7.0",
+    "express": "^4.18.2",
+    "bcrypt": "^5.1.1",
+    "uuid": "^9.0.1",
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/express": "^4.17.21",
+    "@types/bcrypt": "^5.0.2",
+    "@types/uuid": "^9.0.7",
+    "prisma": "^5.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "nodemon": "^3.0.2",
+    "rimraf": "^5.0.5"
+  }
+}
+

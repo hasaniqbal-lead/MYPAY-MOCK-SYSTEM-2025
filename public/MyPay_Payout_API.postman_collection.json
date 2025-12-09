@@ -1,0 +1,556 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "MyPay Payout API - Complete",
+		"description": "Complete Postman collection for testing MyPay Mock Payout API System\n\n**Base URL:** http://localhost:3000/api/v1\n\n**API Key:** mypay_3771a05970d71c8a95e9364756d1c6163f811343785390102d4730b8a4aa5039\n\n**Test Account Numbers:**\n- *0001 → SUCCESS\n- *0002 → RETRY then SUCCESS\n- *0003 → FAILED\n- *0004 → PENDING\n- *0005 → ON_HOLD\n- Amount ≥ 100,000 → IN_REVIEW",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/health",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"health"
+					]
+				},
+				"description": "Check if the API server is running"
+			},
+			"response": []
+		},
+		{
+			"name": "Payouts",
+			"item": [
+				{
+					"name": "Create Payout - SUCCESS",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-API-KEY",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-IDEMPOTENCY-KEY",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"merchantReference\": \"test-success-{{$timestamp}}\",\n  \"amount\": 1000,\n  \"currency\": \"PKR\",\n  \"destType\": \"BANK\",\n  \"bankCode\": \"HBL\",\n  \"accountNumber\": \"1234500001\",\n  \"accountTitle\": \"Test User Success\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/payouts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"payouts"
+							]
+						},
+						"description": "Create a payout that will immediately succeed. Account ending in 0001."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Payout - RETRY",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-API-KEY",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-IDEMPOTENCY-KEY",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"merchantReference\": \"test-retry-{{$timestamp}}\",\n  \"amount\": 2000,\n  \"currency\": \"PKR\",\n  \"destType\": \"BANK\",\n  \"bankCode\": \"UBL\",\n  \"accountNumber\": \"9876500002\",\n  \"accountTitle\": \"Test User Retry\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/payouts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"payouts"
+							]
+						},
+						"description": "Create a payout that will retry then succeed. Account ending in 0002."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Payout - FAILED",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-API-KEY",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-IDEMPOTENCY-KEY",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"merchantReference\": \"test-failed-{{$timestamp}}\",\n  \"amount\": 500,\n  \"currency\": \"PKR\",\n  \"destType\": \"WALLET\",\n  \"walletCode\": \"EASYPAISA\",\n  \"accountNumber\": \"5555500003\",\n  \"accountTitle\": \"Test User Failed\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/payouts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"payouts"
+							]
+						},
+						"description": "Create a payout that will fail. Account ending in 0003."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Payout - PENDING",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-API-KEY",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-IDEMPOTENCY-KEY",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"merchantReference\": \"test-pending-{{$timestamp}}\",\n  \"amount\": 1500,\n  \"currency\": \"PKR\",\n  \"destType\": \"BANK\",\n  \"bankCode\": \"MCB\",\n  \"accountNumber\": \"1111100004\",\n  \"accountTitle\": \"Test User Pending\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/payouts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"payouts"
+							]
+						},
+						"description": "Create a payout that will stay pending. Account ending in 0004."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Payout - ON_HOLD",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-API-KEY",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-IDEMPOTENCY-KEY",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"merchantReference\": \"test-onhold-{{$timestamp}}\",\n  \"amount\": 3000,\n  \"currency\": \"PKR\",\n  \"destType\": \"WALLET\",\n  \"walletCode\": \"JAZZCASH\",\n  \"accountNumber\": \"9999900005\",\n  \"accountTitle\": \"Test User Blocked\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/payouts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"payouts"
+							]
+						},
+						"description": "Create a payout that will be placed on hold. Account ending in 0005."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Payout - IN_REVIEW (Large Amount)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-API-KEY",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-IDEMPOTENCY-KEY",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"merchantReference\": \"test-review-{{$timestamp}}\",\n  \"amount\": 150000,\n  \"currency\": \"PKR\",\n  \"destType\": \"BANK\",\n  \"bankCode\": \"HBL\",\n  \"accountNumber\": \"1234567890\",\n  \"accountTitle\": \"Test Large Amount\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/payouts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"payouts"
+							]
+						},
+						"description": "Create a payout with amount >= 100,000 that will be placed in review."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Payout by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-API-KEY",
+								"value": "{{api_key}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/payouts/:payoutId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"payouts",
+								":payoutId"
+							],
+							"variable": [
+								{
+									"key": "payoutId",
+									"value": "02241e26-0ee6-4972-a97b-279e81dcff96",
+									"description": "Replace with actual payout ID"
+								}
+							]
+						},
+						"description": "Get details of a specific payout by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "List Payouts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-API-KEY",
+								"value": "{{api_key}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/payouts?page=1&limit=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"payouts"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "status",
+									"value": "SUCCESS",
+									"disabled": true
+								}
+							]
+						},
+						"description": "List all payouts with pagination. Optionally filter by status."
+					},
+					"response": []
+				},
+				{
+					"name": "Reinitiate Failed Payout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-API-KEY",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-IDEMPOTENCY-KEY",
+								"value": "{{$guid}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/payouts/:payoutId/reinitiate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"payouts",
+								":payoutId",
+								"reinitiate"
+							],
+							"variable": [
+								{
+									"key": "payoutId",
+									"value": "772dcdaa-4309-40e2-837c-e3c7c6bcbe9b",
+									"description": "ID of failed payout to reinitiate"
+								}
+							]
+						},
+						"description": "Reinitiate a failed payout. Only works for payouts with FAILED status."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Balance",
+			"item": [
+				{
+					"name": "Get Balance",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-API-KEY",
+								"value": "{{api_key}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/balance",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"balance"
+							]
+						},
+						"description": "Get merchant balance including locked and available balance"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Balance History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-API-KEY",
+								"value": "{{api_key}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/balance/history?page=1&limit=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"balance",
+								"history"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Get ledger entries (balance history) with pagination"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Directory",
+			"item": [
+				{
+					"name": "Get Banks and Wallets Directory",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-API-KEY",
+								"value": "{{api_key}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/directory",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"directory"
+							]
+						},
+						"description": "Get list of available Pakistani banks and mobile wallets"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Verification",
+			"item": [
+				{
+					"name": "Verify Bank Account",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-API-KEY",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-IDEMPOTENCY-KEY",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"destType\": \"BANK\",\n  \"bankCode\": \"HBL\",\n  \"accountNumber\": \"1234500001\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/verify-account",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"verify-account"
+							]
+						},
+						"description": "Verify a bank account before creating payout"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Wallet Account",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-API-KEY",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-IDEMPOTENCY-KEY",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"destType\": \"WALLET\",\n  \"walletCode\": \"EASYPAISA\",\n  \"accountNumber\": \"03001234567\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/verify-account",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"verify-account"
+							]
+						},
+						"description": "Verify a mobile wallet account before creating payout"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "api_key",
+			"value": "mypay_3771a05970d71c8a95e9364756d1c6163f811343785390102d4730b8a4aa5039",
+			"type": "string"
+		}
+	]
+}

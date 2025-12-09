@@ -1,0 +1,1 @@
+{reference:TEST-LOCAL-OK,amount:1000,paymentMethod:jazzcash,paymentType:onetime,successUrl:https://merchant.com/webhook,returnUrl:https://merchant.com/return}

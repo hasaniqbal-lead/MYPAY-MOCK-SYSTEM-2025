@@ -1,0 +1,19 @@
+✅ Database connected successfully
+
+╔════════════════════════════════════════════╗
+║       DUMMY PAYMENT API SERVER             ║
+╠════════════════════════════════════════════╣
+║  🚀 Server running on port 3000          ║
+║  📍 Base URL: http://localhost:3000      ║
+║  🔐 API Key: test-api-key-123              ║
+╚════════════════════════════════════════════╝
+
+📚 Available Endpoints:
+- POST   /checkouts                 - Create checkout session
+- GET    /checkouts/:checkoutId     - Get checkout details
+- GET    /transactions/:reference   - Get transaction status
+- GET    /payment/:sessionId        - Payment page
+- POST   /payment/:sessionId/complete - Complete payment
+- GET    /test-scenarios           - View test scenarios
+- POST   /webhooks/test            - Test webhook sending
+            

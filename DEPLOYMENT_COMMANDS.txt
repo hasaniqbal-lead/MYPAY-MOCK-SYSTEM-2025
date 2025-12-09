@@ -1,0 +1,171 @@
+==============================================
+PAYOUT SYSTEM - VPS DEPLOYMENT COMMANDS
+==============================================
+
+Domain: sandbox.mycodigital.io
+VPS IP: 72.60.110.249
+
+==============================================
+METHOD 1: AUTOMATED DEPLOYMENT (RECOMMENDED)
+==============================================
+
+1. Transfer files to VPS:
+   scp -i "c:\Users\hasan\.ssh\id_ed25519" -r C:\Users\hasan\OneDrive\Desktop\MYPAY-MOCK-SYSTEM\* root@72.60.110.249:/opt/payout-system/
+
+2. Connect to VPS:
+   ssh -i "c:\Users\hasan\.ssh\id_ed25519" root@72.60.110.249
+
+3. Run deployment script:
+   cd /opt/payout-system
+   chmod +x deploy-to-vps.sh
+   ./deploy-to-vps.sh
+
+4. Setup SSL certificate:
+   apt install certbot python3-certbot-nginx -y
+   certbot --nginx -d sandbox.mycodigital.io
+
+5. Test deployment:
+   curl https://sandbox.mycodigital.io/api/v1/health
+
+==============================================
+METHOD 2: MANUAL DEPLOYMENT
+==============================================
+
+1. Connect to VPS:
+   ssh -i "c:\Users\hasan\.ssh\id_ed25519" root@72.60.110.249
+
+2. Install Docker:
+   curl -fsSL https://get.docker.com -o get-docker.sh
+   sh get-docker.sh
+   apt install docker-compose -y
+
+3. Create directory:
+   mkdir -p /opt/payout-system
+   cd /opt/payout-system
+
+4. Transfer files (from local terminal):
+   scp -i "c:\Users\hasan\.ssh\id_ed25519" -r C:\Users\hasan\OneDrive\Desktop\MYPAY-MOCK-SYSTEM\* root@72.60.110.249:/opt/payout-system/
+
+5. Configure environment:
+   nano .env
+   # Add production configuration
+
+6. Start services:
+   docker-compose up -d --build
+
+7. Wait for MySQL:
+   sleep 30
+
+8. Run migrations:
+   docker-compose exec api npm run prisma:migrate deploy
+
+9. Seed database:
+   docker-compose exec api npm run prisma:seed
+
+10. Setup Nginx:
+    apt install nginx -y
+    nano /etc/nginx/sites-available/payout-api
+    # Add configuration from DEPLOYMENT_GUIDE.md
+    
+11. Enable site:
+    ln -s /etc/nginx/sites-available/payout-api /etc/nginx/sites-enabled/
+    nginx -t
+    systemctl restart nginx
+
+12. Setup SSL:
+    apt install certbot python3-certbot-nginx -y
+    certbot --nginx -d sandbox.mycodigital.io
+
+13. Configure firewall:
+    ufw allow 22/tcp
+    ufw allow 80/tcp
+    ufw allow 443/tcp
+    ufw enable
+
+==============================================
+POST-DEPLOYMENT VERIFICATION
+==============================================
+
+1. Check services:
+   docker-compose ps
+
+2. View logs:
+   docker-compose logs -f
+
+3. Test API locally (on VPS):
+   curl http://localhost:3000/api/v1/health
+
+4. Test API externally:
+   curl https://sandbox.mycodigital.io/api/v1/health
+
+5. Get API key from seed output:
+   docker-compose logs api | grep "API Key"
+
+==============================================
+USEFUL COMMANDS
+==============================================
+
+# View logs
+docker-compose logs -f api
+docker-compose logs -f worker
+
+# Restart services
+docker-compose restart
+
+# Stop services
+docker-compose down
+
+# Update and redeploy
+git pull origin main
+docker-compose down
+docker-compose up -d --build
+
+# Access database
+docker-compose exec mysql mysql -uroot -p payout_system
+
+# Backup database
+docker-compose exec mysql mysqldump -uroot -p payout_system > backup.sql
+
+==============================================
+TROUBLESHOOTING
+==============================================
+
+# If port 3306 is in use:
+netstat -tulpn | grep 3306
+# Kill the process or change port in docker-compose.yml
+
+# If API won't start:
+docker-compose logs api
+docker-compose restart api
+
+# If Nginx error:
+nginx -t
+systemctl status nginx
+tail -f /var/log/nginx/error.log
+
+# If SSL issues:
+certbot certificates
+certbot renew
+
+==============================================
+SUPPORT FILES
+==============================================
+
+- DEPLOYMENT_GUIDE.md - Complete step-by-step guide
+- deploy-to-vps.sh - Automated deployment script
+- QUICK_DEPLOY.ps1 - Windows PowerShell deployment helper
+- docker-compose.yml - Docker services configuration
+
+==============================================
+FINAL ENDPOINT
+==============================================
+
+Base URL: https://sandbox.mycodigital.io/api/v1
+
+Health: https://sandbox.mycodigital.io/api/v1/health
+Directory: https://sandbox.mycodigital.io/api/v1/directory
+Balance: https://sandbox.mycodigital.io/api/v1/balance
+Payouts: https://sandbox.mycodigital.io/api/v1/payouts
+
+==============================================
+
