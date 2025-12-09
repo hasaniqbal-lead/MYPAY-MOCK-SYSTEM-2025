@@ -29,20 +29,19 @@ WORKDIR /app
 # Install pnpm
 RUN npm install -g pnpm
 
-# Copy workspace structure and prisma FIRST
+# Copy workspace structure
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY --from=builder /app/prisma ./prisma/
+COPY prisma ./prisma/
 COPY services/payment-api/package.json ./services/payment-api/
 
-# Install production dependencies only
+# Install production dependencies
 RUN pnpm install --prod --frozen-lockfile
 
-# Generate Prisma client in production
+# Generate Prisma client
 RUN npx prisma generate
 
-# Copy built application and generated prisma client from builder
+# Copy built application
 COPY --from=builder /app/services/payment-api/dist ./services/payment-api/dist
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 # Set working directory to service
 WORKDIR /app/services/payment-api
