@@ -45,7 +45,7 @@ ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
 
 # Generate Prisma client AFTER pruning
-RUN pnpm add -D prisma@5.7.0 && pnpm exec prisma generate
+RUN pnpm add -D -w prisma@5.7.0 && pnpm exec prisma generate
 
 # Copy built application
 COPY --from=builder /app/services/payout-api/dist ./services/payout-api/dist
