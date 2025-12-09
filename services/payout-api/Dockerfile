@@ -37,8 +37,8 @@ COPY --from=builder /app/node_modules ./node_modules
 # Copy built application
 COPY --from=builder /app/services/payout-api/dist ./services/payout-api/dist
 
-# Set working directory to service
-WORKDIR /app/services/payout-api
+# Stay in /app directory so node_modules can be found
+WORKDIR /app
 
 # Set environment
 ENV NODE_ENV=production
@@ -46,4 +46,4 @@ ENV PORT=4001
 
 EXPOSE 4001
 
-CMD ["node", "dist/api/main.js"]
+CMD ["node", "services/payout-api/dist/api/main.js"]
