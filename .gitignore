@@ -13,6 +13,7 @@ out/
 # Production build
 dist/
 build/
+.turbo/
 
 # Misc
 .DS_Store
@@ -50,6 +51,9 @@ prisma/migrations/**/*.sql
 
 # Deployment
 mypay-deploy/
+*.tar.gz
+*.zip
+mypay-production-*.tar.gz
 
 # OS
 Thumbs.db
