@@ -11,7 +11,7 @@ export interface CreatePayoutRequest {
 
 export interface PayoutResponse {
   id: string;
-  merchantId: string;
+  merchantId: number;
   merchantReference: string;
   amount: string;
   currency: string;
@@ -82,7 +82,7 @@ import { Request } from 'express';
 
 export interface MerchantRequest extends Request {
   merchant?: {
-    id: string;
+    id: number;
     name: string;
     email: string;
     apiKey: string;
