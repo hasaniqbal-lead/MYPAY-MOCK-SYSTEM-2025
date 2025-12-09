@@ -9,7 +9,7 @@ import { MerchantRequest } from '../../shared/types';
 interface AuditLog {
   timestamp: string;
   request_id: string;
-  merchant_id?: string;
+  merchant_id?: number;
   api_key_hash?: string;
   method: string;
   path: string;

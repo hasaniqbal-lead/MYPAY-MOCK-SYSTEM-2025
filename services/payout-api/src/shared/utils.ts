@@ -208,7 +208,7 @@ export function isValidCurrency(currency: string): boolean {
 /**
  * Generate idempotency key hash
  */
-export function hashIdempotencyKey(merchantId: string, key: string, body: any): string {
+export function hashIdempotencyKey(merchantId: number, key: string, body: any): string {
   const content = `${merchantId}:${key}:${JSON.stringify(body)}`;
   return crypto.createHash('sha256').update(content).digest('hex');
 }
