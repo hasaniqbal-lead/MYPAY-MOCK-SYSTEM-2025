@@ -14,8 +14,8 @@ COPY services/payment-api ./services/payment-api/
 # Install ALL dependencies (including dev dependencies for build)
 RUN pnpm install --frozen-lockfile
 
-# Generate Prisma client
-RUN npx prisma generate
+# Generate Prisma client using pnpm (ensures correct version)
+RUN pnpm exec prisma generate
 
 # Build the service
 WORKDIR /app/services/payment-api
@@ -41,8 +41,8 @@ RUN pnpm install --prod --frozen-lockfile
 ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
 
-# Generate Prisma client
-RUN npx prisma generate
+# Generate Prisma client using pnpm (ensures correct version)
+RUN pnpm exec prisma generate
 
 # Copy built application
 COPY --from=builder /app/services/payment-api/dist ./services/payment-api/dist
