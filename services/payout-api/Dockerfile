@@ -34,15 +34,18 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY prisma ./prisma/
 COPY services/payout-api/package.json ./services/payout-api/
 
-# Install production dependencies
-RUN pnpm install --prod --frozen-lockfile
+# Install all dependencies (need prisma for generation)
+RUN pnpm install --frozen-lockfile
 
 # Set dummy DATABASE_URL for Prisma generation
 ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
 
-# Generate Prisma client using pnpm (ensures correct version)
+# Generate Prisma client
 RUN pnpm exec prisma generate
+
+# Remove dev dependencies to reduce image size
+RUN pnpm prune --prod
 
 # Copy built application
 COPY --from=builder /app/services/payout-api/dist ./services/payout-api/dist
