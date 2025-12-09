@@ -26,18 +26,12 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm
+# Copy workspace structure from builder
+COPY --from=builder /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
+COPY --from=builder /app/prisma ./prisma/
+COPY --from=builder /app/services/payment-api/package.json ./services/payment-api/
 
-# Copy workspace structure
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY prisma ./prisma/
-COPY services/payment-api/package.json ./services/payment-api/
-
-# Install production dependencies only
-RUN pnpm install --prod --frozen-lockfile
-
-# Copy ALL node_modules from builder (includes generated Prisma client)
+# Copy ALL node_modules from builder (includes generated Prisma client with correct version)
 COPY --from=builder /app/node_modules ./node_modules
 
 # Copy built application
