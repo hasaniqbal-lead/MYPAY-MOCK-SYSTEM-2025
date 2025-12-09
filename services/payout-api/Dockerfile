@@ -37,18 +37,9 @@ COPY services/payout-api/package.json ./services/payout-api/
 # Install production dependencies only
 RUN pnpm install --prod --frozen-lockfile
 
-# Add prisma temporarily for client generation
-RUN pnpm add -D -w prisma@5.7.0
-
-# Set dummy DATABASE_URL for Prisma generation
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
-
-# Generate Prisma client
-RUN pnpm exec prisma generate
-
-# Remove prisma CLI (keep @prisma/client which is in dependencies)
-RUN pnpm remove -D -w prisma
+# Copy generated Prisma client from builder (rock-solid approach)
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 # Copy built application
 COPY --from=builder /app/services/payout-api/dist ./services/payout-api/dist
