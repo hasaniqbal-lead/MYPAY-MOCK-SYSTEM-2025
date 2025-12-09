@@ -37,6 +37,10 @@ COPY services/payment-api/package.json ./services/payment-api/
 # Install production dependencies
 RUN pnpm install --prod --frozen-lockfile
 
+# Set dummy DATABASE_URL for Prisma generation
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
+
 # Generate Prisma client
 RUN npx prisma generate
 

@@ -26,6 +26,8 @@ services:
     build:
       context: .
       dockerfile: services/payout-api/Dockerfile
+      args:
+        - DATABASE_URL=mysql://root:dummy@localhost:3306/dummy
     container_name: mypay-payout-api
     restart: unless-stopped
     environment:
@@ -46,6 +48,8 @@ services:
     build:
       context: .
       dockerfile: services/payment-api/Dockerfile
+      args:
+        - DATABASE_URL=mysql://root:dummy@localhost:3306/dummy
     container_name: mypay-payment-api
     restart: unless-stopped
     environment:
