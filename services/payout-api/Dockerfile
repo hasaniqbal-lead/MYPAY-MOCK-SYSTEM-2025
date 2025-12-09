@@ -37,9 +37,8 @@ COPY services/payout-api/package.json ./services/payout-api/
 # Install production dependencies only
 RUN pnpm install --prod --frozen-lockfile
 
-# Copy generated Prisma client from builder (rock-solid approach)
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+# Copy ALL node_modules from builder (includes generated Prisma client)
+COPY --from=builder /app/node_modules ./node_modules
 
 # Copy built application
 COPY --from=builder /app/services/payout-api/dist ./services/payout-api/dist
