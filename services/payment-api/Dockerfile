@@ -34,18 +34,21 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY prisma ./prisma/
 COPY services/payment-api/package.json ./services/payment-api/
 
-# Install all dependencies (need prisma for generation)
-RUN pnpm install --frozen-lockfile
+# Install production dependencies only
+RUN pnpm install --prod --frozen-lockfile
 
-# Remove dev dependencies to reduce image size (except prisma needed for generation)
-RUN pnpm prune --prod
+# Add prisma temporarily for client generation
+RUN pnpm add -D -w prisma@5.7.0
 
 # Set dummy DATABASE_URL for Prisma generation
 ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
 
-# Generate Prisma client AFTER pruning
-RUN pnpm add -D -w prisma@5.7.0 && pnpm exec prisma generate
+# Generate Prisma client
+RUN pnpm exec prisma generate
+
+# Remove prisma CLI (keep @prisma/client which is in dependencies)
+RUN pnpm remove -D -w prisma
 
 # Copy built application
 COPY --from=builder /app/services/payment-api/dist ./services/payment-api/dist
