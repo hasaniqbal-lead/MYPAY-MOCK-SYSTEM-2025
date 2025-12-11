@@ -35,13 +35,15 @@ ENV PORT=4010
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy built files
-COPY --from=builder /app/services/merchant-portal/public ./services/merchant-portal/public
+# Copy built files - standalone includes everything
 COPY --from=builder /app/services/merchant-portal/.next/standalone ./
-COPY --from=builder /app/services/merchant-portal/.next/static ./services/merchant-portal/.next/static
+COPY --from=builder /app/services/merchant-portal/.next/static ./.next/static
+COPY --from=builder /app/services/merchant-portal/public ./public
+# Copy pnpm node_modules for symlink resolution
+COPY --from=builder /app/node_modules ./node_modules
 
 USER nextjs
 
 EXPOSE 4010
 
-CMD ["node", "services/merchant-portal/server.js"]
+CMD ["node", "server.js"]

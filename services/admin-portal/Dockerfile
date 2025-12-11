@@ -35,13 +35,15 @@ ENV PORT=4011
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy built files
-COPY --from=builder /app/services/admin-portal/public ./services/admin-portal/public
+# Copy built files - standalone includes everything
 COPY --from=builder /app/services/admin-portal/.next/standalone ./
-COPY --from=builder /app/services/admin-portal/.next/static ./services/admin-portal/.next/static
+COPY --from=builder /app/services/admin-portal/.next/static ./.next/static
+COPY --from=builder /app/services/admin-portal/public ./public
+# Copy pnpm node_modules for symlink resolution
+COPY --from=builder /app/node_modules ./node_modules
 
 USER nextjs
 
 EXPOSE 4011
 
-CMD ["node", "services/admin-portal/server.js"]
+CMD ["node", "server.js"]
