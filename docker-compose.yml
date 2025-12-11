@@ -58,6 +58,7 @@ services:
       - DATABASE_URL=mysql://root:${DB_PASSWORD:-mypay_secure_password}@mysql:3306/${DB_NAME:-mypay_mock_db}
       - JWT_SECRET=${JWT_SECRET:-supersecretjwtkey}
       - API_KEY_SECRET=${API_KEY_SECRET:-supersecretapikey}
+      - CHECKOUT_BASE_URL=${CHECKOUT_BASE_URL:-http://localhost:4002/payment}
     ports:
       - "4002:4002"
     depends_on:
