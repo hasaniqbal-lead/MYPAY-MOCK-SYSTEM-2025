@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
 		"name": "MyPay Payout API - Complete",
-		"description": "Complete Postman collection for testing MyPay Mock Payout API System\n\n**Base URL:** http://localhost:3000/api/v1\n\n**API Key:** mypay_3771a05970d71c8a95e9364756d1c6163f811343785390102d4730b8a4aa5039\n\n**Test Account Numbers:**\n- *0001 → SUCCESS\n- *0002 → RETRY then SUCCESS\n- *0003 → FAILED\n- *0004 → PENDING\n- *0005 → ON_HOLD\n- Amount ≥ 100,000 → IN_REVIEW",
+		"description": "Complete Postman collection for testing MyPay Mock Payout API System\n\n**Production URL:** https://sandbox.mycodigital.io/api/v1\n**Local URL:** http://localhost:4001/api/v1\n\n**API Key:** mypay_3771a05970d71c8a95e9364756d1c6163f811343785390102d4730b8a4aa5039\n\n**Test Account Numbers:**\n- *0001 → SUCCESS\n- *0002 → RETRY then SUCCESS\n- *0003 → FAILED\n- *0004 → PENDING\n- *0005 → ON_HOLD\n- Amount ≥ 100,000 → IN_REVIEW\n\n**Note:** Use {{base_url}} for production or switch to {{base_url_local}} for local testing.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -544,13 +544,21 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "http://localhost:3000/api/v1",
-			"type": "string"
+			"value": "https://sandbox.mycodigital.io/api/v1",
+			"type": "string",
+			"description": "Production Payout API base URL"
+		},
+		{
+			"key": "base_url_local",
+			"value": "http://localhost:4001/api/v1",
+			"type": "string",
+			"description": "Local development URL (use this for local testing)"
 		},
 		{
 			"key": "api_key",
 			"value": "mypay_3771a05970d71c8a95e9364756d1c6163f811343785390102d4730b8a4aa5039",
-			"type": "string"
+			"type": "string",
+			"description": "Test API key from seeded data"
 		}
 	]
 }

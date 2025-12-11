@@ -156,6 +156,7 @@ sudo certbot --nginx -d your-service.mycodigital.io
 | Mock Merchant Portal | devportal.mycodigital.io | 4010 | ✅ Active | MyPay Team | Test/Mock service |
 | Mock Admin Portal | devadmin.mycodigital.io | 4011 | ✅ Active | MyPay Team | Test/Mock service |
 | MySQL (MyPay Mock) | Internal only | 3306 | ✅ Active | MyPay Team | Not exposed externally |
+| Wallet Linking Service | link.mycodigital.io | 3000 | ✅ Active | MyPay Team | Multi-provider wallet linking (Easypaisa, JazzCash) |
 | *(Add your service)* | *(your domain)* | *(port)* | - | *(your name)* | *(description)* |
 
 **Instructions**: 
