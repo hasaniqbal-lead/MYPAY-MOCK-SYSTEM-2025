@@ -31,19 +31,30 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=4010
 
+# Install pnpm
+RUN npm install -g pnpm
+
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy built files - standalone includes everything
-COPY --from=builder /app/services/merchant-portal/.next/standalone ./
-COPY --from=builder /app/services/merchant-portal/.next/static ./.next/static
-COPY --from=builder /app/services/merchant-portal/public ./public
-# Copy pnpm node_modules for symlink resolution
-COPY --from=builder /app/node_modules ./node_modules
+# Copy package files
+COPY --from=builder /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
+COPY --from=builder /app/services/merchant-portal/package.json ./services/merchant-portal/
+
+# Install production dependencies
+RUN pnpm install --frozen-lockfile --prod
+
+# Copy built application
+COPY --from=builder --chown=nextjs:nodejs /app/services/merchant-portal/.next ./services/merchant-portal/.next
+COPY --from=builder --chown=nextjs:nodejs /app/services/merchant-portal/public ./services/merchant-portal/public
+COPY --from=builder --chown=nextjs:nodejs /app/services/merchant-portal/next.config.js ./services/merchant-portal/
+COPY --from=builder --chown=nextjs:nodejs /app/services/merchant-portal/package.json ./services/merchant-portal/package.json
+
+WORKDIR /app/services/merchant-portal
 
 USER nextjs
 
 EXPOSE 4010
 
-CMD ["node", "server.js"]
+CMD ["pnpm", "start"]
