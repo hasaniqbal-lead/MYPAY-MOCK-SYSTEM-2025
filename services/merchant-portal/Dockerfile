@@ -36,12 +36,12 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy built files
-COPY --from=builder /app/services/merchant-portal/public ./public
+COPY --from=builder /app/services/merchant-portal/public ./services/merchant-portal/public
 COPY --from=builder /app/services/merchant-portal/.next/standalone ./
-COPY --from=builder /app/services/merchant-portal/.next/static ./.next/static
+COPY --from=builder /app/services/merchant-portal/.next/static ./services/merchant-portal/.next/static
 
 USER nextjs
 
 EXPOSE 4010
 
-CMD ["node", "server.js"]
+CMD ["node", "services/merchant-portal/server.js"]

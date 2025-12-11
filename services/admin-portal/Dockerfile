@@ -36,12 +36,12 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy built files
-COPY --from=builder /app/services/admin-portal/public ./public
+COPY --from=builder /app/services/admin-portal/public ./services/admin-portal/public
 COPY --from=builder /app/services/admin-portal/.next/standalone ./
-COPY --from=builder /app/services/admin-portal/.next/static ./.next/static
+COPY --from=builder /app/services/admin-portal/.next/static ./services/admin-portal/.next/static
 
 USER nextjs
 
 EXPOSE 4011
 
-CMD ["node", "server.js"]
+CMD ["node", "services/admin-portal/server.js"]
