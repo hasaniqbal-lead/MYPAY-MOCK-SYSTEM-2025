@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import { testConnection } from './config/database';
 import { simpleValidation, validateCheckoutParams } from './middleware/validation';
 import { requireAuth } from './middleware/auth';
+import { auditRequestLogger, auditResponseLogger } from './middleware/auditLogger';
 import { checkoutController } from './controllers/checkoutController';
 import { paymentController } from './controllers/paymentController';
 import { portalAuthController } from './controllers/portalAuthController';
@@ -24,14 +25,18 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Request logging middleware
-app.use((req: Request, _res: Response, next: NextFunction) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-  next();
-});
+// Audit logging middleware
+app.use(auditRequestLogger);
+app.use(auditResponseLogger);
+
+// ============================================
+// API v1 Routes (under /api/v1 prefix)
+// ============================================
+
+const apiRouter = express.Router();
 
 // Health check endpoint
-app.get('/health', (_req: Request, res: Response) => {
+apiRouter.get('/health', (_req: Request, res: Response) => {
   res.json({
     status: 'OK',
     service: 'MyPay Payment API',
@@ -44,7 +49,7 @@ app.get('/health', (_req: Request, res: Response) => {
 // ============================================
 
 // Create checkout session
-app.post(
+apiRouter.post(
   '/checkouts',
   simpleValidation as express.RequestHandler,
   validateCheckoutParams as express.RequestHandler,
@@ -52,47 +57,32 @@ app.post(
 );
 
 // Get checkout details
-app.get(
+apiRouter.get(
   '/checkouts/:checkoutId',
   simpleValidation as express.RequestHandler,
   (req: Request, res: Response) => checkoutController.getCheckout(req as AuthenticatedRequest, res)
 );
 
 // Get transaction status by reference
-app.get(
+apiRouter.get(
   '/transactions/:reference',
   simpleValidation as express.RequestHandler,
   (req: Request, res: Response) => checkoutController.getTransactionStatus(req as AuthenticatedRequest, res)
 );
 
 // ============================================
-// Payment Page Routes (no auth required)
-// ============================================
-
-app.get('/payment/:sessionId', (req: Request, res: Response) =>
-  paymentController.renderPaymentPage(req, res)
-);
-
-app.post('/payment/:sessionId/complete', (req: Request, res: Response) =>
-  paymentController.completePayment(req, res)
-);
-
-// Test scenarios endpoint
-app.get('/test-scenarios', (req: Request, res: Response) =>
-  paymentController.getTestScenarios(req, res)
-);
-
-// ============================================
 // Webhook Routes
 // ============================================
 
-app.post('/webhooks/test', async (req: Request, res: Response) => {
+apiRouter.post('/webhooks/test', async (req: Request, res: Response) => {
   const { checkoutId } = req.body;
 
   if (!checkoutId) {
     res.status(400).json({
-      success: false,
-      error: 'checkoutId is required',
+      error: {
+        message: 'checkoutId is required',
+        code: 'VALIDATION_ERROR',
+      },
     });
     return;
   }
@@ -105,7 +95,7 @@ app.post('/webhooks/test', async (req: Request, res: Response) => {
   });
 });
 
-app.post(
+apiRouter.post(
   '/webhooks/process-pending',
   simpleValidation as express.RequestHandler,
   async (_req: Request, res: Response) => {
@@ -122,88 +112,116 @@ app.post(
 // ============================================
 
 // Authentication routes (no auth required)
-app.post('/api/portal/auth/register', (req: Request, res: Response) =>
+apiRouter.post('/portal/auth/register', (req: Request, res: Response) =>
   portalAuthController.register(req, res)
 );
 
-app.post('/api/portal/auth/login', (req: Request, res: Response) =>
+apiRouter.post('/portal/auth/login', (req: Request, res: Response) =>
   portalAuthController.login(req, res)
 );
 
-app.post('/api/portal/auth/logout', (req: Request, res: Response) =>
+apiRouter.post('/portal/auth/logout', (req: Request, res: Response) =>
   portalAuthController.logout(req, res)
 );
 
 // Merchant profile routes (auth required)
-app.get(
-  '/api/portal/merchant/profile',
+apiRouter.get(
+  '/portal/merchant/profile',
   requireAuth as express.RequestHandler,
   (req: Request, res: Response) => portalMerchantController.getProfile(req as AuthenticatedRequest, res)
 );
 
-app.put(
-  '/api/portal/merchant/profile',
+apiRouter.put(
+  '/portal/merchant/profile',
   requireAuth as express.RequestHandler,
   (req: Request, res: Response) => portalMerchantController.updateProfile(req as AuthenticatedRequest, res)
 );
 
 // Credentials routes (auth required)
-app.get(
-  '/api/portal/merchant/credentials',
+apiRouter.get(
+  '/portal/merchant/credentials',
   requireAuth as express.RequestHandler,
   (req: Request, res: Response) => portalMerchantController.getCredentials(req as AuthenticatedRequest, res)
 );
 
-app.post(
-  '/api/portal/merchant/credentials',
+apiRouter.post(
+  '/portal/merchant/credentials',
   requireAuth as express.RequestHandler,
   (req: Request, res: Response) => portalMerchantController.generateApiKey(req as AuthenticatedRequest, res)
 );
 
 // Transactions routes (auth required)
-app.get(
-  '/api/portal/transactions',
+apiRouter.get(
+  '/portal/transactions',
   requireAuth as express.RequestHandler,
   (req: Request, res: Response) => portalTransactionsController.list(req as AuthenticatedRequest, res)
 );
 
-app.get(
-  '/api/portal/transactions/:id',
+apiRouter.get(
+  '/portal/transactions/:id',
   requireAuth as express.RequestHandler,
   (req: Request, res: Response) => portalTransactionsController.get(req as AuthenticatedRequest, res)
 );
 
-app.get(
-  '/api/portal/transactions/export/:format',
+apiRouter.get(
+  '/portal/transactions/export/:format',
   requireAuth as express.RequestHandler,
   (req: Request, res: Response) => portalTransactionsController.export(req as AuthenticatedRequest, res)
 );
 
 // Dashboard routes (auth required)
-app.get(
-  '/api/portal/dashboard/stats',
+apiRouter.get(
+  '/portal/dashboard/stats',
   requireAuth as express.RequestHandler,
   (req: Request, res: Response) => portalDashboardController.getStats(req as AuthenticatedRequest, res)
+);
+
+// Mount API v1 router
+app.use('/api/v1', apiRouter);
+
+// ============================================
+// Public Payment Page Routes (no prefix - public facing)
+// ============================================
+
+app.get('/payment/:sessionId', (req: Request, res: Response) =>
+  paymentController.renderPaymentPage(req, res)
+);
+
+app.post('/payment/:sessionId/complete', (req: Request, res: Response) =>
+  paymentController.completePayment(req, res)
+);
+
+// Test scenarios endpoint
+app.get('/test-scenarios', (req: Request, res: Response) =>
+  paymentController.getTestScenarios(req, res)
 );
 
 // ============================================
 // Error Handlers
 // ============================================
 
+// ============================================
+// Error Handlers (Standardized with Payout API)
+// ============================================
+
 // 404 handler
 app.use((_req: Request, res: Response) => {
   res.status(404).json({
-    success: false,
-    error: 'Endpoint not found',
+    error: {
+      message: 'Route not found',
+      code: 'NOT_FOUND',
+    },
   });
 });
 
 // Error handler
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  console.error('Server error:', err);
+  console.error('Unhandled error:', err);
   res.status(500).json({
-    success: false,
-    error: 'Internal server error',
+    error: {
+      message: 'Internal server error',
+      code: 'INTERNAL_ERROR',
+    },
   });
 });
 
@@ -217,29 +235,23 @@ async function startServer(): Promise<void> {
     await testConnection();
 
     app.listen(PORT, () => {
-      console.log(`
-╔════════════════════════════════════════════╗
-║       MYPAY PAYMENT API SERVER             ║
-╠════════════════════════════════════════════╣
-║  🚀 Server running on port ${PORT}          ║
-║  📍 Base URL: http://localhost:${PORT}      ║
-╚════════════════════════════════════════════╝
-
-📚 Available Endpoints:
-- POST   /checkouts                 - Create checkout session
-- GET    /checkouts/:checkoutId     - Get checkout details
-- GET    /transactions/:reference   - Get transaction status
-- GET    /payment/:sessionId        - Payment page
-- POST   /payment/:sessionId/complete - Complete payment
-- GET    /test-scenarios           - View test scenarios
-
-🔐 Portal API Endpoints:
-- POST   /api/portal/auth/register - Merchant registration
-- POST   /api/portal/auth/login    - Merchant login
-- GET    /api/portal/dashboard/stats - Dashboard statistics
-- GET    /api/portal/transactions - List transactions
-- GET    /api/portal/merchant/credentials - Get API credentials
-      `);
+      console.log(`🚀 API server running on port ${PORT}`);
+      console.log(`📍 Health check: http://localhost:${PORT}/api/v1/health`);
+      console.log(`📍 API base: http://localhost:${PORT}/api/v1`);
+      console.log(`📍 Payment pages: http://localhost:${PORT}/payment`);
+      console.log(``);
+      console.log(`📚 API v1 Endpoints:`);
+      console.log(`- GET    /api/v1/health                    - Health check`);
+      console.log(`- POST   /api/v1/checkouts                - Create checkout session`);
+      console.log(`- GET    /api/v1/checkouts/:checkoutId    - Get checkout details`);
+      console.log(`- GET    /api/v1/transactions/:reference  - Get transaction status`);
+      console.log(``);
+      console.log(`🔐 Portal API Endpoints:`);
+      console.log(`- POST   /api/v1/portal/auth/register     - Merchant registration`);
+      console.log(`- POST   /api/v1/portal/auth/login        - Merchant login`);
+      console.log(`- GET    /api/v1/portal/dashboard/stats   - Dashboard statistics`);
+      console.log(`- GET    /api/v1/portal/transactions      - List transactions`);
+      console.log(`- GET    /api/v1/portal/merchant/credentials - Get API credentials`);
 
       // Process pending webhooks every minute
       setInterval(() => {

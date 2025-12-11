@@ -37,7 +37,7 @@ export default api
 export const authAPI = {
   login: async (email: string, password: string) => {
     try {
-      const response = await api.post('/api/portal/auth/login', { email, password })
+      const response = await api.post('/api/v1/portal/auth/login', { email, password })
       return response.data
     } catch (error) {
       // Mock login for local development when API is unreachable
@@ -57,7 +57,7 @@ export const authAPI = {
   },
   register: async (data: { companyName: string; username: string }) => {
     try {
-      const response = await api.post('/api/portal/auth/register', data)
+      const response = await api.post('/api/v1/portal/auth/register', data)
       return response.data
     } catch {
       // Mock registration for local development
@@ -73,7 +73,7 @@ export const authAPI = {
   },
   logout: async () => {
     try {
-      await api.post('/api/portal/auth/logout')
+      await api.post('/api/v1/portal/auth/logout')
     } catch {
       // Ignore logout errors in local development
     }
@@ -85,7 +85,7 @@ export const authAPI = {
 export const merchantAPI = {
   getProfile: async () => {
     try {
-      const response = await api.get('/api/portal/merchant/profile')
+      const response = await api.get('/api/v1/portal/merchant/profile')
       return response.data
     } catch {
       // Mock profile for local development
@@ -101,7 +101,7 @@ export const merchantAPI = {
   },
   updateProfile: async (data: any) => {
     try {
-      const response = await api.put('/api/portal/merchant/profile', data)
+      const response = await api.put('/api/v1/portal/merchant/profile', data)
       return response.data
     } catch {
       return { success: true }
@@ -109,7 +109,7 @@ export const merchantAPI = {
   },
   getCredentials: async () => {
     try {
-      const response = await api.get('/api/portal/merchant/credentials')
+      const response = await api.get('/api/v1/portal/merchant/credentials')
       // Extract credentials from nested response
       return response.data.credentials || response.data
     } catch {
@@ -123,7 +123,7 @@ export const merchantAPI = {
   },
   generateApiKey: async () => {
     try {
-      const response = await api.post('/api/portal/merchant/credentials')
+      const response = await api.post('/api/v1/portal/merchant/credentials')
       // Extract credentials from nested response
       return response.data.credentials || response.data
     } catch {
@@ -147,7 +147,7 @@ export const transactionsAPI = {
     endDate?: string
   }) => {
     try {
-      const response = await api.get('/api/portal/transactions', { params })
+      const response = await api.get('/api/v1/portal/transactions', { params })
       return response.data
     } catch {
       // Mock transactions for local development
@@ -164,7 +164,7 @@ export const transactionsAPI = {
   },
   get: async (id: string) => {
     try {
-      const response = await api.get(`/api/portal/transactions/${id}`)
+      const response = await api.get(`/api/v1/portal/transactions/${id}`)
       return response.data
     } catch {
       return {
@@ -175,7 +175,7 @@ export const transactionsAPI = {
   },
   export: async (format: 'csv' | 'json', params?: any) => {
     try {
-      const response = await api.get(`/api/portal/transactions/export/${format}`, {
+      const response = await api.get(`/api/v1/portal/transactions/export/${format}`, {
         params,
         responseType: 'blob',
       })
@@ -190,7 +190,7 @@ export const transactionsAPI = {
 export const dashboardAPI = {
   getStats: async () => {
     try {
-      const response = await api.get('/api/portal/dashboard/stats')
+      const response = await api.get('/api/v1/portal/dashboard/stats')
       return response.data
     } catch {
       // Mock stats for local development
@@ -221,7 +221,7 @@ export const payoutsAPI = {
     endDate?: string
   }) => {
     try {
-      const response = await api.get('/api/portal/payouts', { params })
+      const response = await api.get('/api/v1/portal/payouts', { params })
       return response.data
     } catch {
       // Mock payouts for local development
@@ -284,7 +284,7 @@ export const payoutsAPI = {
   },
   get: async (id: string) => {
     try {
-      const response = await api.get(`/api/portal/payouts/${id}`)
+      const response = await api.get(`/api/v1/portal/payouts/${id}`)
       return response.data
     } catch {
       return {
@@ -305,7 +305,7 @@ export const payoutsAPI = {
   },
   export: async (format: 'csv' | 'json', params?: any) => {
     try {
-      const response = await api.get(`/api/portal/payouts/export/${format}`, {
+      const response = await api.get(`/api/v1/portal/payouts/export/${format}`, {
         params,
         responseType: 'blob',
       })
