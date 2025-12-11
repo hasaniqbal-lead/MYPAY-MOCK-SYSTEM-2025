@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
 		"name": "MyPay Payout API - Complete",
-		"description": "Complete Postman collection for testing MyPay Mock Payout API System\n\n**Production URL:** https://sandbox.mycodigital.io/api/v1\n**Local URL:** http://localhost:4001/api/v1\n\n**API Key:** mypay_3771a05970d71c8a95e9364756d1c6163f811343785390102d4730b8a4aa5039\n\n**Test Account Numbers:**\n- *0001 → SUCCESS\n- *0002 → RETRY then SUCCESS\n- *0003 → FAILED\n- *0004 → PENDING\n- *0005 → ON_HOLD\n- Amount ≥ 100,000 → IN_REVIEW\n\n**Note:** Use {{base_url}} for production or switch to {{base_url_local}} for local testing.",
+		"description": "Complete Postman collection for testing MyPay Mock Payout API System\n\n**Production URL:** https://sandbox.mycodigital.io/api/v1\n**Local URL:** http://localhost:4001/api/v1\n\n**API Key:** mypay_87ba5b517b0c7fb360ec2c32030afb4c82ddc2e8c0f7d66abb1aa5e96dd08bce\n\n**Test Account Numbers:**\n- 123450001 → SUCCESS\n- 987650002 → RETRY then SUCCESS\n- 555550003 → FAILED\n- 111110004 → PENDING\n- 999990005 → ON_HOLD\n- Amount ≥ 100,000 → IN_REVIEW\n\n**Note:** Use {{base_url}} for production or switch to {{base_url_local}} for local testing.\n\n**Seeded**: December 11, 2025",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -556,9 +556,9 @@
 		},
 		{
 			"key": "api_key",
-			"value": "mypay_3771a05970d71c8a95e9364756d1c6163f811343785390102d4730b8a4aa5039",
+			"value": "mypay_87ba5b517b0c7fb360ec2c32030afb4c82ddc2e8c0f7d66abb1aa5e96dd08bce",
 			"type": "string",
-			"description": "Test API key from seeded data"
+			"description": "Test API key from seeded data (VPS Production)"
 		}
 	]
 }

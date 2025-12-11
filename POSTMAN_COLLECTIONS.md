@@ -74,7 +74,7 @@ Each collection has variables pre-configured:
 ```
 base_url: https://sandbox.mycodigital.io/api/v1
 base_url_local: http://localhost:4001/api/v1
-api_key: mypay_3771a05970d71c8a95e9364756d1c6163f811343785390102d4730b8a4aa5039
+api_key: mypay_87ba5b517b0c7fb360ec2c32030afb4c82ddc2e8c0f7d66abb1aa5e96dd08bce
 ```
 
 ### Available Endpoints
@@ -93,21 +93,21 @@ Use these account numbers to test different scenarios:
 
 | Account Number | Result | Description |
 |----------------|--------|-------------|
-| `*****0001` | ✅ SUCCESS | Immediate success |
-| `*****0002` | 🔄 RETRY → SUCCESS | First fails, then succeeds |
-| `*****0003` | ❌ FAILED | Always fails |
-| `*****0004` | ⏳ PENDING | Stays in pending |
-| `*****0005` | 🛑 ON_HOLD | Gets put on hold |
+| `123450001` | ✅ SUCCESS | Immediate success |
+| `987650002` | 🔄 RETRY → SUCCESS | First fails, then succeeds |
+| `555550003` | ❌ FAILED | Always fails |
+| `111110004` | ⏳ PENDING | Stays in pending |
+| `999990005` | 🛑 ON_HOLD | Gets put on hold |
 | Amount ≥ 100,000 | 🔍 IN_REVIEW | Goes to review status |
 
-**Example**: Use account number `1234567890` (ends in 0001) for success.
+**Example**: Use account number `123450001` for immediate success.
 
 ### Sample Request: Create Payout
 
 ```bash
 POST https://sandbox.mycodigital.io/api/v1/payouts
 Headers:
-  X-API-KEY: mypay_3771a05970d71c8a95e9364756d1c6163f811343785390102d4730b8a4aa5039
+  X-API-KEY: mypay_87ba5b517b0c7fb360ec2c32030afb4c82ddc2e8c0f7d66abb1aa5e96dd08bce
   X-IDEMPOTENCY-KEY: 550e8400-e29b-41d4-a716-446655440000
   Content-Type: application/json
 
