@@ -78,8 +78,9 @@ async function main() {
   // TEST MERCHANT
   // ============================================
 
-  console.log('\n👤 Creating test merchant...');
+  console.log('\n👤 Creating test merchants...');
 
+  // Merchant 1: test@mycodigital.io
   const payoutApiKey = generateApiKey();
   const hashedPayoutKey = hashApiKey(payoutApiKey);
   const portalPasswordHash = await bcrypt.hash('test123456', 10);
@@ -97,7 +98,7 @@ async function main() {
     },
   });
 
-  console.log(`   ✅ Created merchant: ${merchant.name}`);
+  console.log(`   ✅ Created merchant: ${merchant.name} (${merchant.email})`);
 
   // Create merchant balance
   await prisma.merchantBalance.create({
@@ -117,6 +118,49 @@ async function main() {
       api_key: 'test-api-key-123',
       api_secret: 'test-api-secret-456',
       merchant_id: merchant.id,
+      is_active: true,
+    },
+  });
+  console.log('   ✅ Created Payment API key');
+
+  // Merchant 2: hasaniqbal@mycodigital.io
+  const payoutApiKey2 = generateApiKey();
+  const hashedPayoutKey2 = hashApiKey(payoutApiKey2);
+  const portalPasswordHash2 = await bcrypt.hash('hasan123456', 10);
+
+  const merchant2 = await prisma.merchant.create({
+    data: {
+      name: 'Hasan Iqbal',
+      company_name: 'MyCo Digital',
+      email: 'hasaniqbal@mycodigital.io',
+      password_hash: portalPasswordHash2,
+      apiKey: hashedPayoutKey2,
+      webhookUrl: 'https://webhook.site/hasan',
+      isActive: true,
+      status: 'active',
+    },
+  });
+
+  console.log(`   ✅ Created merchant: ${merchant2.name} (${merchant2.email})`);
+
+  // Create merchant balance
+  await prisma.merchantBalance.create({
+    data: {
+      merchantId: merchant2.id,
+      balance: 2000000.0,
+      lockedBalance: 0.0,
+      version: 0,
+    },
+  });
+  console.log('   ✅ Created merchant balance: 2,000,000 PKR');
+
+  // Create Payment API key for merchant 2
+  await prisma.apiKey.create({
+    data: {
+      vendor_id: `VENDOR_${merchant2.id.toString().padStart(6, '0')}`,
+      api_key: 'hasan-api-key-789',
+      api_secret: 'hasan-api-secret-012',
+      merchant_id: merchant2.id,
       is_active: true,
     },
   });
@@ -191,18 +235,31 @@ async function main() {
   console.log('🎉 SEEDING COMPLETED!');
   console.log('='.repeat(50));
 
-  console.log('\n📋 PAYOUT API CREDENTIALS:');
+  console.log('\n📋 MERCHANT 1 - PAYOUT API CREDENTIALS:');
   console.log(`   API Key: ${payoutApiKey}`);
   console.log(`   Merchant ID: ${merchant.id}`);
   console.log('   Use this API key in the X-API-KEY header');
 
-  console.log('\n📋 PAYMENT API CREDENTIALS:');
+  console.log('\n📋 MERCHANT 1 - PAYMENT API CREDENTIALS:');
   console.log('   API Key: test-api-key-123');
   console.log('   Use this in the X-Api-Key header');
 
-  console.log('\n📋 PORTAL LOGIN:');
+  console.log('\n📋 MERCHANT 1 - PORTAL LOGIN:');
   console.log('   Email: test@mycodigital.io');
   console.log('   Password: test123456');
+
+  console.log('\n📋 MERCHANT 2 - PAYOUT API CREDENTIALS:');
+  console.log(`   API Key: ${payoutApiKey2}`);
+  console.log(`   Merchant ID: ${merchant2.id}`);
+  console.log('   Use this API key in the X-API-KEY header');
+
+  console.log('\n📋 MERCHANT 2 - PAYMENT API CREDENTIALS:');
+  console.log('   API Key: hasan-api-key-789');
+  console.log('   Use this in the X-Api-Key header');
+
+  console.log('\n📋 MERCHANT 2 - PORTAL LOGIN:');
+  console.log('   Email: hasaniqbal@mycodigital.io');
+  console.log('   Password: hasan123456');
 
   console.log('\n📋 ADMIN LOGIN:');
   console.log('   Email: admin@mycodigital.io');
