@@ -70,25 +70,8 @@ export const transactionsAPI = {
 // Admin Auth API
 export const adminAPI = {
   login: async (email: string, password: string) => {
-    try {
-      const response = await api.post('/api/admin/auth/login', { email, password })
-      return response.data
-    } catch {
-      // Mock successful login for demo
-      if (email === 'admin@mycodigital.io' && password === 'admin123456') {
-        return {
-          success: true,
-          token: 'mock-admin-token-' + Date.now(),
-          admin: {
-            id: 1,
-            email: 'admin@mycodigital.io',
-            name: 'System Admin',
-            role: 'super_admin',
-          },
-        }
-      }
-      throw new Error('Invalid credentials')
-    }
+    const response = await api.post('/api/v1/admin/auth/login', { email, password })
+    return response.data
   },
 
   getSystemStats: async () => {

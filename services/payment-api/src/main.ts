@@ -12,6 +12,7 @@ import { portalAuthController } from './controllers/portalAuthController';
 import { portalMerchantController } from './controllers/portalMerchantController';
 import { portalTransactionsController } from './controllers/portalTransactionsController';
 import { portalDashboardController } from './controllers/portalDashboardController';
+import { adminAuthController } from './controllers/adminAuthController';
 import { webhookService } from './services/webhookService';
 import { AuthenticatedRequest } from './types';
 
@@ -175,6 +176,19 @@ apiRouter.get(
   requireAuth as express.RequestHandler,
   (req: Request, res: Response) => portalDashboardController.getStats(req as AuthenticatedRequest, res)
 );
+
+// ============================================
+// Admin Auth Routes
+// ============================================
+
+// Admin login (public)
+apiRouter.post(
+  '/admin/auth/login',
+  (req: Request, res: Response) => adminAuthController.login(req, res)
+);
+
+// Admin protected routes will be added here in the future
+// Example: apiRouter.get('/admin/merchants', requireAdminAuth, ...)
 
 // Mount API v1 router
 app.use('/api/v1', apiRouter);

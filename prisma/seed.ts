@@ -152,18 +152,18 @@ async function main() {
 
   console.log('\n👑 Creating admin user...');
 
-  const adminPasswordHash = await bcrypt.hash('admin123456', 10);
+  const adminPasswordHash = await bcrypt.hash('admin@@1234', 10);
 
   await prisma.adminUser.create({
     data: {
       email: 'admin@mycodigital.io',
       password_hash: adminPasswordHash,
-      name: 'System Admin',
+      name: 'System Administrator',
       role: 'super_admin',
       is_active: true,
     },
   });
-  console.log('   ✅ Created admin user');
+  console.log('   ✅ Created admin user: admin@mycodigital.io');
 
   // ============================================
   // SYSTEM CONFIG
@@ -206,7 +206,7 @@ async function main() {
 
   console.log('\n📋 ADMIN LOGIN:');
   console.log('   Email: admin@mycodigital.io');
-  console.log('   Password: admin123456');
+  console.log('   Password: admin@@1234');
 
   console.log('\n🧪 PAYOUT TEST ACCOUNT NUMBERS:');
   console.log('   123450001 → SUCCESS');

@@ -110,28 +110,36 @@ export const merchantAPI = {
   getCredentials: async () => {
     try {
       const response = await api.get('/api/v1/portal/merchant/credentials')
-      // Extract credentials from nested response
-      return response.data.credentials || response.data
+      const data = response.data.credentials || response.data
+      return {
+        apiKey: data.apiKey || data.api_key,
+        merchantId: data.vendorId || data.vendor_id, // Map vendorId to merchantId for display
+        createdAt: data.createdAt || data.created_at || new Date().toISOString(),
+      }
     } catch {
       // Mock credentials for local development
       return {
-        vendor_id: 'VENDOR_000001',
-        api_key: 'test-api-key-123',
-        api_secret: 'test-api-secret-456',
+        apiKey: 'test-api-key-123',
+        merchantId: 'MERCHANT_000001',
+        createdAt: new Date().toISOString(),
       }
     }
   },
   generateApiKey: async () => {
     try {
       const response = await api.post('/api/v1/portal/merchant/credentials')
-      // Extract credentials from nested response
-      return response.data.credentials || response.data
+      const data = response.data.credentials || response.data
+      return {
+        apiKey: data.apiKey || data.api_key,
+        merchantId: data.vendorId || data.vendor_id,
+        createdAt: data.createdAt || data.created_at || new Date().toISOString(),
+      }
     } catch {
       // Mock new credentials for local development
       return {
-        vendor_id: 'VENDOR_000001',
-        api_key: 'new-api-key-' + Date.now(),
-        api_secret: 'new-api-secret-' + Date.now(),
+        apiKey: 'new-api-key-' + Date.now(),
+        merchantId: 'MERCHANT_000001',
+        createdAt: new Date().toISOString(),
       }
     }
   },

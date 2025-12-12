@@ -98,12 +98,6 @@ export default function LoginPage() {
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
-
-          <div className="mt-6 p-4 bg-mypay-green/10 rounded-lg border border-mypay-green/20">
-            <p className="text-xs text-muted-foreground mb-2">Test Credentials:</p>
-            <p className="text-xs text-foreground">Email: admin@mycodigital.io</p>
-            <p className="text-xs text-foreground">Password: admin123456</p>
-          </div>
         </CardContent>
       </Card>
     </div>

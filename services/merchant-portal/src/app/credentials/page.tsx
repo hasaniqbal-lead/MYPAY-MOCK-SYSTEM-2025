@@ -95,22 +95,22 @@ export default function CredentialsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* Production API Key */}
+                {/* Single API Key - Works for both APIs */}
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-foreground">Production API Key</span>
+                      <span className="font-medium text-foreground">API Key</span>
                       <Badge variant="default" className="bg-mypay-green text-white">
                         Active
                       </Badge>
                     </div>
+                    <div className="text-xs text-muted-foreground mb-2">
+                      Use this key for both Payment and Payout API requests
+                    </div>
                     <div className="text-sm text-muted-foreground">
-                      Created: {new Date().toLocaleDateString()}
+                      Created: {new Date(credentials.createdAt || Date.now()).toLocaleDateString()}
                     </div>
-                    <div className="text-sm font-medium text-muted-foreground mb-1">
-                      API Key:
-                    </div>
-                    <div className="font-mono text-sm bg-muted p-2 rounded text-foreground">
+                    <div className="font-mono text-sm bg-muted p-2 rounded text-foreground mt-2">
                       {showKeys ? (credentials.apiKey || 'N/A') : '••••••••••••••••••••••••••••••••'}
                     </div>
                   </div>
@@ -120,42 +120,20 @@ export default function CredentialsPage() {
                   </Button>
                 </div>
 
-                {/* Test API Key / Secret */}
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="space-y-1 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-foreground">Test API Key</span>
-                      <Badge variant="default" className="bg-mypay-green text-white">
-                        Active
-                      </Badge>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Created: {new Date().toLocaleDateString()}
-                    </div>
-                    <div className="text-sm font-medium text-muted-foreground mb-1">
-                      API Secret:
-                    </div>
-                    <div className="font-mono text-sm bg-muted p-2 rounded text-foreground">
-                      {showKeys ? (credentials.apiSecret || 'N/A') : maskKey(credentials.apiSecret || '')}
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm" className="gap-2" onClick={() => copyToClipboard(credentials.apiSecret || '')}>
-                    <Copy className="h-4 w-4" />
-                    Copy
-                  </Button>
-                </div>
-
-                {/* Vendor ID */}
+                {/* Merchant ID */}
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="space-y-1 flex-1">
                     <div className="text-sm font-medium text-muted-foreground mb-1">
-                      Vendor ID:
+                      Merchant ID:
+                    </div>
+                    <div className="text-xs text-muted-foreground mb-2">
+                      Your unique merchant identifier
                     </div>
                     <div className="font-mono text-sm bg-muted p-2 rounded text-foreground">
-                      {credentials.vendorId || 'N/A'}
+                      {credentials.merchantId || credentials.vendorId || 'N/A'}
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-2" onClick={() => copyToClipboard(credentials.vendorId || '')}>
+                  <Button variant="outline" size="sm" className="gap-2" onClick={() => copyToClipboard(credentials.merchantId || credentials.vendorId || '')}>
                     <Copy className="h-4 w-4" />
                     Copy
                   </Button>
