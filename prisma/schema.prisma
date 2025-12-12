@@ -25,7 +25,8 @@ model Merchant {
   company_name  String?   // Used by Payment API portal
   email         String    @unique
   password_hash String?   // For portal login
-  apiKey        String    @unique // Hashed API key for Payout API
+  apiKey        String    @unique // Hashed API key for Payout API (for authentication)
+  apiKeyPlain   String?   // Plain API key for Payout API (for display in portal)
   webhookUrl    String?
   isActive      Boolean   @default(true)
   status        String    @default("active") // For portal: active, inactive, suspended

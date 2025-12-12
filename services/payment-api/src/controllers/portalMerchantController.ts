@@ -191,7 +191,7 @@ class PortalMerchantController {
         credentials: {
           merchantId: apiKey.vendor_id,
           paymentApiKey: apiKey.api_key,
-          payoutApiKey: merchant?.apiKey || '',
+          payoutApiKey: merchant?.apiKeyPlain || '', // Return plain key, not hashed
           createdAt: apiKey.created_at?.toISOString() || new Date().toISOString(),
         },
       });
@@ -242,7 +242,7 @@ class PortalMerchantController {
         credentials: {
           merchantId: merchantIdStr,
           paymentApiKey: apiKey,
-          payoutApiKey: merchant?.apiKey || '',
+          payoutApiKey: merchant?.apiKeyPlain || '', // Return plain key, not hashed
         },
       });
     } catch (error) {

@@ -92,6 +92,7 @@ async function main() {
       email: 'test@mycodigital.io',
       password_hash: portalPasswordHash,
       apiKey: hashedPayoutKey,
+      apiKeyPlain: payoutApiKey, // Store plain key for portal display
       webhookUrl: 'https://webhook.site/test',
       isActive: true,
       status: 'active',
@@ -135,6 +136,7 @@ async function main() {
       email: 'hasaniqbal@mycodigital.io',
       password_hash: portalPasswordHash2,
       apiKey: hashedPayoutKey2,
+      apiKeyPlain: payoutApiKey2, // Store plain key for portal display
       webhookUrl: 'https://webhook.site/hasan',
       isActive: true,
       status: 'active',

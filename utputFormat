@@ -1,0 +1,10 @@
+HTTP/1.1 500 Internal Server Error
+Server: nginx/1.24.0 (Ubuntu)
+Date: Fri, 12 Dec 2025 16:09:15 GMT
+Content-Type: application/json; charset=utf-8
+Content-Length: 69
+Connection: keep-alive
+X-Powered-By: Express
+ETag: W/"45-EY0vFtnfhDqyoYsKQIF/dUnLpT0"
+
+{"error":{"message":"Internal server error","code":"INTERNAL_ERROR"}}
