@@ -190,6 +190,15 @@ apiRouter.post(
 // Admin protected routes will be added here in the future
 // Example: apiRouter.get('/admin/merchants', requireAdminAuth, ...)
 
+// ============================================
+// Test & Developer Routes (Public)
+// ============================================
+
+// Test scenarios endpoint (public - for developers)
+apiRouter.get('/test-scenarios', (req: Request, res: Response) =>
+  paymentController.getTestScenarios(req, res)
+);
+
 // Mount API v1 router
 app.use('/api/v1', apiRouter);
 
@@ -203,11 +212,6 @@ app.get('/payment/:sessionId', (req: Request, res: Response) =>
 
 app.post('/payment/:sessionId/complete', (req: Request, res: Response) =>
   paymentController.completePayment(req, res)
-);
-
-// Test scenarios endpoint
-app.get('/test-scenarios', (req: Request, res: Response) =>
-  paymentController.getTestScenarios(req, res)
 );
 
 // ============================================
