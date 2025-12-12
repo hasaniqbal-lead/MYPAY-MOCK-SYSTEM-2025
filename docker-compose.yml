@@ -97,7 +97,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=4010
-      - NEXT_PUBLIC_API_URL=https://sandbox.mycodigital.io
+      - NEXT_PUBLIC_API_URL=https://mock.mycodigital.io
     ports:
       - "4010:4010"
     depends_on:
@@ -115,7 +115,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=4011
-      - NEXT_PUBLIC_API_URL=https://sandbox.mycodigital.io
+      - NEXT_PUBLIC_API_URL=https://mock.mycodigital.io
     ports:
       - "4011:4011"
     depends_on:
