@@ -43,6 +43,26 @@ services:
     networks:
       - mypay-network
 
+  # Payout Worker (Background Processing)
+  payout-worker:
+    build:
+      context: .
+      dockerfile: services/payout-api/Dockerfile
+      args:
+        - DATABASE_URL=mysql://root:dummy@localhost:3306/dummy
+    container_name: mypay-payout-worker
+    restart: unless-stopped
+    command: ["pnpm", "--filter", "@mypay/payout-api", "run", "start:worker"]
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=mysql://root:${DB_PASSWORD:-mypay_secure_password}@mysql:3306/${DB_NAME:-mypay_mock_db}
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET:-default-webhook-secret-key}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mypay-network
+
   # Payment API
   payment-api:
     build:
