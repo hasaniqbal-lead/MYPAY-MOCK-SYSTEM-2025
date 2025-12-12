@@ -78,13 +78,13 @@ class PortalAuthController {
       });
 
       // Create default API key for merchant
-      const vendorId = `VENDOR_${merchant.id.toString().padStart(6, '0')}`;
-      const apiKey = `test-${normalizedUsername}-vendor-${merchant.id.toString().padStart(6, '0')}-${uuidv4().substring(0, 8)}`;
+      const merchantId = `MERCHANT_${merchant.id.toString().padStart(6, '0')}`;
+      const apiKey = `test-${normalizedUsername}-merchant-${merchant.id.toString().padStart(6, '0')}-${uuidv4().substring(0, 8)}`;
       const apiSecret = `api-secret-${uuidv4()}`;
 
       await prisma.apiKey.create({
         data: {
-          vendor_id: vendorId,
+          vendor_id: merchantId,
           api_key: apiKey,
           api_secret: apiSecret,
           merchant_id: merchant.id,

@@ -95,26 +95,51 @@ export default function CredentialsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* Single API Key - Works for both APIs */}
-                <div className="flex items-center justify-between p-4 border rounded-lg">
+                {/* Payment API Key */}
+                <div className="flex items-center justify-between p-4 border rounded-lg border-blue-200 bg-blue-50/50">
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-foreground">API Key</span>
-                      <Badge variant="default" className="bg-mypay-green text-white">
+                      <span className="font-medium text-foreground">Payment API Key</span>
+                      <Badge variant="default" className="bg-blue-500 text-white">
                         Active
                       </Badge>
                     </div>
                     <div className="text-xs text-muted-foreground mb-2">
-                      Use this key for both Payment and Payout API requests
+                      Use this key for Payment API requests (mock.mycodigital.io)
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Created: {new Date(credentials.createdAt || Date.now()).toLocaleDateString()}
                     </div>
-                    <div className="font-mono text-sm bg-muted p-2 rounded text-foreground mt-2">
-                      {showKeys ? (credentials.apiKey || 'N/A') : '••••••••••••••••••••••••••••••••'}
+                    <div className="font-mono text-sm bg-white p-2 rounded text-foreground mt-2 border">
+                      {showKeys ? (credentials.paymentApiKey || credentials.apiKey || 'N/A') : '••••••••••••••••••••••••••••••••'}
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-2" onClick={() => copyToClipboard(credentials.apiKey || '')}>
+                  <Button variant="outline" size="sm" className="gap-2" onClick={() => copyToClipboard(credentials.paymentApiKey || credentials.apiKey || '')}>
+                    <Copy className="h-4 w-4" />
+                    Copy
+                  </Button>
+                </div>
+
+                {/* Payout API Key */}
+                <div className="flex items-center justify-between p-4 border rounded-lg border-purple-200 bg-purple-50/50">
+                  <div className="space-y-1 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-foreground">Payout API Key</span>
+                      <Badge variant="default" className="bg-purple-500 text-white">
+                        Active
+                      </Badge>
+                    </div>
+                    <div className="text-xs text-muted-foreground mb-2">
+                      Use this key for Payout API requests (sandbox.mycodigital.io)
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Created: {new Date(credentials.createdAt || Date.now()).toLocaleDateString()}
+                    </div>
+                    <div className="font-mono text-sm bg-white p-2 rounded text-foreground mt-2 border">
+                      {showKeys ? (credentials.payoutApiKey || 'N/A') : '••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••'}
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" className="gap-2" onClick={() => copyToClipboard(credentials.payoutApiKey || '')}>
                     <Copy className="h-4 w-4" />
                     Copy
                   </Button>

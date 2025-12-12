@@ -112,14 +112,16 @@ export const merchantAPI = {
       const response = await api.get('/api/v1/portal/merchant/credentials')
       const data = response.data.credentials || response.data
       return {
-        apiKey: data.apiKey || data.api_key,
-        merchantId: data.vendorId || data.vendor_id, // Map vendorId to merchantId for display
+        paymentApiKey: data.paymentApiKey || data.apiKey || data.api_key,
+        payoutApiKey: data.payoutApiKey || '',
+        merchantId: data.merchantId || data.vendorId || data.vendor_id,
         createdAt: data.createdAt || data.created_at || new Date().toISOString(),
       }
     } catch {
       // Mock credentials for local development
       return {
-        apiKey: 'test-api-key-123',
+        paymentApiKey: 'test-api-key-123',
+        payoutApiKey: 'mypay_mock_payout_key_for_local_testing',
         merchantId: 'MERCHANT_000001',
         createdAt: new Date().toISOString(),
       }

@@ -181,12 +181,18 @@ class PortalMerchantController {
         return;
       }
 
+      // Get merchant for payout API key
+      const merchant = await prisma.merchant.findUnique({
+        where: { id: merchantId },
+      });
+
       res.json({
         success: true,
         credentials: {
-          vendorId: apiKey.vendor_id,
-          apiKey: apiKey.api_key,
-          apiSecret: apiKey.api_secret,
+          merchantId: apiKey.vendor_id,
+          paymentApiKey: apiKey.api_key,
+          payoutApiKey: merchant?.apiKey || '',
+          createdAt: apiKey.created_at?.toISOString() || new Date().toISOString(),
         },
       });
     } catch (error) {
@@ -212,13 +218,13 @@ class PortalMerchantController {
       });
 
       // Generate new key
-      const vendorId = `VENDOR_${merchantId!.toString().padStart(6, '0')}`;
+      const merchantIdStr = `MERCHANT_${merchantId!.toString().padStart(6, '0')}`;
       const apiKey = `api-key-${uuidv4().substring(0, 8)}`;
       const apiSecret = `api-secret-${uuidv4()}`;
 
       await prisma.apiKey.create({
         data: {
-          vendor_id: vendorId,
+          vendor_id: merchantIdStr,
           api_key: apiKey,
           api_secret: apiSecret,
           merchant_id: merchantId!,
@@ -226,12 +232,17 @@ class PortalMerchantController {
         },
       });
 
+      // Get merchant for payout API key
+      const merchant = await prisma.merchant.findUnique({
+        where: { id: merchantId! },
+      });
+
       res.json({
         success: true,
         credentials: {
-          vendorId,
-          apiKey,
-          apiSecret,
+          merchantId: merchantIdStr,
+          paymentApiKey: apiKey,
+          payoutApiKey: merchant?.apiKey || '',
         },
       });
     } catch (error) {

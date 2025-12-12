@@ -114,7 +114,7 @@ async function main() {
   // Create Payment API key for merchant
   await prisma.apiKey.create({
     data: {
-      vendor_id: `VENDOR_${merchant.id.toString().padStart(6, '0')}`,
+      vendor_id: `MERCHANT_${merchant.id.toString().padStart(6, '0')}`,
       api_key: 'test-api-key-123',
       api_secret: 'test-api-secret-456',
       merchant_id: merchant.id,
@@ -157,7 +157,7 @@ async function main() {
   // Create Payment API key for merchant 2
   await prisma.apiKey.create({
     data: {
-      vendor_id: `VENDOR_${merchant2.id.toString().padStart(6, '0')}`,
+      vendor_id: `MERCHANT_${merchant2.id.toString().padStart(6, '0')}`,
       api_key: 'hasan-api-key-789',
       api_secret: 'hasan-api-secret-012',
       merchant_id: merchant2.id,
