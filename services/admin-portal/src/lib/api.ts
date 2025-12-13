@@ -145,6 +145,24 @@ export const adminAPI = {
     }
   },
 
+  resetMerchantPassword: async (id: number) => {
+    try {
+      const response = await api.post(`/api/v1/admin/merchants/${id}/reset-password`)
+      return response.data
+    } catch (error: any) {
+      return { success: false, error: error.response?.data?.error || 'Failed to reset password' }
+    }
+  },
+
+  updateMerchantEmail: async (id: number, email: string) => {
+    try {
+      const response = await api.put(`/api/v1/admin/merchants/${id}/email`, { email })
+      return response.data
+    } catch (error: any) {
+      return { success: false, error: error.response?.data?.error || 'Failed to update email' }
+    }
+  },
+
   getAllTransactions: async (params?: { status?: string; merchantId?: number; limit?: number }) => {
     try {
       const response = await api.get('/api/v1/admin/transactions', { params })

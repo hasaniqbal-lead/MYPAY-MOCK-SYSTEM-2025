@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import Layout from '@/components/Layout'
 import { adminAPI } from '@/lib/api'
-import { Users, Search, RefreshCw, Plus, Edit, Power, Check, X } from 'lucide-react'
+import { Users, Search, RefreshCw, Plus, Edit, Power, Check, X, Key, Mail } from 'lucide-react'
 
 interface Merchant {
   id: number
@@ -72,6 +72,19 @@ export default function MerchantsPage() {
     status: 'active',
   })
   const [editError, setEditError] = useState('')
+
+  // Reset password dialog
+  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false)
+  const [resettingPassword, setResettingPassword] = useState(false)
+  const [resetPasswordMerchant, setResetPasswordMerchant] = useState<Merchant | null>(null)
+  const [resetPasswordResult, setResetPasswordResult] = useState<{ email: string; password: string } | null>(null)
+
+  // Update email dialog
+  const [updateEmailDialogOpen, setUpdateEmailDialogOpen] = useState(false)
+  const [updatingEmail, setUpdatingEmail] = useState(false)
+  const [updateEmailMerchant, setUpdateEmailMerchant] = useState<Merchant | null>(null)
+  const [newEmail, setNewEmail] = useState('')
+  const [updateEmailError, setUpdateEmailError] = useState('')
 
   useEffect(() => {
     fetchMerchants()
@@ -163,6 +176,65 @@ export default function MerchantsPage() {
       }
     } catch (error) {
       console.error('Failed to toggle merchant status:', error)
+    }
+  }
+
+  const openResetPasswordDialog = (merchant: Merchant) => {
+    setResetPasswordMerchant(merchant)
+    setResetPasswordResult(null)
+    setResetPasswordDialogOpen(true)
+  }
+
+  const handleResetPassword = async () => {
+    if (!resetPasswordMerchant) return
+
+    setResettingPassword(true)
+    try {
+      const response = await adminAPI.resetMerchantPassword(resetPasswordMerchant.id)
+      
+      if (response.success) {
+        setResetPasswordResult(response.credentials)
+      }
+    } catch (error) {
+      console.error('Failed to reset password:', error)
+    } finally {
+      setResettingPassword(false)
+    }
+  }
+
+  const closeResetPasswordDialog = () => {
+    setResetPasswordDialogOpen(false)
+    setResetPasswordMerchant(null)
+    setResetPasswordResult(null)
+  }
+
+  const openUpdateEmailDialog = (merchant: Merchant) => {
+    setUpdateEmailMerchant(merchant)
+    setNewEmail(merchant.email)
+    setUpdateEmailError('')
+    setUpdateEmailDialogOpen(true)
+  }
+
+  const handleUpdateEmail = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!updateEmailMerchant) return
+
+    setUpdateEmailError('')
+    setUpdatingEmail(true)
+
+    try {
+      const response = await adminAPI.updateMerchantEmail(updateEmailMerchant.id, newEmail)
+      
+      if (response.success) {
+        setUpdateEmailDialogOpen(false)
+        fetchMerchants()
+      } else {
+        setUpdateEmailError(response.error || 'Failed to update email')
+      }
+    } catch (error: any) {
+      setUpdateEmailError(error.message || 'Failed to update email')
+    } finally {
+      setUpdatingEmail(false)
     }
   }
 
@@ -302,13 +374,31 @@ export default function MerchantsPage() {
                             onClick={() => openEditDialog(merchant)}
                             variant="outline"
                             size="sm"
+                            title="Edit merchant"
                           >
                             <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            onClick={() => openUpdateEmailDialog(merchant)}
+                            variant="outline"
+                            size="sm"
+                            title="Update email"
+                          >
+                            <Mail className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            onClick={() => openResetPasswordDialog(merchant)}
+                            variant="outline"
+                            size="sm"
+                            title="Reset password"
+                          >
+                            <Key className="h-3 w-3" />
                           </Button>
                           <Button
                             onClick={() => handleToggleStatus(merchant)}
                             variant="outline"
                             size="sm"
+                            title={merchant.isActive ? 'Deactivate' : 'Activate'}
                             className={merchant.isActive ? 'text-red-600' : 'text-green-600'}
                           >
                             <Power className="h-3 w-3" />
@@ -542,6 +632,149 @@ export default function MerchantsPage() {
                 className="bg-mypay-green hover:bg-mypay-green-dark text-white"
               >
                 {editing ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reset Password Dialog */}
+      <Dialog open={resetPasswordDialogOpen} onOpenChange={setResetPasswordDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reset Merchant Password</DialogTitle>
+            <DialogDescription>
+              Generate a new random password for this merchant
+            </DialogDescription>
+          </DialogHeader>
+
+          {resetPasswordResult ? (
+            <div className="space-y-4">
+              <Alert className="bg-status-success/10 border-status-success/20">
+                <Check className="h-4 w-4 text-status-success" />
+                <AlertDescription className="text-status-success">
+                  Password reset successfully! Save these credentials - they won't be shown again.
+                </AlertDescription>
+              </Alert>
+
+              <div className="space-y-3 p-4 bg-muted rounded-lg">
+                <h3 className="font-semibold text-sm">New Login Credentials</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Email:</span>
+                    <div className="flex gap-2 items-center">
+                      <span className="font-mono">{resetPasswordResult.email}</span>
+                      <Button size="sm" variant="ghost" onClick={() => copyToClipboard(resetPasswordResult.email)}>
+                        Copy
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">New Password:</span>
+                    <div className="flex gap-2 items-center">
+                      <span className="font-mono">{resetPasswordResult.password}</span>
+                      <Button size="sm" variant="ghost" onClick={() => copyToClipboard(resetPasswordResult.password)}>
+                        Copy
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button onClick={closeResetPasswordDialog} className="bg-mypay-green hover:bg-mypay-green-dark text-white">
+                  Done
+                </Button>
+              </DialogFooter>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="p-4 bg-muted rounded-lg">
+                <p className="text-sm">
+                  <strong>Merchant:</strong> {resetPasswordMerchant?.company_name}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  <strong>Email:</strong> {resetPasswordMerchant?.email}
+                </p>
+              </div>
+
+              <Alert>
+                <AlertDescription>
+                  This will generate a new random password for the merchant. The old password will no longer work.
+                </AlertDescription>
+              </Alert>
+
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setResetPasswordDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleResetPassword}
+                  disabled={resettingPassword}
+                  className="bg-mypay-green hover:bg-mypay-green-dark text-white"
+                >
+                  {resettingPassword ? 'Resetting...' : 'Reset Password'}
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Update Email Dialog */}
+      <Dialog open={updateEmailDialogOpen} onOpenChange={setUpdateEmailDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update Merchant Email</DialogTitle>
+            <DialogDescription>
+              Change the login email for this merchant
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleUpdateEmail}>
+            <div className="space-y-4">
+              {updateEmailError && (
+                <Alert variant="destructive">
+                  <X className="h-4 w-4" />
+                  <AlertDescription>{updateEmailError}</AlertDescription>
+                </Alert>
+              )}
+
+              <div className="p-4 bg-muted rounded-lg">
+                <p className="text-sm">
+                  <strong>Merchant:</strong> {updateEmailMerchant?.company_name}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  <strong>Current Email:</strong> {updateEmailMerchant?.email}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="new-email">New Email Address *</Label>
+                <Input
+                  id="new-email"
+                  type="email"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  placeholder="merchant@example.com"
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  The merchant will use this email to log in to the portal
+                </p>
+              </div>
+            </div>
+
+            <DialogFooter className="mt-6">
+              <Button type="button" variant="outline" onClick={() => setUpdateEmailDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={updatingEmail || newEmail === updateEmailMerchant?.email}
+                className="bg-mypay-green hover:bg-mypay-green-dark text-white"
+              >
+                {updatingEmail ? 'Updating...' : 'Update Email'}
               </Button>
             </DialogFooter>
           </form>

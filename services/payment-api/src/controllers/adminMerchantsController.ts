@@ -335,6 +335,126 @@ class AdminMerchantsController {
   }
 
   /**
+   * Reset merchant password
+   */
+  async resetMerchantPassword(req: AuthenticatedAdminRequest, res: Response): Promise<void> {
+    try {
+      if (!req.admin) {
+        res.status(401).json({ success: false, error: 'Unauthorized' });
+        return;
+      }
+
+      const merchantId = parseInt(req.params.id);
+      if (isNaN(merchantId)) {
+        res.status(400).json({ success: false, error: 'Invalid merchant ID' });
+        return;
+      }
+
+      const merchant = await prisma.merchant.findUnique({
+        where: { id: merchantId },
+      });
+
+      if (!merchant) {
+        res.status(404).json({ success: false, error: 'Merchant not found' });
+        return;
+      }
+
+      // Generate new random password
+      const newPassword = crypto.randomBytes(8).toString('hex');
+      const passwordHash = await bcrypt.hash(newPassword, 10);
+
+      // Update merchant password
+      await prisma.merchant.update({
+        where: { id: merchantId },
+        data: {
+          password_hash: passwordHash,
+        },
+      });
+
+      res.json({
+        success: true,
+        message: 'Password reset successfully',
+        credentials: {
+          email: merchant.email,
+          password: newPassword,
+        },
+      });
+    } catch (error) {
+      console.error('Reset merchant password error:', error);
+      res.status(500).json({ success: false, error: 'Failed to reset password' });
+    }
+  }
+
+  /**
+   * Update merchant email
+   */
+  async updateMerchantEmail(req: AuthenticatedAdminRequest, res: Response): Promise<void> {
+    try {
+      if (!req.admin) {
+        res.status(401).json({ success: false, error: 'Unauthorized' });
+        return;
+      }
+
+      const merchantId = parseInt(req.params.id);
+      if (isNaN(merchantId)) {
+        res.status(400).json({ success: false, error: 'Invalid merchant ID' });
+        return;
+      }
+
+      const { email } = req.body;
+
+      if (!email || !email.includes('@')) {
+        res.status(400).json({ success: false, error: 'Valid email is required' });
+        return;
+      }
+
+      // Check if merchant exists
+      const merchant = await prisma.merchant.findUnique({
+        where: { id: merchantId },
+      });
+
+      if (!merchant) {
+        res.status(404).json({ success: false, error: 'Merchant not found' });
+        return;
+      }
+
+      // Check if email is already taken by another merchant
+      const existingMerchant = await prisma.merchant.findFirst({
+        where: {
+          email: email,
+          id: { not: merchantId },
+        },
+      });
+
+      if (existingMerchant) {
+        res.status(400).json({
+          success: false,
+          error: 'Email is already in use by another merchant',
+        });
+        return;
+      }
+
+      // Update merchant email
+      const updatedMerchant = await prisma.merchant.update({
+        where: { id: merchantId },
+        data: { email },
+      });
+
+      res.json({
+        success: true,
+        message: 'Email updated successfully',
+        merchant: {
+          id: updatedMerchant.id,
+          email: updatedMerchant.email,
+        },
+      });
+    } catch (error) {
+      console.error('Update merchant email error:', error);
+      res.status(500).json({ success: false, error: 'Failed to update email' });
+    }
+  }
+
+  /**
    * Toggle merchant active status
    */
   async toggleMerchantStatus(req: AuthenticatedAdminRequest, res: Response): Promise<void> {

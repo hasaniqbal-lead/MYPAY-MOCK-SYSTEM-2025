@@ -220,6 +220,18 @@ apiRouter.post(
   (req: Request, res: Response) => adminMerchantsController.toggleMerchantStatus(req as any, res)
 );
 
+apiRouter.post(
+  '/admin/merchants/:id/reset-password',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminMerchantsController.resetMerchantPassword(req as any, res)
+);
+
+apiRouter.put(
+  '/admin/merchants/:id/email',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminMerchantsController.updateMerchantEmail(req as any, res)
+);
+
 // Admin protected routes - Transactions & Payouts
 apiRouter.get(
   '/admin/transactions',
