@@ -4,78 +4,94 @@ import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import Layout from '@/components/Layout'
 import { adminAPI } from '@/lib/api'
-import { CreditCard, RefreshCw, Filter } from 'lucide-react'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { CreditCard, RefreshCw, Filter, Search } from 'lucide-react'
 
 interface Transaction {
+  id: string
   checkout_id: string
   reference: string
   amount: number
+  currency: string
   status: string
-  status_code: string
   payment_method: string
-  merchant_name: string
   created_at: string
+  merchant: {
+    id: number
+    merchant_id: string
+    name: string
+    company_name: string
+  }
+}
+
+interface Merchant {
+  id: number
+  merchant_id: string
+  name: string
+  company_name: string
 }
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [merchants, setMerchants] = useState<Merchant[]>([])
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState('all')
+  const [merchantFilter, setMerchantFilter] = useState('all')
+  const [searchTerm, setSearchTerm] = useState('')
+
+  useEffect(() => {
+    fetchMerchants()
+  }, [])
 
   useEffect(() => {
     fetchTransactions()
-  }, [statusFilter])
+  }, [statusFilter, merchantFilter])
+
+  const fetchMerchants = async () => {
+    try {
+      const response = await adminAPI.getMerchants()
+      if (response.success) {
+        setMerchants(response.merchants)
+      }
+    } catch (error) {
+      console.error('Failed to fetch merchants:', error)
+    }
+  }
 
   const fetchTransactions = async () => {
     setLoading(true)
     try {
-      const response = await adminAPI.getAllTransactions({ status: statusFilter !== 'all' ? statusFilter : undefined })
+      const params: any = {}
+      if (statusFilter !== 'all') params.status = statusFilter
+      if (merchantFilter !== 'all') params.merchantId = parseInt(merchantFilter)
+      params.limit = 100
+
+      const response = await adminAPI.getAllTransactions(params)
       if (response.success) {
         setTransactions(response.transactions)
       }
     } catch (error) {
       console.error('Failed to fetch transactions:', error)
-      // Mock data
-      setTransactions([
-        {
-          checkout_id: 'chk_abc123',
-          reference: 'ORD-001',
-          amount: 5000,
-          status: 'completed',
-          status_code: 'SUCCESS',
-          payment_method: 'jazzcash',
-          merchant_name: 'Test Merchant',
-          created_at: '2024-03-15T10:30:00Z',
-        },
-        {
-          checkout_id: 'chk_def456',
-          reference: 'ORD-002',
-          amount: 2500,
-          status: 'pending',
-          status_code: 'PENDING',
-          payment_method: 'easypaisa',
-          merchant_name: 'Demo Store',
-          created_at: '2024-03-15T11:45:00Z',
-        },
-        {
-          checkout_id: 'chk_ghi789',
-          reference: 'ORD-003',
-          amount: 7500,
-          status: 'failed',
-          status_code: 'INSUFFICIENT_FUNDS',
-          payment_method: 'card',
-          merchant_name: 'Test Merchant',
-          created_at: '2024-03-15T12:00:00Z',
-        },
-      ])
     } finally {
       setLoading(false)
     }
   }
+
+  const filteredTransactions = transactions.filter((tx) => {
+    if (!searchTerm) return true
+    const search = searchTerm.toLowerCase()
+    return (
+      tx.reference.toLowerCase().includes(search) ||
+      tx.checkout_id.toLowerCase().includes(search) ||
+      tx.merchant.merchant_id.toLowerCase().includes(search) ||
+      tx.merchant.name.toLowerCase().includes(search) ||
+      tx.merchant.company_name.toLowerCase().includes(search)
+    )
+  })
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-PK', {
@@ -95,30 +111,24 @@ export default function TransactionsPage() {
   }
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'completed':
+      case 'success':
         return 'bg-status-success/10 text-status-success border-status-success/20'
       case 'pending':
-        return 'bg-status-warning/10 text-status-warning border-status-warning/20'
+        return 'bg-status-pending/10 text-status-pending border-status-pending/20'
       case 'failed':
+      case 'error':
         return 'bg-status-error/10 text-status-error border-status-error/20'
       default:
-        return 'bg-muted text-muted-foreground border-border'
+        return 'bg-muted text-muted-foreground'
     }
   }
 
-  const getMethodBadge = (method: string) => {
-    switch (method) {
-      case 'jazzcash':
-        return 'bg-red-100 text-red-700 border-red-200'
-      case 'easypaisa':
-        return 'bg-green-100 text-green-700 border-green-200'
-      case 'card':
-        return 'bg-mypay-green/10 text-mypay-green border-mypay-green/20'
-      default:
-        return 'bg-muted text-muted-foreground border-border'
-    }
-  }
+  const totalAmount = filteredTransactions.reduce((sum, tx) => sum + tx.amount, 0)
+  const completedAmount = filteredTransactions
+    .filter((tx) => tx.status.toLowerCase() === 'completed')
+    .reduce((sum, tx) => sum + tx.amount, 0)
 
   return (
     <Layout>
@@ -129,72 +139,140 @@ export default function TransactionsPage() {
               <CreditCard className="h-6 w-6 text-mypay-green" />
               Payment Transactions
             </h1>
-            <p className="text-muted-foreground">Monitor all payment transactions across merchants</p>
+            <p className="text-muted-foreground">View all payment transactions</p>
           </div>
-          <div className="flex items-center gap-3">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-40">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Filter status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="failed">Failed</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button
-              onClick={fetchTransactions}
-              variant="outline"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
-          </div>
+          <Button onClick={fetchTransactions} variant="outline">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Transactions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{filteredTransactions.length}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Volume</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{formatCurrency(totalAmount)}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Completed Volume</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{formatCurrency(completedAmount)}</div>
+            </CardContent>
+          </Card>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-foreground">All Transactions</CardTitle>
-            <CardDescription>
-              {transactions.length} transactions found
-            </CardDescription>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <CardTitle className="text-foreground">All Transactions</CardTitle>
+                <CardDescription>
+                  {filteredTransactions.length} transactions
+                </CardDescription>
+              </div>
+              
+              <div className="flex flex-col md:flex-row gap-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 w-64"
+                  />
+                </div>
+                
+                <Select value={merchantFilter} onValueChange={setMerchantFilter}>
+                  <SelectTrigger className="w-48">
+                    <Filter className="h-4 w-4 mr-2" />
+                    <SelectValue placeholder="Filter by merchant" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Merchants</SelectItem>
+                    {merchants.map((merchant) => (
+                      <SelectItem key={merchant.id} value={merchant.id.toString()}>
+                        {merchant.company_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Filter by status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="failed">Failed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             {loading ? (
               <div className="text-center py-8 text-muted-foreground">Loading transactions...</div>
+            ) : filteredTransactions.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">No transactions found</div>
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Checkout ID</TableHead>
-                    <TableHead>Reference</TableHead>
                     <TableHead>Merchant</TableHead>
-                    <TableHead>Method</TableHead>
+                    <TableHead>Reference</TableHead>
                     <TableHead>Amount</TableHead>
+                    <TableHead>Method</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Date</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {transactions.map((tx) => (
-                    <TableRow key={tx.checkout_id}>
-                      <TableCell className="font-mono text-xs">{tx.checkout_id}</TableCell>
-                      <TableCell className="font-medium">{tx.reference}</TableCell>
-                      <TableCell>{tx.merchant_name}</TableCell>
+                  {filteredTransactions.map((transaction) => (
+                    <TableRow key={transaction.id}>
                       <TableCell>
-                        <Badge className={getMethodBadge(tx.payment_method)}>
-                          {tx.payment_method}
+                        <div>
+                          <p className="font-medium text-sm">{transaction.merchant.company_name}</p>
+                          <p className="text-xs text-muted-foreground">{transaction.merchant.merchant_id}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-mono text-xs">
+                          <p>{transaction.reference}</p>
+                          <p className="text-muted-foreground">{transaction.checkout_id.substring(0, 12)}...</p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-semibold">
+                        {formatCurrency(transaction.amount)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="capitalize">
+                          {transaction.payment_method}
                         </Badge>
                       </TableCell>
-                      <TableCell className="font-medium">{formatCurrency(tx.amount)}</TableCell>
                       <TableCell>
-                        <Badge className={getStatusBadge(tx.status)}>
-                          {tx.status}
+                        <Badge className={getStatusBadge(transaction.status)}>
+                          {transaction.status}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">{formatDate(tx.created_at)}</TableCell>
+                      <TableCell className="text-muted-foreground text-sm">
+                        {formatDate(transaction.created_at)}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

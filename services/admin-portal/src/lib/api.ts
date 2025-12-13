@@ -102,25 +102,61 @@ export const adminAPI = {
 
   getMerchants: async () => {
     try {
-      const response = await api.get('/api/admin/merchants')
+      const response = await api.get('/api/v1/admin/merchants')
       return response.data
     } catch {
       return { success: true, merchants: [] }
     }
   },
 
-  getAllTransactions: async (params?: { status?: string }) => {
+  getMerchantById: async (id: number) => {
     try {
-      const response = await api.get('/api/admin/transactions', { params })
+      const response = await api.get(`/api/v1/admin/merchants/${id}`)
+      return response.data
+    } catch {
+      return { success: false, error: 'Failed to fetch merchant' }
+    }
+  },
+
+  createMerchant: async (data: { email: string; name: string; company_name?: string; webhookUrl?: string }) => {
+    try {
+      const response = await api.post('/api/v1/admin/merchants', data)
+      return response.data
+    } catch (error: any) {
+      return { success: false, error: error.response?.data?.error || 'Failed to create merchant' }
+    }
+  },
+
+  updateMerchant: async (id: number, data: { name?: string; company_name?: string; webhookUrl?: string; status?: string; isActive?: boolean }) => {
+    try {
+      const response = await api.put(`/api/v1/admin/merchants/${id}`, data)
+      return response.data
+    } catch (error: any) {
+      return { success: false, error: error.response?.data?.error || 'Failed to update merchant' }
+    }
+  },
+
+  toggleMerchantStatus: async (id: number) => {
+    try {
+      const response = await api.post(`/api/v1/admin/merchants/${id}/toggle-status`)
+      return response.data
+    } catch {
+      return { success: false, error: 'Failed to toggle merchant status' }
+    }
+  },
+
+  getAllTransactions: async (params?: { status?: string; merchantId?: number; limit?: number }) => {
+    try {
+      const response = await api.get('/api/v1/admin/transactions', { params })
       return response.data
     } catch {
       return { success: true, transactions: [] }
     }
   },
 
-  getAllPayouts: async (params?: { status?: string }) => {
+  getAllPayouts: async (params?: { status?: string; merchantId?: number; limit?: number }) => {
     try {
-      const response = await api.get('/api/admin/payouts', { params })
+      const response = await api.get('/api/v1/admin/payouts', { params })
       return response.data
     } catch {
       return { success: true, payouts: [] }

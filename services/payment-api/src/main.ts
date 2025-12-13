@@ -13,6 +13,8 @@ import { portalMerchantController } from './controllers/portalMerchantController
 import { portalTransactionsController } from './controllers/portalTransactionsController';
 import { portalDashboardController } from './controllers/portalDashboardController';
 import { adminAuthController } from './controllers/adminAuthController';
+import { adminMerchantsController } from './controllers/adminMerchantsController';
+import { requireAdminAuth } from './middleware/adminAuth';
 import { webhookService } from './services/webhookService';
 import { AuthenticatedRequest } from './types';
 
@@ -187,8 +189,50 @@ apiRouter.post(
   (req: Request, res: Response) => adminAuthController.login(req, res)
 );
 
-// Admin protected routes will be added here in the future
-// Example: apiRouter.get('/admin/merchants', requireAdminAuth, ...)
+// Admin protected routes - Merchant Management
+apiRouter.get(
+  '/admin/merchants',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminMerchantsController.getAllMerchants(req as any, res)
+);
+
+apiRouter.get(
+  '/admin/merchants/:id',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminMerchantsController.getMerchantById(req as any, res)
+);
+
+apiRouter.post(
+  '/admin/merchants',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminMerchantsController.createMerchant(req as any, res)
+);
+
+apiRouter.put(
+  '/admin/merchants/:id',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminMerchantsController.updateMerchant(req as any, res)
+);
+
+apiRouter.post(
+  '/admin/merchants/:id/toggle-status',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminMerchantsController.toggleMerchantStatus(req as any, res)
+);
+
+// Admin protected routes - Transactions & Payouts
+apiRouter.get(
+  '/admin/transactions',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminMerchantsController.getMerchantTransactions(req as any, res)
+);
+
+apiRouter.get(
+  '/admin/payouts',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminMerchantsController.getMerchantPayouts(req as any, res)
+);
+
 
 // ============================================
 // Test & Developer Routes (Public)
