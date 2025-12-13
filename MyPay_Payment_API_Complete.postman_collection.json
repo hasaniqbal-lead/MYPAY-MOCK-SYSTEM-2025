@@ -1,0 +1,667 @@
+{
+	"info": {
+		"_postman_id": "mypay-payment-api-complete-2025",
+		"name": "MyPay Payment API - Complete (2025)",
+		"description": "**Complete Postman Collection for MyPay Mock Payment System**\n\n## Production URLs\n- **Payment API**: https://mock.mycodigital.io/api/v1\n- **Merchant Portal**: https://devportal.mycodigital.io\n- **Admin Portal**: https://devadmin.mycodigital.io\n\n## Test Credentials\n\n### Merchant Credentials\n- **Email**: hasaniqbal@mycodigital.io\n- **Password**: hasan123456\n- **Payment API Key**: hasan-api-key-789\n- **Payout API Key**: Check portal after login\n- **Merchant ID**: MERCHANT_0012\n\n### Admin Credentials\n- **Email**: admin@mycodigital.io\n- **Password**: admin@@1234\n\n## Test Data\n\n### Success Scenarios (Wallet)\n- Mobile: **03030000000** → SUCCESS\n- PIN: Any 4-digit number\n\n### Failed Scenarios (Wallet)\n- **03021111111** → FAILED\n- **03032222222** → TIMEOUT\n- **03033333333** → REJECTED\n\n### Card Test Numbers\n- **4242 4242 4242 4242** → SUCCESS\n- **4000 0000 0000 0002** → DECLINED\n- **4000 0000 0000 9995** → INSUFFICIENT_FUNDS\n\n## Collection Structure\n1. **Public APIs** - Health check, test scenarios\n2. **Checkout APIs** - Create checkout, get status\n3. **Merchant Portal** - Login, profile, credentials, transactions\n4. **Admin Portal** - Login, merchant management, analytics\n\n## Usage\n1. Set {{base_url}} to production URL (or {{base_url_local}} for local)\n2. Use \"Merchant Login\" to get JWT token (auto-saved)\n3. Use \"Admin Login\" to get admin JWT token (auto-saved)\n4. All authenticated requests use saved tokens automatically\n\n**Last Updated**: December 13, 2025",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "noauth"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://mock.mycodigital.io/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "base_url_local",
+			"value": "http://localhost:4002/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "merchant_api_key",
+			"value": "hasan-api-key-789",
+			"type": "string"
+		},
+		{
+			"key": "merchant_email",
+			"value": "hasaniqbal@mycodigital.io",
+			"type": "string"
+		},
+		{
+			"key": "merchant_password",
+			"value": "hasan123456",
+			"type": "string"
+		},
+		{
+			"key": "admin_email",
+			"value": "admin@mycodigital.io",
+			"type": "string"
+		},
+		{
+			"key": "admin_password",
+			"value": "admin@@1234",
+			"type": "string"
+		},
+		{
+			"key": "merchant_jwt_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "admin_jwt_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Public APIs",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						},
+						"description": "Check if the Payment API is running and healthy."
+					}
+				},
+				{
+					"name": "Get Test Scenarios",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/test-scenarios",
+							"host": ["{{base_url}}"],
+							"path": ["test-scenarios"]
+						},
+						"description": "Get all test payment scenarios (mobile numbers, card numbers, expected results)."
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Checkout & Payment APIs",
+			"item": [
+				{
+					"name": "Create Checkout - JazzCash Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.checkoutId) {",
+									"        pm.collectionVariables.set('checkout_id', jsonData.checkoutId);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{merchant_api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reference\": \"TEST-{{$timestamp}}\",\n  \"amount\": 1000.00,\n  \"paymentMethod\": \"jazzcash\",\n  \"paymentType\": \"onetime\",\n  \"successUrl\": \"https://merchant.com/webhook\",\n  \"returnUrl\": \"https://merchant.com/return\",\n  \"user\": {\n    \"id\": \"user{{$timestamp}}\",\n    \"email\": \"user@example.com\",\n    \"name\": \"Test User\",\n    \"phone\": \"03030000000\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/checkouts",
+							"host": ["{{base_url}}"],
+							"path": ["checkouts"]
+						},
+						"description": "Create a checkout with JazzCash using success mobile number."
+					}
+				},
+				{
+					"name": "Create Checkout - Easypaisa Success",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{merchant_api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reference\": \"TEST-EP-{{$timestamp}}\",\n  \"amount\": 2500.00,\n  \"paymentMethod\": \"easypaisa\",\n  \"paymentType\": \"onetime\",\n  \"successUrl\": \"https://merchant.com/webhook\",\n  \"returnUrl\": \"https://merchant.com/return\",\n  \"user\": {\n    \"id\": \"user{{$timestamp}}\",\n    \"email\": \"user@example.com\",\n    \"name\": \"Test User\",\n    \"phone\": \"03030000000\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/checkouts",
+							"host": ["{{base_url}}"],
+							"path": ["checkouts"]
+						}
+					}
+				},
+				{
+					"name": "Create Checkout - Card Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{merchant_api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reference\": \"TEST-CARD-{{$timestamp}}\",\n  \"amount\": 5000.00,\n  \"paymentMethod\": \"card\",\n  \"paymentType\": \"onetime\",\n  \"successUrl\": \"https://merchant.com/webhook\",\n  \"returnUrl\": \"https://merchant.com/return\",\n  \"user\": {\n    \"id\": \"user{{$timestamp}}\",\n    \"email\": \"user@example.com\",\n    \"name\": \"Test User\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/checkouts",
+							"host": ["{{base_url}}"],
+							"path": ["checkouts"]
+						}
+					}
+				},
+				{
+					"name": "Get Checkout Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{merchant_api_key}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/checkouts/{{checkout_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["checkouts", "{{checkout_id}}"]
+						},
+						"description": "Get details of a checkout session (uses saved checkout_id from previous request)."
+					}
+				},
+				{
+					"name": "Get Transaction Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{merchant_api_key}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/transactions/TEST-123",
+							"host": ["{{base_url}}"],
+							"path": ["transactions", "TEST-123"]
+						},
+						"description": "Get transaction status by merchant reference."
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Merchant Portal APIs",
+			"item": [
+				{
+					"name": "Merchant Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.token) {",
+									"        pm.collectionVariables.set('merchant_jwt_token', jsonData.token);",
+									"        console.log('Merchant JWT token saved');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{merchant_email}}\",\n  \"password\": \"{{merchant_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/portal/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["portal", "auth", "login"]
+						},
+						"description": "Login to merchant portal and get JWT token (auto-saved)."
+					}
+				},
+				{
+					"name": "Get Merchant Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{merchant_jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/portal/merchant/profile",
+							"host": ["{{base_url}}"],
+							"path": ["portal", "merchant", "profile"]
+						},
+						"description": "Get logged-in merchant's profile information."
+					}
+				},
+				{
+					"name": "Get Merchant Credentials",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{merchant_jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/portal/merchant/credentials",
+							"host": ["{{base_url}}"],
+							"path": ["portal", "merchant", "credentials"]
+						},
+						"description": "Get API keys (Payment API key and Payout API key)."
+					}
+				},
+				{
+					"name": "Get Merchant Transactions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{merchant_jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/portal/transactions?limit=50",
+							"host": ["{{base_url}}"],
+							"path": ["portal", "transactions"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "status",
+									"value": "completed",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get list of merchant's transactions with optional filters."
+					}
+				},
+				{
+					"name": "Get Dashboard Stats",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{merchant_jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/portal/dashboard/stats",
+							"host": ["{{base_url}}"],
+							"path": ["portal", "dashboard", "stats"]
+						},
+						"description": "Get merchant dashboard statistics (transactions, volume, success rate)."
+					}
+				},
+				{
+					"name": "Update Merchant Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{merchant_jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"company_name\": \"Updated Company Name\",\n  \"webhook_url\": \"https://example.com/webhook\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/portal/merchant/profile",
+							"host": ["{{base_url}}"],
+							"path": ["portal", "merchant", "profile"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Admin Portal APIs",
+			"item": [
+				{
+					"name": "Admin Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.token) {",
+									"        pm.collectionVariables.set('admin_jwt_token', jsonData.token);",
+									"        console.log('Admin JWT token saved');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "auth", "login"]
+						},
+						"description": "Admin login - get JWT token for admin operations."
+					}
+				},
+				{
+					"name": "Get All Merchants",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/merchants",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "merchants"]
+						},
+						"description": "Get list of all merchants with statistics."
+					}
+				},
+				{
+					"name": "Get Merchant By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/merchants/12",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "merchants", "12"]
+						},
+						"description": "Get detailed information for a specific merchant."
+					}
+				},
+				{
+					"name": "Create Merchant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"newmerchant@example.com\",\n  \"name\": \"John Doe\",\n  \"company_name\": \"New Company Ltd\",\n  \"webhookUrl\": \"https://example.com/webhook\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/merchants",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "merchants"]
+						},
+						"description": "Create new merchant with auto-generated credentials (password and API keys)."
+					}
+				},
+				{
+					"name": "Update Merchant",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Name\",\n  \"company_name\": \"Updated Company\",\n  \"webhookUrl\": \"https://example.com/webhook-updated\",\n  \"status\": \"active\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/merchants/12",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "merchants", "12"]
+						},
+						"description": "Update merchant details (name, company, webhook, status)."
+					}
+				},
+				{
+					"name": "Toggle Merchant Status",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/merchants/12/toggle-status",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "merchants", "12", "toggle-status"]
+						},
+						"description": "Toggle merchant active/inactive status."
+					}
+				},
+				{
+					"name": "Reset Merchant Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/merchants/12/reset-password",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "merchants", "12", "reset-password"]
+						},
+						"description": "Generate new random password for merchant (returns plain password)."
+					}
+				},
+				{
+					"name": "Update Merchant Email",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"newemail@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/merchants/12/email",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "merchants", "12", "email"]
+						},
+						"description": "Update merchant login email address."
+					}
+				},
+				{
+					"name": "Get All Transactions (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/transactions?limit=50",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "transactions"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "merchantId",
+									"value": "12",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "completed",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get all transactions with optional filters (merchantId, status, limit)."
+					}
+				},
+				{
+					"name": "Get All Payouts (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/payouts?limit=50",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "payouts"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "merchantId",
+									"value": "12",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "SUCCESS",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get all payouts with optional filters (merchantId, status, limit)."
+					}
+				}
+			]
+		}
+	]
+}
+

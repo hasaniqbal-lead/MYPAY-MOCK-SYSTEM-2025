@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
 		"name": "MyPay Payout API - Complete",
-		"description": "Complete Postman collection for testing MyPay Mock Payout API System\n\n**Production URL:** https://sandbox.mycodigital.io/api/v1\n**Local URL:** http://localhost:4001/api/v1\n\n**API Key:** mypay_87ba5b517b0c7fb360ec2c32030afb4c82ddc2e8c0f7d66abb1aa5e96dd08bce\n\n**Test Account Numbers:**\n- 123450001 → SUCCESS\n- 987650002 → RETRY then SUCCESS\n- 555550003 → FAILED\n- 111110004 → PENDING\n- 999990005 → ON_HOLD\n- Amount ≥ 100,000 → IN_REVIEW\n\n**Note:** Use {{base_url}} for production or switch to {{base_url_local}} for local testing.\n\n**Seeded**: December 11, 2025",
+		"description": "**Complete Postman Collection for MyPay Mock Payout API System**\n\n## 🌐 URLs\n- **Production**: https://sandbox.mycodigital.io/api/v1\n- **Local**: http://localhost:4001/api/v1\n\n## 🔑 API Key Setup\n\n⚠️ **IMPORTANT**: Payout API keys are generated randomly on each database seed.\n\n**To get your API key:**\n1. Login to Merchant Portal: https://devportal.mycodigital.io\n2. Use credentials: `hasaniqbal@mycodigital.io` / `hasan123456`\n3. Go to **Credentials** tab\n4. Copy the **Payout API Key** (starts with `mypay_`)\n5. Update `{{api_key}}` variable in this collection\n\n## 🧪 Test Scenarios\n\n### Account Numbers (Success/Failure)\n- **123450001** → SUCCESS (instant)\n- **987650002** → RETRY → SUCCESS (after worker processes, ~30s)\n- **555550003** → FAILED (instant)\n- **111110004** → PENDING (stays pending)\n- **999990005** → ON_HOLD (stays on hold)\n\n### Amount-Based Scenarios\n- Amount **≥ 100,000 PKR** → IN_REVIEW status\n\n## 🤖 Auto-Processing\n- Payout worker runs every **30 seconds**\n- RETRY payouts automatically become SUCCESS after one retry\n- Check status after 30-60 seconds for RETRY scenarios\n\n## 📝 Usage\n1. Update `{{api_key}}` with your Payout API key from portal\n2. Use `{{base_url}}` for production\n3. Use `{{base_url_local}}` for local testing\n\n**Last Updated**: December 13, 2025",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -556,9 +556,9 @@
 		},
 		{
 			"key": "api_key",
-			"value": "mypay_87ba5b517b0c7fb360ec2c32030afb4c82ddc2e8c0f7d66abb1aa5e96dd08bce",
+			"value": "GET_FROM_PORTAL",
 			"type": "string",
-			"description": "Test API key from seeded data (VPS Production)"
+			"description": "⚠️ UPDATE THIS! Get from Merchant Portal → Credentials tab (starts with mypay_)"
 		}
 	]
 }
