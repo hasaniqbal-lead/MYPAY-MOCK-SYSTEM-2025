@@ -223,10 +223,15 @@ class AdminMerchantsController {
       });
 
       // Create Payment API key record
+      const vendorId = `VENDOR_${String(merchant.id).padStart(4, '0')}`;
+      const apiSecret = crypto.randomBytes(32).toString('hex');
+      
       await prisma.apiKey.create({
         data: {
+          vendor_id: vendorId,
           merchant_id: merchant.id,
           api_key: paymentApiKey,
+          api_secret: apiSecret,
           is_active: true,
         },
       });
@@ -422,17 +427,17 @@ class AdminMerchantsController {
           checkout_id: t.checkout_id,
           reference: t.reference,
           amount: parseFloat(t.amount.toString()),
-          currency: t.currency,
+          currency: 'PKR', // Default currency
           status: t.status,
           payment_method: t.payment_method,
           created_at: t.created_at,
           updated_at: t.updated_at,
-          merchant: {
+          merchant: t.merchant ? {
             id: t.merchant.id,
             merchant_id: `MERCHANT_${String(t.merchant.id).padStart(4, '0')}`,
             name: t.merchant.name,
-            company_name: t.merchant.company_name,
-          },
+            company_name: t.merchant.company_name || t.merchant.name,
+          } : null,
         })),
         total: transactions.length,
       });

@@ -4,7 +4,7 @@ import { prisma } from '../config/database';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretjwtkey';
 
-interface AuthenticatedAdminRequest extends Request {
+export interface AuthenticatedAdminRequest extends Request {
   admin?: {
     id: number;
     email: string;
