@@ -11,6 +11,7 @@ import { paymentController } from './controllers/paymentController';
 import { portalAuthController } from './controllers/portalAuthController';
 import { portalMerchantController } from './controllers/portalMerchantController';
 import { portalTransactionsController } from './controllers/portalTransactionsController';
+import { portalPayoutsController } from './controllers/portalPayoutsController';
 import { portalDashboardController } from './controllers/portalDashboardController';
 import { adminAuthController } from './controllers/adminAuthController';
 import { adminMerchantsController } from './controllers/adminMerchantsController';
@@ -170,6 +171,25 @@ apiRouter.get(
   '/portal/transactions/export/:format',
   requireAuth as express.RequestHandler,
   (req: Request, res: Response) => portalTransactionsController.export(req as AuthenticatedRequest, res)
+);
+
+// Payout routes (auth required)
+apiRouter.get(
+  '/portal/payouts',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => portalPayoutsController.list(req as AuthenticatedRequest, res)
+);
+
+apiRouter.get(
+  '/portal/payouts/:id',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => portalPayoutsController.get(req as AuthenticatedRequest, res)
+);
+
+apiRouter.get(
+  '/portal/payouts/export/:format',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => portalPayoutsController.export(req as AuthenticatedRequest, res)
 );
 
 // Dashboard routes (auth required)
