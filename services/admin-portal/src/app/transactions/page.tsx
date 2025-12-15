@@ -25,7 +25,7 @@ interface Transaction {
     merchant_id: string
     name: string
     company_name: string
-  }
+  } | null
 }
 
 interface Merchant {
@@ -87,9 +87,9 @@ export default function TransactionsPage() {
     return (
       tx.reference.toLowerCase().includes(search) ||
       tx.checkout_id.toLowerCase().includes(search) ||
-      tx.merchant.merchant_id.toLowerCase().includes(search) ||
-      tx.merchant.name.toLowerCase().includes(search) ||
-      tx.merchant.company_name.toLowerCase().includes(search)
+      (tx.merchant && tx.merchant.merchant_id.toLowerCase().includes(search)) ||
+      (tx.merchant && tx.merchant.name.toLowerCase().includes(search)) ||
+      (tx.merchant && tx.merchant.company_name.toLowerCase().includes(search))
     )
   })
 
@@ -247,8 +247,12 @@ export default function TransactionsPage() {
                     <TableRow key={transaction.id}>
                       <TableCell>
                         <div>
-                          <p className="font-medium text-sm">{transaction.merchant.company_name}</p>
-                          <p className="text-xs text-muted-foreground">{transaction.merchant.merchant_id}</p>
+                          <p className="font-medium text-sm">
+                            {transaction.merchant ? transaction.merchant.company_name : 'Unknown Merchant'}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {transaction.merchant ? transaction.merchant.merchant_id : 'N/A'}
+                          </p>
                         </div>
                       </TableCell>
                       <TableCell>
