@@ -90,6 +90,10 @@ model Payout {
   @@unique([merchantId, merchantReference])
   @@index([merchantId])
   @@index([status])
+  @@index([createdAt])                         // NEW: For date filtering
+  @@index([merchantId, createdAt])             // NEW: Compound index for merchant queries
+  @@index([merchantId, status])                // NEW: Compound index for status filtering
+  @@index([merchantId, status, createdAt])     // NEW: Covering index for dashboard
   @@map("payouts")
 }
 
@@ -229,6 +233,10 @@ model PaymentTransaction {
   @@index([reference])
   @@index([status])
   @@index([merchant_id])
+  @@index([created_at])                          // NEW: For dashboard date filtering
+  @@index([merchant_id, created_at])             // NEW: Compound index for merchant queries
+  @@index([merchant_id, status])                 // NEW: Compound index for status filtering
+  @@index([merchant_id, status, created_at])     // NEW: Covering index for dashboard
   @@map("payment_transactions")
 }
 
@@ -302,5 +310,6 @@ model AuditLog {
   @@index([user_type, user_id])
   @@index([action])
   @@index([created_at])
+  @@index([created_at, user_type])              // NEW: For log cleanup queries
   @@map("audit_logs")
 }

@@ -514,7 +514,9 @@ class AdminMerchantsController {
 
       const merchantId = req.query.merchantId ? parseInt(req.query.merchantId as string) : undefined;
       const status = req.query.status as string | undefined;
-      const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 20; // Reduced from 50
+      const page = req.query.page ? parseInt(req.query.page as string) : 1;
+      const offset = (page - 1) * limit;
 
       const where: any = {};
       if (merchantId) {
@@ -526,7 +528,15 @@ class AdminMerchantsController {
 
       const transactions = await prisma.paymentTransaction.findMany({
         where,
-        include: {
+        select: {
+          id: true,
+          checkout_id: true,
+          reference: true,
+          amount: true,
+          status: true,
+          payment_method: true,
+          created_at: true,
+          updated_at: true,
           merchant: {
             select: {
               id: true,
@@ -538,6 +548,7 @@ class AdminMerchantsController {
         },
         orderBy: { created_at: 'desc' },
         take: limit,
+        skip: offset,
       });
 
       res.json({
@@ -579,7 +590,9 @@ class AdminMerchantsController {
 
       const merchantId = req.query.merchantId ? parseInt(req.query.merchantId as string) : undefined;
       const status = req.query.status as string | undefined;
-      const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 20; // Reduced from 50
+      const page = req.query.page ? parseInt(req.query.page as string) : 1;
+      const offset = (page - 1) * limit;
 
       const where: any = {};
       if (merchantId) {
@@ -591,7 +604,19 @@ class AdminMerchantsController {
 
       const payouts = await prisma.payout.findMany({
         where,
-        include: {
+        select: {
+          id: true,
+          merchantReference: true,
+          amount: true,
+          currency: true,
+          status: true,
+          destType: true,
+          bankCode: true,
+          walletCode: true,
+          accountNumber: true,
+          accountTitle: true,
+          createdAt: true,
+          updatedAt: true,
           merchant: {
             select: {
               id: true,
@@ -603,6 +628,7 @@ class AdminMerchantsController {
         },
         orderBy: { createdAt: 'desc' },
         take: limit,
+        skip: offset,
       });
 
       res.json({

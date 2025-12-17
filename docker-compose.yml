@@ -11,10 +11,24 @@ services:
       MYSQL_DATABASE: ${DB_NAME:-mypay_mock_db}
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./mysql/my.cnf:/etc/mysql/conf.d/custom.cnf:ro
     ports:
       - "3306:3306"
     networks:
       - mypay-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1024M
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -35,6 +49,7 @@ services:
       - PORT=4001
       - DATABASE_URL=mysql://root:${DB_PASSWORD:-mypay_secure_password}@mysql:3306/${DB_NAME:-mypay_mock_db}
       - WEBHOOK_SECRET=${WEBHOOK_SECRET:-default-webhook-secret-key}
+      - NODE_OPTIONS=--max-old-space-size=256
     ports:
       - "4001:4001"
     depends_on:
@@ -42,6 +57,19 @@ services:
         condition: service_healthy
     networks:
       - mypay-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 384M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # Payout Worker (Background Processing)
   payout-worker:
@@ -57,11 +85,25 @@ services:
       - NODE_ENV=production
       - DATABASE_URL=mysql://root:${DB_PASSWORD:-mypay_secure_password}@mysql:3306/${DB_NAME:-mypay_mock_db}
       - WEBHOOK_SECRET=${WEBHOOK_SECRET:-default-webhook-secret-key}
+      - NODE_OPTIONS=--max-old-space-size=256
     depends_on:
       mysql:
         condition: service_healthy
     networks:
       - mypay-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 384M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # Payment API
   payment-api:
@@ -79,6 +121,7 @@ services:
       - JWT_SECRET=${JWT_SECRET:-supersecretjwtkey}
       - API_KEY_SECRET=${API_KEY_SECRET:-supersecretapikey}
       - CHECKOUT_BASE_URL=${CHECKOUT_BASE_URL:-http://localhost:4002/payment}
+      - NODE_OPTIONS=--max-old-space-size=256
     ports:
       - "4002:4002"
     depends_on:
@@ -86,6 +129,19 @@ services:
         condition: service_healthy
     networks:
       - mypay-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 384M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # Merchant Portal
   merchant-portal:
@@ -98,12 +154,26 @@ services:
       - NODE_ENV=production
       - PORT=4010
       - NEXT_PUBLIC_API_URL=https://mock.mycodigital.io
+      - NODE_OPTIONS=--max-old-space-size=256
     ports:
       - "4010:4010"
     depends_on:
       - payment-api
     networks:
       - mypay-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 384M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # Admin Portal
   admin-portal:
@@ -116,6 +186,7 @@ services:
       - NODE_ENV=production
       - PORT=4011
       - NEXT_PUBLIC_API_URL=https://mock.mycodigital.io
+      - NODE_OPTIONS=--max-old-space-size=256
     ports:
       - "4011:4011"
     depends_on:
@@ -123,6 +194,19 @@ services:
       - payout-api
     networks:
       - mypay-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 384M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   mypay-network:
