@@ -120,7 +120,7 @@ services:
       - DATABASE_URL=mysql://root:${DB_PASSWORD:-mypay_secure_password}@mysql:3306/${DB_NAME:-mypay_mock_db}
       - JWT_SECRET=${JWT_SECRET:-supersecretjwtkey}
       - API_KEY_SECRET=${API_KEY_SECRET:-supersecretapikey}
-      - CHECKOUT_BASE_URL=${CHECKOUT_BASE_URL:-http://localhost:4002/payment}
+      - PAYMENT_PAGE_URL=${PAYMENT_PAGE_URL:-https://demo.mypay.mx}
       - NODE_OPTIONS=--max-old-space-size=256
     ports:
       - "4002:4002"
@@ -202,6 +202,35 @@ services:
         reservations:
           cpus: '0.25'
           memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Payment Page (Customizable checkout page)
+  payment-page:
+    build:
+      context: .
+      dockerfile: services/payment-page/Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-https://test.mypay.mx}
+    container_name: mypay-payment-page
+    restart: unless-stopped
+    ports:
+      - "4012:80"
+    depends_on:
+      - payment-api
+    networks:
+      - mypay-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
     logging:
       driver: "json-file"
       options:

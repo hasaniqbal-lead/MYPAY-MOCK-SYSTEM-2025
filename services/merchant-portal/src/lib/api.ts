@@ -221,6 +221,88 @@ export const dashboardAPI = {
   },
 }
 
+// Payment Page Config API
+export const paymentPageAPI = {
+  listConfigs: async () => {
+    try {
+      const response = await api.get('/api/v1/portal/payment-page/configs')
+      return response.data
+    } catch {
+      return {
+        success: true,
+        configs: [
+          { id: 1, name: 'Default Theme', description: 'Modern dark theme', isDefault: true, isActive: true, createdAt: new Date().toISOString() }
+        ]
+      }
+    }
+  },
+  getConfig: async (id: number) => {
+    try {
+      const response = await api.get(`/api/v1/portal/payment-page/configs/${id}`)
+      return response.data
+    } catch {
+      return { success: true, config: null }
+    }
+  },
+  getDefaultConfig: async () => {
+    try {
+      const response = await api.get('/api/v1/portal/payment-page/configs/default')
+      return response.data
+    } catch {
+      return { success: true, config: null }
+    }
+  },
+  createConfig: async (data: any) => {
+    const response = await api.post('/api/v1/portal/payment-page/configs', data)
+    return response.data
+  },
+  updateConfig: async (id: number, data: any) => {
+    const response = await api.put(`/api/v1/portal/payment-page/configs/${id}`, data)
+    return response.data
+  },
+  deleteConfig: async (id: number) => {
+    const response = await api.delete(`/api/v1/portal/payment-page/configs/${id}`)
+    return response.data
+  },
+  activateConfig: async (id: number) => {
+    const response = await api.post(`/api/v1/portal/payment-page/configs/${id}/activate`)
+    return response.data
+  },
+  listTemplates: async () => {
+    try {
+      const response = await api.get('/api/v1/portal/payment-page/templates')
+      return response.data
+    } catch {
+      return {
+        success: true,
+        templates: [
+          { id: 1, name: 'Modern Minimal', slug: 'modern-minimal', category: 'minimal', description: 'Clean dark theme', isFeatured: true },
+          { id: 2, name: 'Ecommerce PKR', slug: 'ecommerce-pkr', category: 'ecommerce', description: 'Light theme for shops', isFeatured: true }
+        ]
+      }
+    }
+  },
+  createFromTemplate: async (data: { templateId: number; name: string; description?: string }) => {
+    const response = await api.post('/api/v1/portal/payment-page/configs/from-template', data)
+    return response.data
+  },
+  getRules: async () => {
+    try {
+      const response = await api.get('/api/v1/portal/payment-page/rules')
+      return response.data
+    } catch {
+      return {
+        success: true,
+        rules: {
+          locked: { 'advanced.showPoweredBy': true },
+          required: ['branding.merchantName'],
+          restricted: {}
+        }
+      }
+    }
+  },
+}
+
 // Payouts API
 export const payoutsAPI = {
   list: async (params?: {

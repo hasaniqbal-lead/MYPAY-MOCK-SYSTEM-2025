@@ -207,3 +207,77 @@ export const adminAPI = {
     }
   },
 }
+
+// Payment Page Admin API
+export const paymentPageAdminAPI = {
+  // Rules management
+  listRules: async () => {
+    try {
+      const response = await api.get('/api/v1/admin/payment-page/rules')
+      return response.data
+    } catch {
+      return {
+        success: true,
+        rules: [
+          { id: 1, fieldPath: 'advanced.showPoweredBy', ruleType: 'locked', ruleValue: { value: true }, description: 'MyPay branding must be shown', isActive: true }
+        ]
+      }
+    }
+  },
+
+  createRule: async (data: { fieldPath: string; ruleType: string; ruleValue: unknown; description?: string }) => {
+    const response = await api.post('/api/v1/admin/payment-page/rules', data)
+    return response.data
+  },
+
+  updateRule: async (id: number, data: { fieldPath?: string; ruleType?: string; ruleValue?: unknown; description?: string; isActive?: boolean }) => {
+    const response = await api.put(`/api/v1/admin/payment-page/rules/${id}`, data)
+    return response.data
+  },
+
+  deleteRule: async (id: number) => {
+    const response = await api.delete(`/api/v1/admin/payment-page/rules/${id}`)
+    return response.data
+  },
+
+  // Templates management
+  listTemplates: async () => {
+    try {
+      const response = await api.get('/api/v1/admin/payment-page/templates')
+      return response.data
+    } catch {
+      return {
+        success: true,
+        templates: [
+          { id: 1, name: 'Modern Minimal', category: 'minimal', description: 'Clean dark theme', isActive: true },
+          { id: 2, name: 'Ecommerce PKR', category: 'ecommerce', description: 'Light theme for shops', isActive: true }
+        ]
+      }
+    }
+  },
+
+  createTemplate: async (data: { name: string; category: string; description?: string; configuration: unknown }) => {
+    const response = await api.post('/api/v1/admin/payment-page/templates', data)
+    return response.data
+  },
+
+  updateTemplate: async (id: number, data: { name?: string; category?: string; description?: string; configuration?: unknown; isActive?: boolean }) => {
+    const response = await api.put(`/api/v1/admin/payment-page/templates/${id}`, data)
+    return response.data
+  },
+
+  deleteTemplate: async (id: number) => {
+    const response = await api.delete(`/api/v1/admin/payment-page/templates/${id}`)
+    return response.data
+  },
+
+  // View all merchant configs
+  listMerchantConfigs: async (params?: { merchantId?: number }) => {
+    try {
+      const response = await api.get('/api/v1/admin/payment-page/configs', { params })
+      return response.data
+    } catch {
+      return { success: true, configs: [] }
+    }
+  },
+}

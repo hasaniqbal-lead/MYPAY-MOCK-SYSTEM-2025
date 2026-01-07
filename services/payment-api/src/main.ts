@@ -15,6 +15,8 @@ import { portalPayoutsController } from './controllers/portalPayoutsController';
 import { portalDashboardController } from './controllers/portalDashboardController';
 import { adminAuthController } from './controllers/adminAuthController';
 import { adminMerchantsController } from './controllers/adminMerchantsController';
+import { paymentPageConfigController } from './controllers/paymentPageConfigController';
+import { adminPaymentPageController } from './controllers/adminPaymentPageController';
 import { requireAdminAuth } from './middleware/adminAuth';
 import { webhookService } from './services/webhookService';
 import { AuthenticatedRequest } from './types';
@@ -200,6 +202,80 @@ apiRouter.get(
 );
 
 // ============================================
+// Portal Payment Page Configuration Routes
+// ============================================
+
+// List merchant payment page configurations
+apiRouter.get(
+  '/portal/payment-page/configs',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => paymentPageConfigController.listConfigs(req as AuthenticatedRequest, res)
+);
+
+// Get default configuration
+apiRouter.get(
+  '/portal/payment-page/configs/default',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => paymentPageConfigController.getDefaultConfig(req as AuthenticatedRequest, res)
+);
+
+// Get single configuration
+apiRouter.get(
+  '/portal/payment-page/configs/:id',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => paymentPageConfigController.getConfig(req as AuthenticatedRequest, res)
+);
+
+// Create configuration
+apiRouter.post(
+  '/portal/payment-page/configs',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => paymentPageConfigController.createConfig(req as AuthenticatedRequest, res)
+);
+
+// Create configuration from template
+apiRouter.post(
+  '/portal/payment-page/configs/from-template',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => paymentPageConfigController.createFromTemplate(req as AuthenticatedRequest, res)
+);
+
+// Update configuration
+apiRouter.put(
+  '/portal/payment-page/configs/:id',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => paymentPageConfigController.updateConfig(req as AuthenticatedRequest, res)
+);
+
+// Delete configuration
+apiRouter.delete(
+  '/portal/payment-page/configs/:id',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => paymentPageConfigController.deleteConfig(req as AuthenticatedRequest, res)
+);
+
+// Activate configuration
+apiRouter.post(
+  '/portal/payment-page/configs/:id/activate',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => paymentPageConfigController.activateConfig(req as AuthenticatedRequest, res)
+);
+
+// List available templates
+apiRouter.get(
+  '/portal/payment-page/templates',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => paymentPageConfigController.listTemplates(req as AuthenticatedRequest, res)
+);
+
+// Get admin rules (for frontend to know what's locked)
+apiRouter.get(
+  '/portal/payment-page/rules',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => paymentPageConfigController.getRules(req as AuthenticatedRequest, res)
+);
+
+// ============================================
 // Admin Auth Routes
 // ============================================
 
@@ -265,6 +341,186 @@ apiRouter.get(
   (req: Request, res: Response) => adminMerchantsController.getMerchantPayouts(req as any, res)
 );
 
+// ============================================
+// Admin Payment Page Routes
+// ============================================
+
+// Rules management
+apiRouter.get(
+  '/admin/payment-page/rules',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminPaymentPageController.listRules(req as any, res)
+);
+
+apiRouter.get(
+  '/admin/payment-page/rules/:id',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminPaymentPageController.getRule(req as any, res)
+);
+
+apiRouter.post(
+  '/admin/payment-page/rules',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminPaymentPageController.createRule(req as any, res)
+);
+
+apiRouter.put(
+  '/admin/payment-page/rules/:id',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminPaymentPageController.updateRule(req as any, res)
+);
+
+apiRouter.delete(
+  '/admin/payment-page/rules/:id',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminPaymentPageController.deleteRule(req as any, res)
+);
+
+apiRouter.post(
+  '/admin/payment-page/rules/:id/toggle',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminPaymentPageController.toggleRule(req as any, res)
+);
+
+// Templates management
+apiRouter.get(
+  '/admin/payment-page/templates',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminPaymentPageController.listTemplates(req as any, res)
+);
+
+apiRouter.get(
+  '/admin/payment-page/templates/:id',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminPaymentPageController.getTemplate(req as any, res)
+);
+
+apiRouter.post(
+  '/admin/payment-page/templates',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminPaymentPageController.createTemplate(req as any, res)
+);
+
+apiRouter.put(
+  '/admin/payment-page/templates/:id',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminPaymentPageController.updateTemplate(req as any, res)
+);
+
+apiRouter.delete(
+  '/admin/payment-page/templates/:id',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminPaymentPageController.deleteTemplate(req as any, res)
+);
+
+// Merchant configs oversight
+apiRouter.get(
+  '/admin/payment-page/configs',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminPaymentPageController.listAllConfigs(req as any, res)
+);
+
+apiRouter.get(
+  '/admin/payment-page/configs/:id',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => adminPaymentPageController.getConfigById(req as any, res)
+);
+
+
+// ============================================
+// Public Payment Page Session Routes
+// ============================================
+
+// Get payment session with configuration (for payment page frontend)
+apiRouter.get('/payment-page/session/:checkoutId', async (req: Request, res: Response) => {
+  try {
+    const { checkoutId } = req.params;
+    const { prisma } = await import('./config/database');
+
+    // Get the transaction with merchant info
+    const transaction = await prisma.paymentTransaction.findUnique({
+      where: { checkout_id: checkoutId },
+      include: {
+        merchant: {
+          select: {
+            id: true,
+            name: true,
+            company_name: true,
+          },
+        },
+      },
+    });
+
+    if (!transaction) {
+      res.status(404).json({
+        success: false,
+        error: 'Payment session not found',
+      });
+      return;
+    }
+
+    // Get merchant's default payment page configuration
+    let config = null;
+    if (transaction.merchant_id) {
+      // First try to get config by config_id if set on transaction
+      if (transaction.config_id) {
+        config = await prisma.paymentPageConfig.findUnique({
+          where: { id: transaction.config_id },
+        });
+      }
+
+      // Fall back to merchant's default config
+      if (!config) {
+        config = await prisma.paymentPageConfig.findFirst({
+          where: {
+            merchant_id: transaction.merchant_id,
+            is_default: true,
+            is_active: true,
+          },
+        });
+      }
+    }
+
+    // Build the response
+    const sessionConfig = {
+      checkoutId: transaction.checkout_id,
+      reference: transaction.reference,
+      amount: Number(transaction.amount),
+      currency: 'PKR',
+      paymentMethod: transaction.payment_method,
+      status: transaction.status,
+      merchantId: transaction.merchant_id,
+      merchantName: transaction.merchant?.company_name || transaction.merchant?.name || 'MyPay',
+      configuration: config ? {
+        id: config.id,
+        name: config.name,
+        branding: config.branding,
+        colors: config.colors,
+        typography: config.typography,
+        layout: config.layout,
+        channels: config.channels,
+        text: config.text,
+        legal: config.legal,
+        resultPages: config.result_pages,
+        advanced: config.advanced,
+        visibility: config.visibility,
+        formConfig: config.form_config,
+        otpConfig: config.otp_config,
+      } : null,
+    };
+
+    res.json({
+      success: true,
+      session: sessionConfig,
+    });
+  } catch (error) {
+    console.error('Get payment session error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get payment session',
+    });
+  }
+});
 
 // ============================================
 // Test & Developer Routes (Public)

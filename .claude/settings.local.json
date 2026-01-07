@@ -5,7 +5,14 @@
       "Bash(tar:*)",
       "Bash(scp:*)",
       "Bash(curl:*)",
-      "Bash(where:*)"
+      "Bash(where:*)",
+      "Bash(dir:*)",
+      "Bash(ls -la \"c:\\\\Users\\\\hasan\\\\OneDrive\\\\Desktop\\\\MYPAY-MOCK-SYSTEM\\\\services\\\\payment-api\\\\src\\\\config\"\" 2>/dev/null || echo \"Path not found \")",
+      "Bash(xargs:*)",
+      "Bash(cat:*)",
+      "Bash(npx prisma db seed)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

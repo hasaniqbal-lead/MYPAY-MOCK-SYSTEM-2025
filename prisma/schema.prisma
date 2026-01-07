@@ -44,6 +44,9 @@ model Merchant {
   apiKeys           ApiKey[]
   transactions      PaymentTransaction[]
 
+  // Payment Page Configuration relations
+  paymentPageConfigs PaymentPageConfig[]
+
   @@map("merchants")
 }
 
@@ -224,6 +227,7 @@ model PaymentTransaction {
   webhook_status   String    @default("pending")
   webhook_attempts Int       @default(0)
   merchant_id      Int?
+  config_id        Int?      // Payment page configuration used for this checkout
   created_at       DateTime  @default(now())
   updated_at       DateTime  @updatedAt
 
@@ -312,4 +316,83 @@ model AuditLog {
   @@index([created_at])
   @@index([created_at, user_type])              // NEW: For log cleanup queries
   @@map("audit_logs")
+}
+
+// ============================================
+// PAYMENT PAGE CONFIGURATION MODELS
+// ============================================
+
+// Merchant payment page theme configurations
+model PaymentPageConfig {
+  id            Int       @id @default(autoincrement())
+  merchant_id   Int
+  name          String    // e.g., "Default Theme", "Holiday Theme"
+  description   String?   @db.Text
+  is_default    Boolean   @default(false)
+  is_active     Boolean   @default(true)
+
+  // Configuration JSON sections (ThemeConfiguration)
+  branding      Json      // BrandingConfig: merchantLogo, merchantName, favicon
+  colors        Json      // ColorConfig: primary, secondary, accent, success, error, etc.
+  typography    Json      // TypographyConfig: fontFamily, fontSize, fontWeight
+  layout        Json      // LayoutConfig: type, maxWidth, padding, borderRadius, shadow
+  channels      Json      // ChannelsConfig: enabled, displayStyle, showIcons, channelOrder
+  text          Json      // TextConfig: heading, subheading, labels, buttons, messages
+  legal         Json      // LegalConfig: showTerms, showPrivacy, showRefund, texts, urls
+  result_pages  Json      // ResultPagesConfig: success (confetti, message, cta), failure
+  advanced      Json      // AdvancedConfig: showPoweredBy, enableAnalytics, customCSS
+  visibility    Json?     // UIVisibilityConfig: header, amount, channels, form, footer
+  form_config   Json?     // FormFieldConfig: phone, email, name field settings
+  otp_config    Json?     // OTPConfigExtended: enabled, length, timeout, resendLimit
+
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  merchant      Merchant  @relation(fields: [merchant_id], references: [id], onDelete: Cascade)
+
+  @@unique([merchant_id, name])
+  @@index([merchant_id])
+  @@index([is_active])
+  @@index([merchant_id, is_default])
+  @@map("payment_page_configs")
+}
+
+// Admin-defined rules for field-level locks and validation
+model PaymentPageRule {
+  id            Int       @id @default(autoincrement())
+  field_path    String    @unique  // e.g., "advanced.showPoweredBy", "colors.primary"
+  rule_type     String    // "required", "allowed_values", "locked", "regex", "range"
+  rule_value    Json      // Rule-specific data: { value, values[], pattern, min, max, message }
+  description   String?   @db.Text
+  is_active     Boolean   @default(true)
+  priority      Int       @default(0)  // Higher priority rules are checked first
+  created_by    Int?      // Admin user ID who created the rule
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  @@index([rule_type])
+  @@index([is_active])
+  @@map("payment_page_rules")
+}
+
+// Pre-defined templates for quick configuration
+model PaymentPageTemplate {
+  id            Int       @id @default(autoincrement())
+  name          String    @unique
+  slug          String    @unique  // URL-friendly identifier
+  category      String    // "e-commerce", "subscription", "services", "events"
+  description   String?   @db.Text
+  thumbnail_url String?   // Preview image URL
+  configuration Json      // Full ThemeConfiguration object
+  tags          Json?     // Array of tags for filtering
+  is_active     Boolean   @default(true)
+  is_featured   Boolean   @default(false)
+  usage_count   Int       @default(0)  // Track popularity
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  @@index([category])
+  @@index([is_active])
+  @@index([is_featured])
+  @@map("payment_page_templates")
 }

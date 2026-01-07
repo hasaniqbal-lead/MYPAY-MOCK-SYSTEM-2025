@@ -615,6 +615,8 @@ class AdminMerchantsController {
           walletCode: true,
           accountNumber: true,
           accountTitle: true,
+          failureReason: true,
+          processedAt: true,
           createdAt: true,
           updatedAt: true,
           merchant: {

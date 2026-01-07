@@ -32,6 +32,10 @@ async function main() {
   await prisma.merchantBalance.deleteMany();
   await prisma.bankDirectory.deleteMany();
   await prisma.walletDirectory.deleteMany();
+  // Payment Page Configuration tables
+  await prisma.paymentPageConfig.deleteMany();
+  await prisma.paymentPageRule.deleteMany();
+  await prisma.paymentPageTemplate.deleteMany();
   await prisma.merchant.deleteMany();
 
   // ============================================
@@ -228,6 +232,337 @@ async function main() {
     await prisma.systemConfig.create({ data: config });
   }
   console.log(`   ✅ Created ${configs.length} system configs`);
+
+  // ============================================
+  // PAYMENT PAGE TEMPLATES
+  // ============================================
+
+  console.log('\n🎨 Creating payment page templates...');
+
+  // Template 1: Modern Minimal (Default)
+  const modernMinimalConfig = {
+    branding: {
+      merchantLogo: '',
+      merchantName: 'Your Business',
+      favicon: '',
+      backgroundImage: '',
+      backgroundGradient: '',
+    },
+    colors: {
+      primary: '#10B981',
+      secondary: '#3B82F6',
+      accent: '#10B981',
+      success: '#10B981',
+      error: '#EF4444',
+      warning: '#F59E0B',
+      background: '#0F172A',
+      surface: '#1E293B',
+      text: {
+        primary: '#F8FAFC',
+        secondary: '#94A3B8',
+        disabled: '#64748B',
+      },
+    },
+    typography: {
+      fontFamily: 'Inter',
+      fontSize: { heading: '2xl', body: 'base', small: 'sm' },
+      fontWeight: { heading: 600, body: 400 },
+    },
+    layout: {
+      type: 'centered',
+      maxWidth: 'md',
+      padding: 'normal',
+      borderRadius: 'lg',
+      shadow: 'lg',
+    },
+    channels: {
+      enabled: ['easypaisa', 'jazzcash', 'card'],
+      displayStyle: 'list',
+      showIcons: true,
+      channelOrder: { easypaisa: 1, jazzcash: 2, card: 3 },
+    },
+    text: {
+      heading: 'Select Payment Method',
+      subheading: 'Choose how you would like to pay',
+      amountLabel: 'Total to pay',
+      channelSelectionLabel: 'Payment Options',
+      buttons: {
+        payNow: 'Pay Now',
+        cancel: 'Cancel',
+        retry: 'Try Again',
+        back: 'Back',
+        continue: 'Continue',
+      },
+      messages: {
+        processing: 'Processing your payment...',
+        success: 'Payment Successful!',
+        failure: 'Payment Failed',
+        expired: 'Session Expired',
+      },
+    },
+    legal: {
+      showTerms: true,
+      termsUrl: '',
+      termsDisplayMode: 'popup',
+      showPrivacy: true,
+      privacyUrl: '',
+      privacyDisplayMode: 'popup',
+      showRefund: false,
+      refundUrl: '',
+      refundDisplayMode: 'popup',
+    },
+    resultPages: {
+      success: {
+        showConfetti: true,
+        message: 'Payment Successful!',
+        submessage: 'Your payment has been processed.',
+        showTransactionId: true,
+        autoRedirect: false,
+        autoRedirectDelay: 5,
+      },
+      failure: {
+        message: 'Payment Failed',
+        submessage: 'Something went wrong. Please try again.',
+        showRetry: true,
+        showSupport: true,
+        supportEmail: 'support@example.com',
+      },
+    },
+    advanced: {
+      showPoweredBy: true,
+      enableAnalytics: false,
+      customCSS: '',
+      customJS: '',
+    },
+  };
+
+  await prisma.paymentPageTemplate.create({
+    data: {
+      name: 'Modern Minimal',
+      slug: 'modern-minimal',
+      category: 'general',
+      description: 'Clean, professional dark theme suitable for any business. Features a sleek dark background with green accents.',
+      thumbnail_url: null,
+      configuration: modernMinimalConfig,
+      tags: ['modern', 'minimal', 'dark', 'professional', 'default'],
+      is_active: true,
+      is_featured: true,
+      usage_count: 0,
+    },
+  });
+  console.log('   ✅ Created template: Modern Minimal');
+
+  // Template 2: Ecommerce PKR
+  const ecommercePKRConfig = {
+    branding: {
+      merchantLogo: '',
+      merchantName: 'Your Store',
+      favicon: '',
+      backgroundImage: '',
+      backgroundGradient: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+    },
+    colors: {
+      primary: '#059669',
+      secondary: '#0EA5E9',
+      accent: '#F59E0B',
+      success: '#10B981',
+      error: '#EF4444',
+      warning: '#F59E0B',
+      background: '#FFFFFF',
+      surface: '#F8FAFC',
+      text: {
+        primary: '#1E293B',
+        secondary: '#64748B',
+        disabled: '#94A3B8',
+      },
+    },
+    typography: {
+      fontFamily: 'Inter',
+      fontSize: { heading: '2xl', body: 'base', small: 'sm' },
+      fontWeight: { heading: 700, body: 400 },
+    },
+    layout: {
+      type: 'centered',
+      maxWidth: 'sm',
+      padding: 'normal',
+      borderRadius: 'xl',
+      shadow: 'xl',
+    },
+    channels: {
+      enabled: ['easypaisa', 'jazzcash', 'card'],
+      displayStyle: 'grid',
+      showIcons: true,
+      channelOrder: { easypaisa: 1, jazzcash: 2, card: 3 },
+      channelFeatures: {
+        easypaisa: { badge: 'Popular', badgeColor: '#10B981' },
+      },
+    },
+    text: {
+      heading: 'Checkout',
+      subheading: 'Complete your purchase securely',
+      amountLabel: 'Order Total',
+      channelSelectionLabel: 'Pay with',
+      buttons: {
+        payNow: 'Complete Payment',
+        cancel: 'Cancel Order',
+        retry: 'Retry Payment',
+        back: 'Back',
+        continue: 'Continue',
+      },
+      messages: {
+        processing: 'Processing your order...',
+        success: 'Order Confirmed!',
+        failure: 'Payment Failed',
+        expired: 'Session Expired',
+      },
+    },
+    legal: {
+      showTerms: true,
+      termsUrl: '',
+      termsDisplayMode: 'popup',
+      showPrivacy: true,
+      privacyUrl: '',
+      privacyDisplayMode: 'popup',
+      showRefund: true,
+      refundText: '<h3>Refund Policy</h3><p>Returns accepted within 7 days of purchase. Original packaging required.</p>',
+      refundDisplayMode: 'popup',
+    },
+    resultPages: {
+      success: {
+        showConfetti: true,
+        message: 'Order Confirmed!',
+        submessage: 'You will receive a confirmation email shortly.',
+        ctaText: 'Continue Shopping',
+        showTransactionId: true,
+        autoRedirect: true,
+        autoRedirectDelay: 5,
+      },
+      failure: {
+        message: 'Payment Failed',
+        submessage: 'Your order has not been placed. Please try again.',
+        showRetry: true,
+        showSupport: true,
+        supportEmail: 'support@yourstore.pk',
+        supportPhone: '+92 300 1234567',
+      },
+    },
+    advanced: {
+      showPoweredBy: true,
+      enableAnalytics: true,
+      customCSS: '',
+      customJS: '',
+    },
+  };
+
+  await prisma.paymentPageTemplate.create({
+    data: {
+      name: 'Ecommerce PKR',
+      slug: 'ecommerce-pkr',
+      category: 'e-commerce',
+      description: 'Optimized for Pakistani e-commerce with light theme, local payment method emphasis, and order confirmation flow.',
+      thumbnail_url: null,
+      configuration: ecommercePKRConfig,
+      tags: ['ecommerce', 'pakistan', 'pkr', 'light', 'shopping', 'retail'],
+      is_active: true,
+      is_featured: true,
+      usage_count: 0,
+    },
+  });
+  console.log('   ✅ Created template: Ecommerce PKR');
+
+  // ============================================
+  // PAYMENT PAGE RULES (Admin Locks)
+  // ============================================
+
+  console.log('\n🔒 Creating payment page rules...');
+
+  const rules = [
+    {
+      field_path: 'advanced.showPoweredBy',
+      rule_type: 'locked',
+      rule_value: {
+        value: true,
+        message: 'MyPay branding must be displayed on all payment pages.',
+      },
+      description: 'Enforce MyPay "Powered By" branding on all payment pages',
+      is_active: true,
+      priority: 100,
+    },
+    {
+      field_path: 'branding.merchantName',
+      rule_type: 'required',
+      rule_value: {
+        message: 'Merchant name is required and cannot be empty.',
+      },
+      description: 'Require merchant name to be set',
+      is_active: true,
+      priority: 90,
+    },
+    {
+      field_path: 'channels.enabled',
+      rule_type: 'allowed_values',
+      rule_value: {
+        values: ['easypaisa', 'jazzcash', 'card'],
+        message: 'Only approved payment channels can be enabled.',
+      },
+      description: 'Restrict payment channels to approved methods only',
+      is_active: true,
+      priority: 80,
+    },
+  ];
+
+  for (const rule of rules) {
+    await prisma.paymentPageRule.create({ data: rule });
+  }
+  console.log(`   ✅ Created ${rules.length} payment page rules`);
+
+  // ============================================
+  // DEFAULT PAYMENT PAGE CONFIGS FOR MERCHANTS
+  // ============================================
+
+  console.log('\n📄 Creating default payment page configs for merchants...');
+
+  // Create default config for Merchant 1
+  await prisma.paymentPageConfig.create({
+    data: {
+      merchant_id: merchant.id,
+      name: 'Default',
+      description: 'Default payment page configuration',
+      is_default: true,
+      is_active: true,
+      branding: { ...modernMinimalConfig.branding, merchantName: merchant.company_name || merchant.name },
+      colors: modernMinimalConfig.colors,
+      typography: modernMinimalConfig.typography,
+      layout: modernMinimalConfig.layout,
+      channels: modernMinimalConfig.channels,
+      text: modernMinimalConfig.text,
+      legal: modernMinimalConfig.legal,
+      result_pages: modernMinimalConfig.resultPages,
+      advanced: modernMinimalConfig.advanced,
+    },
+  });
+  console.log(`   ✅ Created default config for: ${merchant.name}`);
+
+  // Create default config for Merchant 2
+  await prisma.paymentPageConfig.create({
+    data: {
+      merchant_id: merchant2.id,
+      name: 'Default',
+      description: 'Default payment page configuration',
+      is_default: true,
+      is_active: true,
+      branding: { ...modernMinimalConfig.branding, merchantName: merchant2.company_name || merchant2.name },
+      colors: modernMinimalConfig.colors,
+      typography: modernMinimalConfig.typography,
+      layout: modernMinimalConfig.layout,
+      channels: modernMinimalConfig.channels,
+      text: modernMinimalConfig.text,
+      legal: modernMinimalConfig.legal,
+      result_pages: modernMinimalConfig.resultPages,
+      advanced: modernMinimalConfig.advanced,
+    },
+  });
+  console.log(`   ✅ Created default config for: ${merchant2.name}`);
 
   // ============================================
   // SUMMARY

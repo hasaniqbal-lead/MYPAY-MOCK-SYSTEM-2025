@@ -12,6 +12,7 @@ import {
   Settings,
   LogOut,
   Menu,
+  Palette,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -25,6 +26,7 @@ const navItems = [
   { href: '/merchants', label: 'Merchants', icon: Users },
   { href: '/transactions', label: 'Payments', icon: CreditCard },
   { href: '/payouts', label: 'Payouts', icon: Wallet },
+  { href: '/payment-page', label: 'Payment Page', icon: Palette },
   { href: '/settings', label: 'Settings', icon: Settings },
 ]
 

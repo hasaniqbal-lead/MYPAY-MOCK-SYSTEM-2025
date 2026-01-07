@@ -1,68 +1,120 @@
 # MyPay Mock System - Subdomain Mapping
 
-**Updated**: December 11, 2025  
+**Updated**: January 7, 2026
 **Status**: ✅ Configured and Ready
 
 ---
 
 ## 🌐 Subdomain Configuration
 
-### Nginx Port: 8888
+### Domains Supported
+- **mypay.mx** (Primary - New)
+- **mycodigital.io** (Legacy)
 
-All subdomains are configured to route through Nginx on port **8888**.
+### Nginx Port: 8888 (or 80/443 with SSL)
+
+All subdomains are configured to route through Nginx.
 
 ---
 
-## 📍 Subdomain Map
+## 📍 Subdomain Map - mypay.mx (Primary)
 
 | Subdomain | Service | Backend Port | Purpose |
 |-----------|---------|--------------|---------|
-| **sandbox.mycodigital.io:8888** | Payout API | 4001 | Payout transactions |
-| **mock.mycodigital.io:8888** | Payment API | 4002 | Payment transactions |
-| **devportal.mycodigital.io:8888** | Merchant Portal | 4010 | Merchant dashboard |
-| **devadmin.mycodigital.io:8888** | Admin Portal | 4011 | Admin dashboard |
+| **sandbox.mypay.mx** | Payout API | 4001 | Payout transactions |
+| **test.mypay.mx** | Payment API | 4002 | Payment transactions |
+| **devportal.mypay.mx** | Merchant Portal | 4010 | Merchant dashboard |
+| **devadmin.mypay.mx** | Admin Portal | 4011 | Admin dashboard |
+| **demo.mypay.mx** | Payment Page | 4012 | Checkout/Payment page |
+
+## 📍 Subdomain Map - mycodigital.io (Legacy)
+
+| Subdomain | Service | Backend Port | Purpose |
+|-----------|---------|--------------|---------|
+| **sandbox.mycodigital.io** | Payout API | 4001 | Payout transactions |
+| **mock.mycodigital.io** | Payment API | 4002 | Payment transactions |
+| **devportal.mycodigital.io** | Merchant Portal | 4010 | Merchant dashboard |
+| **devadmin.mycodigital.io** | Admin Portal | 4011 | Admin dashboard |
+| **pay.mycodigital.io** | Payment Page | 4012 | Checkout/Payment page |
 
 ---
 
-## 🔗 API Base URLs
+## 🔗 API Base URLs - mypay.mx (Primary)
 
 ### For Payout API Integration
 ```
-Base URL: http://sandbox.mycodigital.io:8888
+Base URL: https://sandbox.mypay.mx
 Endpoints: /api/v1/*
 
 Examples:
-- http://sandbox.mycodigital.io:8888/api/v1/health
-- http://sandbox.mycodigital.io:8888/api/v1/directory
-- http://sandbox.mycodigital.io:8888/api/v1/balance
-- http://sandbox.mycodigital.io:8888/api/v1/payouts
+- https://sandbox.mypay.mx/api/v1/health
+- https://sandbox.mypay.mx/api/v1/directory
+- https://sandbox.mypay.mx/api/v1/balance
+- https://sandbox.mypay.mx/api/v1/payouts
 ```
 
 ### For Payment API Integration
 ```
-Base URL: http://mock.mycodigital.io:8888
+Base URL: https://test.mypay.mx
 Endpoints: /api/v1/*
 
 Examples:
-- http://mock.mycodigital.io:8888/api/v1/health
-- http://mock.mycodigital.io:8888/api/v1/portal/auth/login
-- http://mock.mycodigital.io:8888/api/v1/portal/dashboard/stats
-- http://mock.mycodigital.io:8888/api/checkout/sessions
+- https://test.mypay.mx/api/v1/health
+- https://test.mypay.mx/api/v1/portal/auth/login
+- https://test.mypay.mx/api/v1/portal/dashboard/stats
+- https://test.mypay.mx/api/checkout/sessions
 ```
 
 ---
 
-## 🌐 Portal URLs
+## 🔗 API Base URLs - mycodigital.io (Legacy)
+
+### For Payout API Integration
+```
+Base URL: https://sandbox.mycodigital.io
+Endpoints: /api/v1/*
+```
+
+### For Payment API Integration
+```
+Base URL: https://mock.mycodigital.io
+Endpoints: /api/v1/*
+```
+
+---
+
+## 🌐 Portal URLs - mypay.mx (Primary)
 
 ### Merchant Portal
 ```
-URL: http://devportal.mycodigital.io:8888
+URL: https://devportal.mypay.mx
+Login: test@mypay.mx / test123456
+```
+
+### Admin Portal
+```
+URL: https://devadmin.mypay.mx
+Login: admin@mypay.mx / admin123456
+```
+
+### Payment Page (Demo)
+```
+URL: https://demo.mypay.mx
+```
+
+---
+
+## 🌐 Portal URLs - mycodigital.io (Legacy)
+
+### Merchant Portal
+```
+URL: https://devportal.mycodigital.io
 Login: test@mycodigital.io / test123456
 ```
 
 ### Admin Portal
 ```
-URL: http://devadmin.mycodigital.io:8888
+URL: https://devadmin.mycodigital.io
 Login: admin@mycodigital.io / admin123456
 ```
 
@@ -70,46 +122,58 @@ Login: admin@mycodigital.io / admin123456
 
 ## 🔧 DNS Configuration Required
 
-To use these subdomains, configure your DNS with:
-
-### Option 1: Individual A Records with Port
+### mypay.mx Domain (Wildcard configured)
 ```
-sandbox.mycodigital.io   → 72.60.110.249:8888
-mock.mycodigital.io      → 72.60.110.249:8888
-devportal.mycodigital.io → 72.60.110.249:8888
-devadmin.mycodigital.io  → 72.60.110.249:8888
+*.mypay.mx → VPS IP (wildcard already pointing to VPS)
 ```
 
-### Option 2: Wildcard + Port Forwarding
-```
-*.mycodigital.io → 72.60.110.249
+Subdomains ready to use:
+- sandbox.mypay.mx (Payout API)
+- test.mypay.mx (Payment API)
+- devportal.mypay.mx (Merchant Portal)
+- devadmin.mypay.mx (Admin Portal)
+- demo.mypay.mx (Payment Page)
 
-Then configure port forwarding on your network:
-External Port 80 → VPS Port 8888
+### mycodigital.io Domain (Legacy - Wildcard configured)
+```
+*.mycodigital.io → VPS IP (wildcard already pointing to VPS)
 ```
 
-### Option 3: Direct IP Access (Currently Working)
+### Direct IP Access (For Testing)
 If DNS isn't configured yet, use direct IP:
 ```
-Payout API:      http://72.60.110.249:4001
-Payment API:     http://72.60.110.249:4002
-Merchant Portal: http://72.60.110.249:4010
-Admin Portal:    http://72.60.110.249:4011
+Payout API:      http://VPS_IP:4001
+Payment API:     http://VPS_IP:4002
+Merchant Portal: http://VPS_IP:4010
+Admin Portal:    http://VPS_IP:4011
+Payment Page:    http://VPS_IP:4012
 ```
 
 ---
 
 ## 📝 Postman Collection Setup
 
-### Environment Variables
+### Environment Variables - mypay.mx (Primary)
 Create a Postman environment with:
 
 ```json
 {
-  "payout_api_url": "http://sandbox.mycodigital.io:8888/api/v1",
-  "payment_api_url": "http://mock.mycodigital.io:8888/api/v1",
-  "payout_api_key": "mypay_b5c79892eecfea9b9c968636e794a3aeeccb25cf0d6aeb67c3e09a06f4bd80de",
-  "payment_api_key": "test-api-key-123",
+  "payout_api_url": "https://sandbox.mypay.mx/api/v1",
+  "payment_api_url": "https://test.mypay.mx/api/v1",
+  "payout_api_key": "YOUR_PAYOUT_API_KEY",
+  "payment_api_key": "YOUR_PAYMENT_API_KEY",
+  "merchant_email": "test@mypay.mx",
+  "merchant_password": "test123456"
+}
+```
+
+### Environment Variables - mycodigital.io (Legacy)
+```json
+{
+  "payout_api_url": "https://sandbox.mycodigital.io/api/v1",
+  "payment_api_url": "https://mock.mycodigital.io/api/v1",
+  "payout_api_key": "YOUR_PAYOUT_API_KEY",
+  "payment_api_key": "YOUR_PAYMENT_API_KEY",
   "merchant_email": "test@mycodigital.io",
   "merchant_password": "test123456"
 }
@@ -231,14 +295,26 @@ http://devadmin.mycodigital.io:8888
 
 ## 🎯 Summary
 
-✅ **Nginx configured** for subdomain routing  
-✅ **Port 8888** selected (80 & 8080 in use)  
-✅ **4 subdomains** mapped to services  
-✅ **All services** operational  
-✅ **Ready for** DNS configuration  
+### mypay.mx Domain (Primary)
+✅ **sandbox.mypay.mx** → Payout API (Port 4001)
+✅ **test.mypay.mx** → Payment API (Port 4002)
+✅ **devportal.mypay.mx** → Merchant Portal (Port 4010)
+✅ **devadmin.mypay.mx** → Admin Portal (Port 4011)
+✅ **demo.mypay.mx** → Payment Page (Port 4012)
 
-**Current Access Method**: Direct IP (working now)  
-**Future Access Method**: Subdomains (requires DNS update)  
+### mycodigital.io Domain (Legacy)
+✅ **sandbox.mycodigital.io** → Payout API
+✅ **mock.mycodigital.io** → Payment API
+✅ **devportal.mycodigital.io** → Merchant Portal
+✅ **devadmin.mycodigital.io** → Admin Portal
+✅ **pay.mycodigital.io** → Payment Page
+
+### Status
+✅ **Nginx configured** for both domains
+✅ **Wildcard DNS** configured for both domains
+✅ **5 subdomains** per domain mapped to services
+✅ **All services** operational
+✅ **SSL ready** via Let's Encrypt wildcard certificates  
 
 ---
 

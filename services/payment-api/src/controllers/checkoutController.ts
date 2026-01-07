@@ -59,9 +59,11 @@ class CheckoutController {
         },
       });
 
-      // Generate checkout URL
-      const baseUrl = process.env.CHECKOUT_BASE_URL || `http://localhost:${process.env.PORT || 3000}/payment`;
-      const checkoutUrl = `${baseUrl}/${checkoutId}`;
+      // Generate checkout URL - points to the payment-page service
+      // In production: https://pay.mycodigital.io
+      // In development: http://localhost:4020
+      const paymentPageUrl = process.env.PAYMENT_PAGE_URL || 'http://localhost:4020';
+      const checkoutUrl = `${paymentPageUrl}/${checkoutId}`;
 
       // Return success response
       res.status(200).json({

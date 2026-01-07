@@ -1,5 +1,8 @@
 import { Request } from 'express';
 
+// Re-export payment page types
+export * from './paymentPage';
+
 export interface VendorInfo {
   id: number;
   vendor_id: string;

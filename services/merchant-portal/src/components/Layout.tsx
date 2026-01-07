@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useState } from 'react'
-import { Home, ArrowUpDown, Shield, Settings } from 'lucide-react'
+import { Home, ArrowUpDown, Shield, Settings, Palette } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -22,6 +22,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     Home: <Home className="h-4 w-4 flex-shrink-0" />,
     ArrowUpDown: <ArrowUpDown className="h-4 w-4 flex-shrink-0" />,
     Shield: <Shield className="h-4 w-4 flex-shrink-0" />,
+    Palette: <Palette className="h-4 w-4 flex-shrink-0" />,
     Settings: <Settings className="h-4 w-4 flex-shrink-0" />,
   }
 
@@ -29,6 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { name: 'Dashboard', href: '/dashboard', icon: 'Home' },
     { name: 'Transactions', href: '/transactions', icon: 'ArrowUpDown' },
     { name: 'Credentials', href: '/credentials', icon: 'Shield' },
+    { name: 'Payment Page', href: '/payment-page', icon: 'Palette' },
     { name: 'Settings', href: '/settings', icon: 'Settings' },
   ]
 
