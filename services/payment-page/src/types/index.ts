@@ -168,6 +168,26 @@ export interface UIVisibilityConfig {
     showNameField?: boolean;
     showLabels?: boolean;
     showPlaceholders?: boolean;
+    showValidationErrors?: boolean;
+  };
+  otp?: {
+    showTimer?: boolean;
+    showResendButton?: boolean;
+    showBackButton?: boolean;
+  };
+  processing?: {
+    showSpinner?: boolean;
+    showMessage?: boolean;
+  };
+  success?: {
+    showConfetti?: boolean;
+    showTransactionId?: boolean;
+    showRedirectButton?: boolean;
+  };
+  failure?: {
+    showRetryButton?: boolean;
+    showSupportInfo?: boolean;
+    showErrorCode?: boolean;
   };
   footer?: {
     show?: boolean;
@@ -186,12 +206,22 @@ export interface FormFieldConfig {
     pattern?: string;
     minLength?: number;
     maxLength?: number;
+    errorMessages?: {
+      required?: string;
+      invalid?: string;
+      minLength?: string;
+      maxLength?: string;
+    };
   };
   email?: {
     required?: boolean;
     visible?: boolean;
     label?: string;
     placeholder?: string;
+    errorMessages?: {
+      required?: string;
+      invalid?: string;
+    };
   };
 }
 
