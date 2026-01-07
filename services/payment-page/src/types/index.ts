@@ -180,14 +180,21 @@ export interface UIVisibilityConfig {
     showMessage?: boolean;
   };
   success?: {
+    showIcon?: boolean;
     showConfetti?: boolean;
+    showMessage?: boolean;
+    showAmount?: boolean;
     showTransactionId?: boolean;
     showRedirectButton?: boolean;
+    showCTA?: boolean;
   };
   failure?: {
+    showIcon?: boolean;
+    showMessage?: boolean;
     showRetryButton?: boolean;
     showSupportInfo?: boolean;
     showErrorCode?: boolean;
+    showErrorDetails?: boolean;
   };
   footer?: {
     show?: boolean;
