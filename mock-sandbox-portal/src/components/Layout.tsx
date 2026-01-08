@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useState } from 'react'
-import { Home, ArrowUpDown, Shield, Settings } from 'lucide-react'
+import { Home, ArrowUpDown, Shield, Settings, CreditCard } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -23,11 +23,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     ArrowUpDown: <ArrowUpDown className="h-4 w-4 flex-shrink-0" />,
     Shield: <Shield className="h-4 w-4 flex-shrink-0" />,
     Settings: <Settings className="h-4 w-4 flex-shrink-0" />,
+    CreditCard: <CreditCard className="h-4 w-4 flex-shrink-0" />,
   }
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: 'Home' },
     { name: 'Transactions', href: '/transactions', icon: 'ArrowUpDown' },
+    { name: 'Payment Page', href: '/payment-page', icon: 'CreditCard' },
     { name: 'Credentials', href: '/credentials', icon: 'Shield' },
     { name: 'Settings', href: '/settings', icon: 'Settings' },
   ]

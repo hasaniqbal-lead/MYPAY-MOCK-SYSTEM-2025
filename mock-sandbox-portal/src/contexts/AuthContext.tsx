@@ -38,10 +38,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const data = await merchantAPI.getProfile()
       setUser(data.merchant)
-      setIsLoading(false)
     } catch (error) {
+      console.error('Failed to load user:', error)
       Cookies.remove('auth_token')
       setUser(null)
+    } finally {
+      // ALWAYS set loading to false, regardless of success or failure
       setIsLoading(false)
     }
   }

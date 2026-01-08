@@ -1,13 +1,15 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://sandbox.mycodigital.io'
+// Use local API routes in development, remote API in production
+const API_URL = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? '' : '')
 
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 5000, // 5 second timeout
 })
 
 // Add auth token to requests
@@ -100,6 +102,70 @@ export const transactionsAPI = {
 export const dashboardAPI = {
   getStats: async () => {
     const response = await api.get('/api/portal/dashboard/stats')
+    return response.data
+  },
+}
+
+// Payment Page Configuration API
+export const paymentPageAPI = {
+  // Get merchant's payment page configuration
+  getConfig: async () => {
+    const response = await api.get('/api/portal/payment-page/config')
+    return response.data
+  },
+
+  // Update payment page configuration
+  updateConfig: async (config: any) => {
+    const response = await api.put('/api/portal/payment-page/config', config)
+    return response.data
+  },
+
+  // Update specific section of configuration
+  updateSection: async (section: string, data: any) => {
+    const response = await api.patch(`/api/portal/payment-page/config/${section}`, data)
+    return response.data
+  },
+
+  // Get available templates
+  getTemplates: async () => {
+    const response = await api.get('/api/portal/payment-page/templates')
+    return response.data
+  },
+
+  // Apply a template
+  applyTemplate: async (templateId: string) => {
+    const response = await api.post(`/api/portal/payment-page/templates/${templateId}/apply`)
+    return response.data
+  },
+
+  // Generate a payment link
+  generatePaymentLink: async (data: {
+    amount: number
+    currency: string
+    reference: string
+    description?: string
+    expiresIn?: number
+    callbackUrl?: string
+  }) => {
+    const response = await api.post('/api/portal/payment-page/links', data)
+    return response.data
+  },
+
+  // List payment links
+  listPaymentLinks: async (params?: { page?: number; limit?: number; status?: string }) => {
+    const response = await api.get('/api/portal/payment-page/links', { params })
+    return response.data
+  },
+
+  // Get payment link details
+  getPaymentLink: async (token: string) => {
+    const response = await api.get(`/api/portal/payment-page/links/${token}`)
+    return response.data
+  },
+
+  // Preview payment page (returns preview URL)
+  getPreviewUrl: async () => {
+    const response = await api.get('/api/portal/payment-page/preview')
     return response.data
   },
 }

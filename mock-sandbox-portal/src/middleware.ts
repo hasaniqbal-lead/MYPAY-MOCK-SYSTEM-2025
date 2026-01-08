@@ -10,7 +10,7 @@ export function middleware(request: NextRequest) {
   const isPublicRoute = publicRoutes.includes(pathname)
 
   // Protected routes
-  const protectedRoutes = ['/dashboard', '/transactions', '/credentials', '/settings']
+  const protectedRoutes = ['/dashboard', '/transactions', '/credentials', '/settings', '/payment-page']
   const isProtectedRoute = protectedRoutes.includes(pathname)
 
   // If accessing protected route without token, redirect to landing page
