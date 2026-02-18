@@ -46,7 +46,7 @@ NEXT_PUBLIC_ADMIN_PORTAL_URL=https://devadmin.mycodigital.io
 
 ## Test Credentials
 
-- **Email:** admin@mycodigital.io
+- **Email:** admin@vstore.cloud
 - **Password:** admin123456
 
 ## Docker

@@ -6,8 +6,8 @@ import { AuthProvider } from '@/contexts/AuthContext'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'MyPay Admin Portal',
-  description: 'Admin Portal for MyPay Mock Payment Platform',
+  title: 'DarPay Admin Portal',
+  description: 'Admin Portal for DarPay Mock Payment Platform',
 }
 
 export default function RootLayout({

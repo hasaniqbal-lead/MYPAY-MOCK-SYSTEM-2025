@@ -6,7 +6,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'MyPay Merchant Portal',
+  title: 'DarPay Merchant Portal',
   description: 'Merchant portal for managing payment API credentials and transactions',
   icons: {
     icon: '/favicon.ico',

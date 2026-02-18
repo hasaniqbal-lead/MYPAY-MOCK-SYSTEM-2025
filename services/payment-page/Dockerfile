@@ -2,26 +2,23 @@
 FROM node:20-alpine AS builder
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN npm install -g pnpm
 
 WORKDIR /app
 
 # Copy workspace files
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
-COPY services/payment-page/package.json ./services/payment-page/
+COPY services/payment-page ./services/payment-page/
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# Copy source code
-COPY services/payment-page ./services/payment-page
-
 # Build the app
-ARG VITE_API_URL=https://mock.mycodigital.io
+ARG VITE_API_URL=https://api-darpay.vstore.cloud
 ENV VITE_API_URL=$VITE_API_URL
 
 WORKDIR /app/services/payment-page
-RUN pnpm run build
+RUN pnpm build
 
 # Production stage - serve with nginx
 FROM nginx:alpine

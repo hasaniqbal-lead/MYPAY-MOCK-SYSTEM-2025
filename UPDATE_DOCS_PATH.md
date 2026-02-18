@@ -2,11 +2,11 @@
 
 ## Current Status
 
-Your API is live at: https://sandbox.mycodigital.io
+Your API is live at: https://api-darpay.vstore.cloud
 
 ## Documentation URL Change
 
-Documentation will be served at: **https://sandbox.mycodigital.io/doc/payout**
+Documentation will be served at: **https://api-darpay.vstore.cloud/doc/payout**
 
 ---
 
@@ -77,7 +77,7 @@ systemctl reload nginx
 After update, visit:
 
 ```
-https://sandbox.mycodigital.io/doc/payout
+https://api.vstore.cloud/doc/payout
 ```
 
 You should see the beautiful API documentation!
@@ -88,19 +88,19 @@ You should see the beautiful API documentation!
 
 ```
 📖 Documentation:
-   https://sandbox.mycodigital.io/doc/payout
+   https://api.vstore.cloud/doc/payout
 
 🔗 API Base:
-   https://sandbox.mycodigital.io/api/v1
+   https://api.vstore.cloud/api/v1
 
 📥 Postman Collection:
-   https://sandbox.mycodigital.io/doc/payout/MyPay_Payout_API.postman_collection.json
+   https://api-darpay.vstore.cloud/doc/payout/MyPay_Payout_API.postman_collection.json
 
 📋 OpenAPI Spec:
-   https://sandbox.mycodigital.io/doc/payout/api-docs.json
+   https://api-darpay.vstore.cloud/doc/payout/api-docs.json
 
 🏥 Health Check:
-   https://sandbox.mycodigital.io/api/v1/health
+   https://api-darpay.vstore.cloud/api/v1/health
 ```
 
 ---
@@ -130,7 +130,7 @@ chmod +x nginx-config-update.sh
 ./nginx-config-update.sh
 
 # 4. Verify
-curl https://sandbox.mycodigital.io/doc/payout
+curl https://api-darpay.vstore.cloud/doc/payout
 ```
 
 ---
@@ -138,7 +138,7 @@ curl https://sandbox.mycodigital.io/doc/payout
 ## Testing
 
 Open your browser and visit:
-- https://sandbox.mycodigital.io/doc/payout
+- https://api-darpay.vstore.cloud/doc/payout
 
 You should see:
 - ✅ Beautiful API documentation
@@ -152,9 +152,9 @@ You should see:
 
 ## Root URL Behavior
 
-When users visit: `https://sandbox.mycodigital.io/`
+When users visit: `https://api-darpay.vstore.cloud/`
 
-They will be automatically redirected to: `https://sandbox.mycodigital.io/doc/payout`
+They will be automatically redirected to: `https://api-darpay.vstore.cloud/doc/payout`
 
 This ensures merchants always see the documentation first!
 

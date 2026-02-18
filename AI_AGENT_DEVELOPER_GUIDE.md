@@ -481,7 +481,7 @@ if (expectedSig !== receivedSignature) {
 
 ### Merchant Portal
 
-**URL**: `https://devportal.mycodigital.io` (Port 4010)
+**URL**: `https://merchant.vstore.cloud` (Port 4010)
 
 **Features**:
 | Page | Path | Purpose |
@@ -512,7 +512,7 @@ services/merchant-portal/
 
 ### Admin Portal
 
-**URL**: `https://devadmin.mycodigital.io` (Port 4011)
+**URL**: `https://admin.vstore.cloud` (Port 4011)
 
 **Features**:
 | Page | Path | Purpose |
@@ -574,8 +574,8 @@ api.interceptors.response.use(
 
 | Portal | Email | Password |
 |--------|-------|----------|
-| Admin | `admin@mycodigital.io` | `admin123456` |
-| Merchant | `vendor@mycodigital.io` | `vendor123456` |
+| Admin | `admin@darpay.net` | `admin123456` |
+| Merchant | `vendor@darpay.net` | `vendor123456` |
 
 ### Adding a New Portal Page
 
@@ -781,14 +781,14 @@ pnpm prisma generate
 |--------|-------|
 | **IP Address** | 72.60.110.249 |
 | **OS** | Ubuntu/Debian Linux |
-| **Domains** | sandbox.mycodigital.io, devportal.mycodigital.io, devadmin.mycodigital.io |
+| **Domains** | api.vstore.cloud, merchant.vstore.cloud, admin.vstore.cloud |
 
 ### Domain Routing
 
 ```
-sandbox.mycodigital.io     → Nginx → Payment API (4002) + Payout API (4001)
-devportal.mycodigital.io   → Nginx → Merchant Portal (4010)
-devadmin.mycodigital.io    → Nginx → Admin Portal (4011)
+api.vstore.cloud          → Nginx → Payment API (4002) + Payout API (4001)
+merchant.vstore.cloud     → Nginx → Merchant Portal (4010)
+admin.vstore.cloud        → Nginx → Admin Portal (4011)
 ```
 
 ### Docker Services
@@ -851,9 +851,9 @@ docker compose exec payment-api npx prisma migrate deploy
 
 ```bash
 # Certificates managed by Certbot
-/etc/letsencrypt/live/sandbox.mycodigital.io/
-/etc/letsencrypt/live/devportal.mycodigital.io/
-/etc/letsencrypt/live/devadmin.mycodigital.io/
+/etc/letsencrypt/live/api.vstore.cloud/
+/etc/letsencrypt/live/merchant.vstore.cloud/
+/etc/letsencrypt/live/admin.vstore.cloud/
 
 # Renew certificates
 certbot renew
@@ -866,8 +866,8 @@ certbot renew
 ./health-check.sh
 
 # Manual checks
-curl https://sandbox.mycodigital.io/health
-curl https://sandbox.mycodigital.io/api/v1/health
+curl https://api.vstore.cloud/health
+curl https://api.vstore.cloud/api/v1/health
 ```
 
 ---
@@ -1007,7 +1007,7 @@ app.get('/api/v1/new-endpoint', authMiddleware, newEndpoint);
 ### Add a New Merchant
 
 **Via Admin Portal**:
-1. Login to https://devadmin.mycodigital.io
+1. Login to https://admin.vstore.cloud
 2. Navigate to Merchants
 3. Click "Add Merchant"
 4. Fill form and submit

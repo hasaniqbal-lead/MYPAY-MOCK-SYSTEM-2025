@@ -1,11 +1,11 @@
-# MyPay Mock Platform
+# DarPay Mock Platform
 
 A centralized mock payment and payout platform for Pakistani FinTech applications. This monorepo contains all services needed for testing payment integrations including Easypaisa, JazzCash, card payments, and bank/wallet payouts.
 
 ## 🏗️ Architecture
 
 ```
-mypay-mock-platform/
+darpay-mock-platform/
 ├── packages/               # Shared packages
 │   └── shared/            # Common types, utilities
 ├── services/              # Microservices
@@ -34,7 +34,7 @@ mypay-mock-platform/
 ```bash
 # Clone the repository
 git clone <repo-url>
-cd mypay-mock-platform
+cd darpay-mock-platform
 
 # Install dependencies
 pnpm install
@@ -193,7 +193,7 @@ npx prisma migrate reset
 pnpm run build
 
 # Build specific service
-pnpm --filter @mypay/payout-api build
+pnpm --filter @darpay/payout-api build
 ```
 
 ## 🔮 Future Services
@@ -226,4 +226,4 @@ The following services are planned and have placeholder directories:
 
 ## 📄 License
 
-Private - MyPay Digital Solutions
+Private - DarPay Digital Solutions

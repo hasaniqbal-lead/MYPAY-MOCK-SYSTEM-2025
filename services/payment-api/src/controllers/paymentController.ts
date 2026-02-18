@@ -258,7 +258,7 @@ class PaymentController {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>${title} - MyPay</title>
+        <title>${title} - DarPay</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -325,7 +325,7 @@ class PaymentController {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>MyPay Payment - ${methodName}</title>
+        <title>DarPay Payment - ${methodName}</title>
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body {
@@ -350,7 +350,7 @@ class PaymentController {
             padding: 24px;
             color: white;
           }
-          .mypay-logo { font-size: 24px; font-weight: bold; }
+          .darpay-logo { font-size: 24px; font-weight: bold; }
           .amount-section {
             padding: 32px 24px;
             text-align: center;
@@ -413,7 +413,7 @@ class PaymentController {
       <body>
         <div class="payment-card">
           <div class="payment-header">
-            <div class="mypay-logo">mypay</div>
+            <div class="darpay-logo">darpay</div>
             <div style="margin-top: 8px;">${methodName}</div>
           </div>
           <div class="amount-section">

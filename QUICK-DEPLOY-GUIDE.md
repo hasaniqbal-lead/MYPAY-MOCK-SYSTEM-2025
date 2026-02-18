@@ -55,14 +55,14 @@ Password: 02tlw|A6#4qx
 ### Merchant Portal
 ```
 URL: https://devportal.mycodigital.io
-Email: test@mycodigital.io
+Email: test@vstore.cloud
 Password: test123456
 ```
 
 ### Admin Portal
 ```
 URL: https://devadmin.mycodigital.io
-Email: admin@mycodigital.io
+Email: admin@vstore.cloud
 Password: admin123456
 ```
 
@@ -482,8 +482,8 @@ You should see:
 │ Merchant:     https://devportal.mycodigital.io      │
 │ Admin:        https://devadmin.mycodigital.io       │
 ├─────────────────────────────────────────────────────┤
-│ Merchant:  test@mycodigital.io / test123456         │
-│ Admin:     admin@mycodigital.io / admin123456       │
+│ Merchant:  test@vstore.cloud / test123456         │
+│ Admin:     admin@vstore.cloud / admin123456       │
 └─────────────────────────────────────────────────────┘
 ```
 

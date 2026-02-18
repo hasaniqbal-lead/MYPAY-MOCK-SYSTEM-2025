@@ -3,7 +3,7 @@
 ## Connection Details
 
 - **VPS IP:** 72.60.110.249
-- **Domain:** sandbox.mycodigital.io
+- **Domain:** api.vstore.cloud
 - **User:** root
 - **Password:** -v9(Q158qCwKk4--5/WY
 
@@ -44,7 +44,7 @@ DATABASE_URL=mysql://root:SecurePayoutPass123!@mysql:3306/payout_system
 PORT=3000
 NODE_ENV=production
 WEBHOOK_SECRET=prod-webhook-$(openssl rand -hex 32)
-WEBHOOK_URL=https://sandbox.mycodigital.io/webhooks
+WEBHOOK_URL=https://api.vstore.cloud/webhooks
 IPN_PORT=3001
 EOF
 
@@ -65,7 +65,7 @@ apt install nginx -y
 cat > /etc/nginx/sites-available/payout-api << 'NGINX_EOF'
 server {
     listen 80;
-    server_name sandbox.mycodigital.io;
+    server_name api.vstore.cloud;
 
     location /api/ {
         proxy_pass http://localhost:3000;
@@ -103,7 +103,7 @@ echo "y" | ufw enable
 
 # Install SSL
 apt install certbot python3-certbot-nginx -y
-certbot --nginx -d sandbox.mycodigital.io
+certbot --nginx -d api.vstore.cloud
 
 # Show status
 docker-compose ps
@@ -159,8 +159,8 @@ After deployment, test:
 curl http://localhost:3000/api/v1/health
 
 # From anywhere
-curl http://sandbox.mycodigital.io/api/v1/health
-curl https://sandbox.mycodigital.io/api/v1/health  # After SSL
+curl http://api.vstore.cloud/api/v1/health
+curl https://api.vstore.cloud/api/v1/health  # After SSL
 ```
 
 Expected response:
@@ -178,7 +178,7 @@ docker-compose logs api | grep "API Key"
 ```
 
 Copy the API key and update your Postman collection:
-- Variable: `base_url` = `https://sandbox.mycodigital.io/api/v1`
+- Variable: `base_url` = `https://api.vstore.cloud/api/v1`
 - Variable: `api_key` = `<your-new-api-key>`
 
 ---
@@ -257,5 +257,5 @@ tail -f /var/log/nginx/error.log
 
 ---
 
-**Your API is live at:** https://sandbox.mycodigital.io/api/v1 🚀
+**Your API is live at:** https://api.vstore.cloud/api/v1 🚀
 

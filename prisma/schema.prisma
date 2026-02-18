@@ -1,5 +1,5 @@
 // ============================================
-// MyPay Mock Platform - Unified Prisma Schema
+// DarPay Mock Platform - Unified Prisma Schema
 // ============================================
 // This schema combines both Payout and Payment services
 // into a single unified database schema.

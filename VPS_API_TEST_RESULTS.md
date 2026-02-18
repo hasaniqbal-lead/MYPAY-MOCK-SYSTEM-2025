@@ -166,7 +166,7 @@ Response (200 OK):
 **Body**: 
 ```json
 {
-  "email": "test@mycodigital.io",
+  "email": "test@vstore.cloud",
   "password": "test123456"
 }
 ```
@@ -224,7 +224,7 @@ Response (200 OK):
   "success": true,
   "merchant": {
     "id": 1,
-    "email": "test@mycodigital.io",
+    "email": "test@darpay.vstore.cloud",
     "companyName": "Test Merchant Company",
     "status": "active",
     "createdAt": "2025-12-11T09:10:43.008Z"
@@ -279,7 +279,7 @@ API Key: test-api-key-123
 
 ### Portal Login
 ```
-Email: test@mycodigital.io
+Email: test@darpay.vstore.cloud
 Password: test123456
 ```
 

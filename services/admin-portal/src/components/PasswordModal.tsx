@@ -101,7 +101,7 @@ export default function PasswordModal({ isOpen, onClose, password, email }: Pass
             <button
               type="button"
               onClick={handleContinue}
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-mypay-green text-base font-medium text-white hover:bg-mypay-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-mypay-green sm:ml-3 sm:w-auto sm:text-sm"
+              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-darpay-primary text-base font-medium text-white hover:bg-darpay-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-darpay-primary sm:ml-3 sm:w-auto sm:text-sm"
             >
               Continue to Login
             </button>

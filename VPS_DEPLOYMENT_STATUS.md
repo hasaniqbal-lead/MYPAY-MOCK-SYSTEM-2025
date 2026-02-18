@@ -64,13 +64,13 @@ Header: X-Api-Key
 
 ### Portal Login
 ```
-Email: test@mycodigital.io
+Email: test@darpay.vstore.cloud
 Password: test123456
 ```
 
 ### Admin Login
 ```
-Email: admin@mycodigital.io
+Email: admin@darpay.vstore.cloud
 Password: admin123456
 ```
 
@@ -138,7 +138,7 @@ Headers:
   Content-Type: application/json
 Body:
 {
-  "email": "test@mycodigital.io",
+  "email": "test@darpay.vstore.cloud",
   "password": "test123456"
 }
 
@@ -229,10 +229,10 @@ ssh root@72.60.110.249 "cd /opt/mypay-mock && docker compose build --no-cache"
 ### Nginx Configuration (Pending)
 Once portals are stable:
 1. Configure Nginx for domain routing:
-   - `sandbox.mycodigital.io` → Payout API (port 4001)
-   - `payment.mycodigital.io` → Payment API (port 4002)
-   - `devportal.mycodigital.io` → Merchant Portal (port 4010)
-   - `devadmin.mycodigital.io` → Admin Portal (port 4011)
+   - `api-darpay.vstore.cloud` → Payout API (port 4001)
+   - `api-darpay.vstore.cloud` → Payment API (port 4002)
+   - `merchant-darpay.vstore.cloud` → Merchant Portal (port 4010)
+   - `admin-darpay.vstore.cloud` → Admin Portal (port 4011)
 2. Setup SSL certificates with Certbot
 3. Test HTTPS access
 
@@ -251,9 +251,9 @@ WEBHOOK_SECRET=MyPayWebhookSecret2025Key
 API_KEY_SECRET=MyPayAPIKeySecret2025
 PAYOUT_API_PORT=4001
 PAYMENT_API_PORT=4002
-NEXT_PUBLIC_API_URL=https://sandbox.mycodigital.io
-MERCHANT_PORTAL_URL=https://devportal.mycodigital.io
-ADMIN_PORTAL_URL=https://devadmin.mycodigital.io
+NEXT_PUBLIC_API_URL=https://api-darpay.vstore.cloud
+MERCHANT_PORTAL_URL=https://merchant-darpay.vstore.cloud
+ADMIN_PORTAL_URL=https://admin-darpay.vstore.cloud
 ```
 
 ---

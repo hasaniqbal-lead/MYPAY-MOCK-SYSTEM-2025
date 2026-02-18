@@ -50,7 +50,7 @@ export default function RecentTransactions() {
     return (
       <div className="bg-white shadow rounded-lg p-6">
         <div className="flex justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mypay-green"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-darpay-primary"></div>
         </div>
       </div>
     )
@@ -122,7 +122,7 @@ export default function RecentTransactions() {
       <div className="px-6 py-4 border-t border-gray-200">
         <Link
           href="/transactions"
-          className="text-sm text-mypay-green hover:text-mypay-green-dark"
+          className="text-sm text-darpay-primary hover:text-darpay-primary-dark"
         >
           View all transactions →
         </Link>

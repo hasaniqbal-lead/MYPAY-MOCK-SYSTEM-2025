@@ -19,7 +19,7 @@ export function MetricsCard({ title, value, change, changeType, icon }: MetricsC
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
         </CardTitle>
-        <div className="text-mypay-green">
+        <div className="text-darpay-primary">
           {icon}
         </div>
       </CardHeader>

@@ -8,7 +8,14 @@
 ## 🌐 Subdomain Configuration
 
 ### Domains Supported
-- **mypay.mx** (Primary - New)
+- **darpay.vstore.cloud** (Main Website)
+- **api-darpay.vstore.cloud** (Primary API)
+- **merchant-darpay.vstore.cloud** (Merchant Portal)
+- **admin-darpay.vstore.cloud** (Admin Portal)
+- **payment-darpay.vstore.cloud** (Payment Page)
+- **sbx-darpay.vstore.cloud** (Sandbox API)
+- **payout-darpay.vstore.cloud** (Payout Interface)
+- **mypay.mx** (Legacy)
 - **mycodigital.io** (Legacy)
 
 ### Nginx Port: 8888 (or 80/443 with SSL)
@@ -17,7 +24,20 @@ All subdomains are configured to route through Nginx.
 
 ---
 
-## 📍 Subdomain Map - mypay.mx (Primary)
+## 📍 Subdomain Map - DarPay vstore.cloud (Primary)
+
+| Subdomain | Service | Backend Port | Purpose |
+|-----------|---------|--------------|---------|
+| **darpay.vstore.cloud** | Main Website | 80/443 | Primary website |
+| **api-darpay.vstore.cloud** | API Gateway | 4002 | Main API endpoint |
+| **api-darpay.vstore.cloud** | Payout API | 4001 | Payout transactions |
+| **sbx-darpay.vstore.cloud** | Sandbox API | 4003 | Development/testing |
+| **merchant-darpay.vstore.cloud** | Merchant Portal | 4010 | Merchant dashboard |
+| **admin-darpay.vstore.cloud** | Admin Portal | 4011 | Admin dashboard |
+| **payment-darpay.vstore.cloud** | Payment Page | 4012 | Checkout/Payment page |
+| **payout-darpay.vstore.cloud** | Payout Interface | 4013 | Payout management |
+
+## 📍 Subdomain Map - mypay.mx (Legacy)
 
 | Subdomain | Service | Backend Port | Purpose |
 |-----------|---------|--------------|---------|
@@ -39,7 +59,45 @@ All subdomains are configured to route through Nginx.
 
 ---
 
-## 🔗 API Base URLs - mypay.mx (Primary)
+## 🔗 API Base URLs - DarPay vstore.cloud (Primary)
+
+### For Main API Integration
+```
+Base URL: https://api-darpay.vstore.cloud
+Endpoints: /api/v1/*
+
+Examples:
+- https://api-darpay.vstore.cloud/api/v1/health
+- https://api-darpay.vstore.cloud/api/v1/directory
+- https://api-darpay.vstore.cloud/api/v1/balance
+- https://api-darpay.vstore.cloud/api/v1/payouts
+```
+
+### For Payment API Integration
+```
+Base URL: https://api-darpay.vstore.cloud
+Endpoints: /api/v1/*
+
+Examples:
+- https://api-darpay.vstore.cloud/api/v1/health
+- https://api-darpay.vstore.cloud/api/v1/portal/auth/login
+- https://api-darpay.vstore.cloud/api/v1/portal/dashboard/stats
+- https://api-darpay.vstore.cloud/api/checkout/sessions
+```
+
+### For Sandbox API Integration
+```
+Base URL: https://sbx-darpay.vstore.cloud
+Endpoints: /api/v1/*
+
+Examples:
+- https://sbx-darpay.vstore.cloud/api/v1/health
+- https://sbx-darpay.vstore.cloud/api/v1/test/endpoints
+```
+
+---
+
+## 🔗 API Base URLs - mypay.mx (Legacy)
 
 ### For Payout API Integration
 ```
@@ -83,7 +141,38 @@ Endpoints: /api/v1/*
 
 ---
 
-## 🌐 Portal URLs - mypay.mx (Primary)
+## 🌐 Portal URLs - DarPay vstore.cloud (Primary)
+
+### Main Website
+```
+URL: https://darpay.vstore.cloud
+```
+
+### Merchant Portal
+```
+URL: https://merchant-darpay.vstore.cloud
+Login: test@darpay.vstore.cloud / test123456
+```
+
+### Admin Portal
+```
+URL: https://admin-darpay.vstore.cloud
+Login: admin@darpay.vstore.cloud / admin123456
+```
+
+### Payment Page (Demo)
+```
+URL: https://payment-darpay.vstore.cloud
+```
+
+### Payout Interface
+```
+URL: https://payout-darpay.vstore.cloud
+```
+
+---
+
+## 🌐 Portal URLs - mypay.mx (Legacy)
 
 ### Merchant Portal
 ```
@@ -109,13 +198,13 @@ URL: https://demo.mypay.mx
 ### Merchant Portal
 ```
 URL: https://devportal.mycodigital.io
-Login: test@mycodigital.io / test123456
+Login: test@vstore.cloud / test123456
 ```
 
 ### Admin Portal
 ```
 URL: https://devadmin.mycodigital.io
-Login: admin@mycodigital.io / admin123456
+Login: admin@vstore.cloud / admin123456
 ```
 
 ---
@@ -153,7 +242,28 @@ Payment Page:    http://VPS_IP:4012
 
 ## 📝 Postman Collection Setup
 
-### Environment Variables - mypay.mx (Primary)
+### Environment Variables - DarPay vstore.cloud (Primary)
+Create a Postman environment with:
+
+```json
+{
+  "api_url": "https://api-darpay.vstore.cloud/api/v1",
+  "sandbox_api_url": "https://sbx-darpay.vstore.cloud/api/v1",
+  "payout_api_url": "https://payout-darpay.vstore.cloud/api/v1",
+  "payment_api_url": "https://payment-darpay.vstore.cloud/api/v1",
+  "merchant_portal_url": "https://merchant-darpay.vstore.cloud",
+  "admin_portal_url": "https://admin-darpay.vstore.cloud",
+  "main_website_url": "https://darpay.vstore.cloud",
+  "payout_api_key": "YOUR_PAYOUT_API_KEY",
+  "payment_api_key": "YOUR_PAYMENT_API_KEY",
+  "merchant_email": "test@darpay.vstore.cloud",
+  "admin_email": "admin@darpay.vstore.cloud",
+  "merchant_password": "test123456",
+  "admin_password": "admin123456"
+}
+```
+
+### Environment Variables - mypay.mx (Legacy)
 Create a Postman environment with:
 
 ```json
@@ -174,7 +284,7 @@ Create a Postman environment with:
   "payment_api_url": "https://mock.mycodigital.io/api/v1",
   "payout_api_key": "YOUR_PAYOUT_API_KEY",
   "payment_api_key": "YOUR_PAYMENT_API_KEY",
-  "merchant_email": "test@mycodigital.io",
+  "merchant_email": "test@darpay.vstore.cloud",
   "merchant_password": "test123456"
 }
 ```
@@ -295,7 +405,17 @@ http://devadmin.mycodigital.io:8888
 
 ## 🎯 Summary
 
-### mypay.mx Domain (Primary)
+### DarPay vstore.cloud Domain (Primary)
+✅ **darpay.vstore.cloud** → Main Website (Port 80/443)
+✅ **api-darpay.vstore.cloud** → API Gateway (Port 4002)
+✅ **api-darpay.vstore.cloud** → Payout API (Port 4001)
+✅ **sbx-darpay.vstore.cloud** → Sandbox API (Port 4003)
+✅ **merchant-darpay.vstore.cloud** → Merchant Portal (Port 4010)
+✅ **admin-darpay.vstore.cloud** → Admin Portal (Port 4011)
+✅ **payment-darpay.vstore.cloud** → Payment Page (Port 4012)
+✅ **payout-darpay.vstore.cloud** → Payout Interface (Port 4013)
+
+### mypay.mx Domain (Legacy)
 ✅ **sandbox.mypay.mx** → Payout API (Port 4001)
 ✅ **test.mypay.mx** → Payment API (Port 4002)
 ✅ **devportal.mypay.mx** → Merchant Portal (Port 4010)
@@ -310,9 +430,9 @@ http://devadmin.mycodigital.io:8888
 ✅ **pay.mycodigital.io** → Payment Page
 
 ### Status
-✅ **Nginx configured** for both domains
-✅ **Wildcard DNS** configured for both domains
-✅ **5 subdomains** per domain mapped to services
+✅ **DarPay domains** configured for new branding
+✅ **Nginx configured** for all domains
+✅ **Wildcard DNS** configured for legacy domains
 ✅ **All services** operational
 ✅ **SSL ready** via Let's Encrypt wildcard certificates  
 

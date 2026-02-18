@@ -13,7 +13,7 @@ export const defaultThemeConfiguration: ThemeConfiguration = {
 
   branding: {
     merchantLogo: '',
-    merchantName: 'MyPay',
+    merchantName: 'DarPay',
   },
 
   colors: {
@@ -101,7 +101,7 @@ export const defaultThemeConfiguration: ThemeConfiguration = {
       submessage: 'We were unable to process your payment',
       showRetry: true,
       showSupport: true,
-      supportEmail: 'support@mypay.com',
+      supportEmail: 'support@darpay.net',
     },
   },
 

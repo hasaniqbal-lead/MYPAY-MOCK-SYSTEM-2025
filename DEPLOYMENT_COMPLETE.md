@@ -28,10 +28,10 @@
 
 ### Subdomain Access (via Nginx on port 8888)
 Once DNS is configured to point to port 8888:
-- **Payout API**: http://sandbox.mycodigital.io:8888
-- **Payment API**: http://payment.mycodigital.io:8888
-- **Merchant Portal**: http://devportal.mycodigital.io:8888
-- **Admin Portal**: http://devadmin.mycodigital.io:8888
+- **Payout API**: http://api.vstore.cloud:8888
+- **Payment API**: http://api.vstore.cloud:8888
+- **Merchant Portal**: http://merchant.vstore.cloud:8888
+- **Admin Portal**: http://admin.vstore.cloud:8888
 
 ---
 
@@ -40,14 +40,14 @@ Once DNS is configured to point to port 8888:
 ### Merchant Portal Login
 ```
 URL: http://72.60.110.249:4010/login
-Email: test@mycodigital.io
+Email: test@vstore.cloud
 Password: test123456
 ```
 
 ### Admin Portal Login
 ```
 URL: http://72.60.110.249:4011/login
-Email: admin@mycodigital.io
+Email: admin@vstore.cloud
 Password: admin123456
 ```
 
@@ -160,7 +160,7 @@ Internet → VPS (72.60.110.249)
 ### 1. Configure DNS for Port 8888
 Update your DNS or add port 8888 to your wildcard entry:
 ```
-*.mycodigital.io → 72.60.110.249:8888
+*.vstore.cloud → 72.60.110.249:8888
 ```
 
 ### 2. Add SSL/HTTPS (Recommended)
@@ -171,10 +171,10 @@ apt install -y certbot python3-certbot-nginx
 
 # Get certificates (requires standard ports 80/443)
 # You may need to temporarily stop other services using port 80
-certbot --nginx -d sandbox.mycodigital.io \
-  -d payment.mycodigital.io \
-  -d devportal.mycodigital.io \
-  -d devadmin.mycodigital.io
+certbot --nginx -d api.vstore.cloud \
+  -d api.vstore.cloud \
+  -d merchant.vstore.cloud \
+  -d admin.vstore.cloud
 ```
 
 ### 3. Setup CI/CD

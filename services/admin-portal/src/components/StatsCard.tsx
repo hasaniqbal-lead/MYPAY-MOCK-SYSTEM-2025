@@ -18,14 +18,14 @@ export default function StatsCard({ title, value, icon, color = 'gray', trend }:
             <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
             <p className="text-3xl font-bold text-gray-900">{value}</p>
             {trend && (
-              <p className={`text-sm mt-2 flex items-center ${trend.positive ? 'text-mypay-green' : 'text-red-500'}`}>
+              <p className={`text-sm mt-2 flex items-center ${trend.positive ? 'text-darpay-primary' : 'text-red-500'}`}>
                 <span className="mr-1">{trend.positive ? '↑' : '↓'}</span>
                 {trend.value}
               </p>
             )}
           </div>
           <div className="flex-shrink-0">
-            <div className="w-12 h-12 bg-mypay-green/10 rounded-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-darpay-primary/10 rounded-lg flex items-center justify-center">
               <span className="text-2xl">{icon}</span>
             </div>
           </div>

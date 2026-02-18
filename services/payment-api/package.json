@@ -1,5 +1,5 @@
 {
-  "name": "@mypay/payment-api",
+  "name": "@darpay/payment-api",
   "version": "1.0.0",
   "description": "Mock Payment API Service for Easypaisa, JazzCash, and Card payments",
   "main": "dist/main.js",

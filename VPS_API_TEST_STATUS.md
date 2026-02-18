@@ -19,7 +19,7 @@
 
 ### Base URL
 ```
-https://mock.mycodigital.io/api/v1
+https://api.vstore.cloud/api/v1
 ```
 
 ### Test Results
@@ -27,7 +27,7 @@ https://mock.mycodigital.io/api/v1
 #### 1. Health Check ✅ PASS
 **Command:**
 ```bash
-curl https://mock.mycodigital.io/api/v1/health
+curl https://api.vstore.cloud/api/v1/health
 ```
 
 **Response:**
@@ -45,7 +45,7 @@ curl https://mock.mycodigital.io/api/v1/health
 #### 2. Create Checkout ✅ PASS
 **Command:**
 ```bash
-curl -X POST https://mock.mycodigital.io/api/v1/checkouts \
+curl -X POST https://api-darpay.vstore.cloud/api/v1/checkouts \
   -H "Content-Type: application/json" \
   -H "X-Api-Key: test-merchant-api-key-12345" \
   -d '{
@@ -93,7 +93,7 @@ curl -X POST https://mock.mycodigital.io/api/v1/checkouts \
 
 ### Base URL
 ```
-https://sandbox.mycodigital.io/api/v1
+https://api.vstore.cloud/api/v1
 ```
 
 ### Test Results
@@ -101,7 +101,7 @@ https://sandbox.mycodigital.io/api/v1
 #### 1. Health Check ✅ PASS
 **Command:**
 ```bash
-curl https://sandbox.mycodigital.io/api/v1/health
+curl https://api.vstore.cloud/api/v1/health
 ```
 
 **Response:**
@@ -118,7 +118,7 @@ curl https://sandbox.mycodigital.io/api/v1/health
 **Command:**
 ```bash
 curl -H "X-API-KEY: mypay_3771a05970d71c8a95e9364756d1c6163f811343785390102d4730b8a4aa5039" \
-  https://sandbox.mycodigital.io/api/v1/directory
+  https://api-darpay.vstore.cloud/api/v1/directory
 ```
 
 **Response:**
@@ -137,7 +137,7 @@ curl -H "X-API-KEY: mypay_3771a05970d71c8a95e9364756d1c6163f811343785390102d4730
 #### 3. Create Payout ❌ FAIL (Authentication)
 **Command:**
 ```bash
-curl -X POST https://sandbox.mycodigital.io/api/v1/payouts \
+curl -X POST https://api-darpay.vstore.cloud/api/v1/payouts \
   -H "Content-Type: application/json" \
   -H "X-API-KEY: mypay_3771a05970d71c8a95e9364756d1c6163f811343785390102d4730b8a4aa5039" \
   -H "X-IDEMPOTENCY-KEY: [uuid]" \
@@ -290,21 +290,21 @@ docker compose exec payout-api npx prisma migrate reset --force
 
 ### Payment API ✅
 ```
-Base URL: https://mock.mycodigital.io/api/v1
+Base URL: https://api.vstore.cloud/api/v1
 API Key: test-merchant-api-key-12345
 Status: WORKING
 ```
 
 ### Payout API ⚠️
 ```
-Base URL: https://sandbox.mycodigital.io/api/v1
+Base URL: https://api.vstore.cloud/api/v1
 API Key: NEEDS TO BE UPDATED
 Status: Service running, auth failing
 ```
 
 ### Merchant Portal ✅
 ```
-URL: https://devportal.mycodigital.io
+URL: https://merchant-darpay.vstore.cloud
 Email: merchant@test.com
 Password: Test123!
 Status: WORKING (assuming credentials match)
@@ -312,7 +312,7 @@ Status: WORKING (assuming credentials match)
 
 ### Admin Portal ✅
 ```
-URL: https://devadmin.mycodigital.io
+URL: https://admin-darpay.vstore.cloud
 Status: WORKING
 ```
 

@@ -1,7 +1,7 @@
 {
-  "name": "@mypay/shared",
+  "name": "@darpay/shared",
   "version": "1.0.0",
-  "description": "Shared types, utilities, and Prisma client for MyPay Mock Platform",
+  "description": "Shared types, utilities, and Prisma client for DarPay Mock Platform",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

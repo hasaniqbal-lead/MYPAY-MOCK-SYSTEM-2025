@@ -79,9 +79,9 @@ export default function RegisterForm() {
       
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-mypay-dark">Create Merchant Account</CardTitle>
+          <CardTitle className="text-2xl font-bold text-darpay-dark">Create Merchant Account</CardTitle>
           <CardDescription>
-            Get started with MyPay's payment solutions
+            Get started with DarPay's payment solutions
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -115,7 +115,7 @@ export default function RegisterForm() {
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Letters only, no spaces. Your login email will be: <span className="font-mono text-mypay-green">{formData.username || 'username'}@mycodigital.io</span>
+                Letters only, no spaces. Your login email will be: <span className="font-mono text-darpay-primary">{formData.username || 'username'}@darpay.net</span>
               </p>
             </div>
 
@@ -134,7 +134,7 @@ export default function RegisterForm() {
 
             <Button
               type="submit"
-              className="w-full h-12 bg-mypay-green hover:bg-mypay-green-dark text-white"
+              className="w-full h-12 bg-darpay-primary hover:bg-darpay-primary-dark text-white"
               disabled={loading || !formData.companyName.trim() || formData.username.length < 3}
             >
               {loading ? (

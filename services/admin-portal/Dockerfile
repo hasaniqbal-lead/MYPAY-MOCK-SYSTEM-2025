@@ -20,7 +20,7 @@ COPY services/admin-portal ./services/admin-portal/
 
 # Build the service
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN pnpm --filter @mypay/admin-portal build
+RUN pnpm --filter @darpay/admin-portal build
 
 # Production stage
 FROM node:20-alpine AS runner

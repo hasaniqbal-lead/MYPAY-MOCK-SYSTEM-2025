@@ -45,7 +45,7 @@ const apiRouter = express.Router();
 apiRouter.get('/health', (_req: Request, res: Response) => {
   res.json({
     status: 'OK',
-    service: 'MyPay Payment API',
+    service: 'DarPay Payment API',
     timestamp: new Date().toISOString(),
   });
 });
@@ -490,7 +490,7 @@ apiRouter.get('/payment-page/session/:checkoutId', async (req: Request, res: Res
       paymentMethod: transaction.payment_method,
       status: transaction.status,
       merchantId: transaction.merchant_id,
-      merchantName: transaction.merchant?.company_name || transaction.merchant?.name || 'MyPay',
+      merchantName: transaction.merchant?.company_name || transaction.merchant?.name || 'DarPay',
       configuration: config ? {
         id: config.id,
         name: config.name,

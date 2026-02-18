@@ -34,12 +34,12 @@ Successfully migrated from "VENDOR" terminology to "MERCHANT" terminology across
 - **Two separate API key sections**:
   1. **Payment API Key** (Blue card)
      - Label: "Payment API Key"
-     - Description: "Use this key for Payment API requests (mock.mycodigital.io)"
-     - Shows: `hasan-api-key-789` (for hasaniqbal@mycodigital.io)
+     - Description: "Use this key for Payment API requests (api-darpay.vstore.cloud)"
+     - Shows: `hasan-api-key-789` (for hasaniqbal@darpay.vstore.cloud)
   
   2. **Payout API Key** (Purple card)
      - Label: "Payout API Key"
-     - Description: "Use this key for Payout API requests (sandbox.mycodigital.io)"
+     - Description: "Use this key for Payout API requests (api-darpay.vstore.cloud)"
      - Shows: `mypay_c915ac3eac093aae0c09e72e0a1812d59e1cd9869c160c95ef86b64ad29b03bb`
 
 ---
@@ -126,7 +126,7 @@ return {
 
 ### Current State (After Reseed):
 
-**Merchant 1** (test@mycodigital.io):
+**Merchant 1** (test@darpay.vstore.cloud):
 ```
 ID: 9
 Merchant ID: MERCHANT_000009
@@ -134,7 +134,7 @@ Payment API Key: test-api-key-123
 Payout API Key: mypay_b8dd025026930b2bd59dc648ccbfc36bbb829a7d6f8f6cd8e934aa42d8d44640
 ```
 
-**Merchant 2** (hasaniqbal@mycodigital.io):
+**Merchant 2** (hasaniqbal@darpay.vstore.cloud):
 ```
 ID: 10
 Merchant ID: MERCHANT_000010
@@ -152,7 +152,7 @@ Payout API Key: mypay_c915ac3eac093aae0c09e72e0a1812d59e1cd9869c160c95ef86b64ad2
 ┌─────────────────────────────────────────────────────┐
 │ Payment API Key                           [Active]  │
 │ Use this key for Payment API requests               │
-│ (mock.mycodigital.io)                               │
+│ (api-darpay.vstore.cloud)                               │
 │                                                      │
 │ Created: 12/12/2025                                 │
 │ ┌────────────────────────────────────────┐         │
@@ -164,7 +164,7 @@ Payout API Key: mypay_c915ac3eac093aae0c09e72e0a1812d59e1cd9869c160c95ef86b64ad2
 ┌─────────────────────────────────────────────────────┐
 │ Payout API Key                            [Active]  │
 │ Use this key for Payout API requests                │
-│ (sandbox.mycodigital.io)                            │
+│ (api-darpay.vstore.cloud)                            │
 │                                                      │
 │ Created: 12/12/2025                                 │
 │ ┌────────────────────────────────────────┐         │
@@ -190,7 +190,7 @@ Payout API Key: mypay_c915ac3eac093aae0c09e72e0a1812d59e1cd9869c160c95ef86b64ad2
 ### Payment API (Using Payment API Key):
 
 ```bash
-curl -X POST https://mock.mycodigital.io/api/v1/checkouts \
+curl -X POST https://api-darpay.vstore.cloud/api/v1/checkouts \
   -H "X-Api-Key: hasan-api-key-789" \
   -H "Content-Type: application/json" \
   -d '{
@@ -204,7 +204,7 @@ curl -X POST https://mock.mycodigital.io/api/v1/checkouts \
 ### Payout API (Using Payout API Key):
 
 ```bash
-curl -X POST https://sandbox.mycodigital.io/api/v1/payouts \
+curl -X POST https://api-darpay.vstore.cloud/api/v1/payouts \
   -H "X-API-KEY: mypay_c915ac3eac093aae0c09e72e0a1812d59e1cd9869c160c95ef86b64ad29b03bb" \
   -H "Content-Type: application/json" \
   -H "X-Idempotency-Key: $(uuidgen)" \
@@ -237,13 +237,13 @@ curl -X POST https://sandbox.mycodigital.io/api/v1/payouts \
 - [x] Show/Hide keys toggle works
 
 ### ⏳ Portal Testing (To Be Done):
-- [ ] Login to merchant portal: `hasaniqbal@mycodigital.io` / `hasan123456`
+- [ ] Login to merchant portal: `hasaniqbal@darpay.vstore.cloud` / `hasan123456`
 - [ ] Navigate to Credentials page
 - [ ] Verify "MERCHANT_000010" is displayed (not "VENDOR_000010")
 - [ ] Verify both API keys are shown separately
 - [ ] Copy both keys and test in Postman
-- [ ] Confirm Payment API key works with mock.mycodigital.io
-- [ ] Confirm Payout API key works with sandbox.mycodigital.io
+- [ ] Confirm Payment API key works with api-darpay.vstore.cloud
+- [ ] Confirm Payout API key works with api-darpay.vstore.cloud
 
 ---
 

@@ -35,7 +35,7 @@ class PortalAuthController {
       const normalizedUsername = username.toLowerCase();
 
       // Generate email from username
-      const email = `${normalizedUsername}@mycodigital.io`;
+      const email = `${normalizedUsername}@darpay.com`;
 
       // Check if email already exists
       const existing = await prisma.merchant.findFirst({

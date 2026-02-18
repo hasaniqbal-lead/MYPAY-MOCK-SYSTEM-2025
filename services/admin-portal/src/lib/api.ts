@@ -219,7 +219,7 @@ export const paymentPageAdminAPI = {
       return {
         success: true,
         rules: [
-          { id: 1, fieldPath: 'advanced.showPoweredBy', ruleType: 'locked', ruleValue: { value: true }, description: 'MyPay branding must be shown', isActive: true }
+          { id: 1, fieldPath: 'advanced.showPoweredBy', ruleType: 'locked', ruleValue: { value: true }, description: 'DarPay branding must be shown', isActive: true }
         ]
       }
     }

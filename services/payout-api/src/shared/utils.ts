@@ -30,7 +30,7 @@ export function verifyWebhookSignature(
  * Generate API key
  */
 export function generateApiKey(): string {
-  return `mypay_${crypto.randomBytes(32).toString('hex')}`;
+  return `darpay_${crypto.randomBytes(32).toString('hex')}`;
 }
 
 /**

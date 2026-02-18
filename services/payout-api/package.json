@@ -1,5 +1,5 @@
 {
-  "name": "@mypay/payout-api",
+  "name": "@darpay/payout-api",
   "version": "1.0.0",
   "description": "Mock Payout API Service for Pakistani FinTech",
   "main": "dist/api/main.js",

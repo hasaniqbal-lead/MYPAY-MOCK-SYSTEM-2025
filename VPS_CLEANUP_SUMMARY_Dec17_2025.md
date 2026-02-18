@@ -111,8 +111,8 @@ CPU: <5% sustained
 
 | Service | URL | Port | Status |
 |---------|-----|------|--------|
-| **Payment API** | https://mock.mycodigital.io | 4002 | ✅ Active |
-| **Payout API** | https://sandbox.mycodigital.io | 4001 | ✅ Active |
+| **Payment API** | https://api-darpay.vstore.cloud | 4002 | ✅ Active |
+| **Payout API** | https://api-darpay.vstore.cloud | 4001 | ✅ Active |
 | **Admin Portal** | http://72.60.110.249:4011 | 4011 | ✅ Active |
 | **Merchant Portal** | http://72.60.110.249:4010 | 4010 | ✅ Active |
 
@@ -413,8 +413,8 @@ Uptime: 8 days, 2 hours
    ```
 
 4. **MyPay services working**
-   - Visit: https://mock.mycodigital.io
-   - Visit: https://sandbox.mycodigital.io
+   - Visit: https://api.vstore.cloud
+   - Visit: https://api.vstore.cloud
    - Both should respond
 
 ---

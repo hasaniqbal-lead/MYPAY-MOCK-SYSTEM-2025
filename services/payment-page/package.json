@@ -1,5 +1,5 @@
 {
-  "name": "@mypay/payment-page",
+  "name": "@darpay/payment-page",
   "version": "1.0.0",
   "private": true,
   "type": "module",

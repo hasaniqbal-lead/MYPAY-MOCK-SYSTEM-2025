@@ -61,11 +61,11 @@ mypay-mysql                Up 3 hours (healthy)        3306 → 3306
 
 | Service | URL | Status | Test Result |
 |---------|-----|--------|-------------|
-| Wallet Linking | https://link.mycodigital.io | ✅ 200 OK | Working |
-| Payout API | https://sandbox.mycodigital.io | ✅ 200 OK | Working |
-| Payment API | https://mock.mycodigital.io | ✅ 200 OK | Working |
-| Merchant Portal | https://devportal.mycodigital.io | ✅ 200 OK | Working |
-| Admin Portal | https://devadmin.mycodigital.io | ✅ 200 OK | Working |
+| Wallet Linking | https://api-darpay.vstore.cloud | ✅ 200 OK | Working |
+| Payout API | https://api-darpay.vstore.cloud | ✅ 200 OK | Working |
+| Payment API | https://api-darpay.vstore.cloud | ✅ 200 OK | Working |
+| Merchant Portal | https://merchant-darpay.vstore.cloud | ✅ 200 OK | Working |
+| Admin Portal | https://admin-darpay.vstore.cloud | ✅ 200 OK | Working |
 
 **Note**: NO PORT NUMBERS in any URL! ✨
 
@@ -75,19 +75,19 @@ mypay-mysql                Up 3 hours (healthy)        3306 → 3306
 
 ### Certificate Details
 
-**Certificate Name**: `link.mycodigital.io`  
+**Certificate Name**: `api-darpay.vstore.cloud`  
 **Type**: ECDSA  
 **Expiry**: March 11, 2026 (89 days remaining - VALID ✅)
 
 **Domains Covered** (Single Multi-Domain Certificate):
-- ✅ link.mycodigital.io
-- ✅ devadmin.mycodigital.io
-- ✅ devportal.mycodigital.io
-- ✅ mock.mycodigital.io
-- ✅ sandbox.mycodigital.io
+- ✅ api-darpay.vstore.cloud
+- ✅ admin-darpay.vstore.cloud
+- ✅ merchant-darpay.vstore.cloud
+- ✅ payment-darpay.vstore.cloud
+- ✅ payout-darpay.vstore.cloud
 
-**Certificate Path**: `/etc/letsencrypt/live/link.mycodigital.io/fullchain.pem`  
-**Private Key Path**: `/etc/letsencrypt/live/link.mycodigital.io/privkey.pem`
+**Certificate Path**: `/etc/letsencrypt/live/api-darpay.vstore.cloud/fullchain.pem`  
+**Private Key Path**: `/etc/letsencrypt/live/api-darpay.vstore.cloud/privkey.pem`
 
 **Auto-Renewal**: ✅ Configured by Certbot
 
@@ -111,11 +111,11 @@ mypay-mysql                Up 3 hours (healthy)        3306 → 3306
 ### Services Configured:
 
 ```nginx
-1. sandbox.mycodigital.io    → localhost:4001 (Payout API)
-2. mock.mycodigital.io       → localhost:4002 (Payment API)
-3. devportal.mycodigital.io  → localhost:4010 (Merchant Portal)
-4. devadmin.mycodigital.io   → localhost:4011 (Admin Portal)
-5. link.mycodigital.io       → localhost:3000 (Wallet Linking)
+1. api-darpay.vstore.cloud    → localhost:4001 (Payout API)
+2. api-darpay.vstore.cloud       → localhost:4002 (Payment API)
+3. merchant-darpay.vstore.cloud  → localhost:4010 (Merchant Portal)
+4. admin-darpay.vstore.cloud   → localhost:4011 (Admin Portal)
+5. payment-darpay.vstore.cloud       → localhost:3000 (Payment Page)
 ```
 
 **HTTP to HTTPS Redirects**: ✅ Configured for all domains
@@ -127,11 +127,11 @@ mypay-mysql                Up 3 hours (healthy)        3306 → 3306
 Tested all services from VPS directly:
 
 ```bash
-✅ link.mycodigital.io           → HTTP 200
-✅ sandbox.mycodigital.io/api/v1/health → HTTP 200
-✅ mock.mycodigital.io/api/v1/health    → HTTP 200
-✅ devportal.mycodigital.io      → HTTP 200
-✅ devadmin.mycodigital.io       → HTTP 200
+✅ api-darpay.vstore.cloud           → HTTP 200
+✅ api-darpay.vstore.cloud/api/v1/health → HTTP 200
+✅ api-darpay.vstore.cloud/api/v1/health    → HTTP 200
+✅ merchant-darpay.vstore.cloud      → HTTP 200
+✅ admin.vstore.cloud       → HTTP 200
 ```
 
 **Result**: 100% success rate - all services operational!
@@ -208,27 +208,27 @@ If you want to improve further:
 
 ### Service URLs (Production - No Port Numbers!)
 
-- **Wallet Linking**: https://link.mycodigital.io
-- **Payout API**: https://sandbox.mycodigital.io
-- **Payment API**: https://mock.mycodigital.io
-- **Merchant Portal**: https://devportal.mycodigital.io
-- **Admin Portal**: https://devadmin.mycodigital.io
+- **Wallet Linking**: https://api.vstore.cloud
+- **Payout API**: https://api.vstore.cloud
+- **Payment API**: https://api.vstore.cloud
+- **Merchant Portal**: https://merchant.vstore.cloud
+- **Admin Portal**: https://admin.vstore.cloud
 
 ### API Endpoints
 
 **Payout API**:
 ```bash
-curl https://sandbox.mycodigital.io/api/v1/health
+curl https://api.vstore.cloud/api/v1/health
 ```
 
 **Payment API**:
 ```bash
-curl https://mock.mycodigital.io/api/v1/health
+curl https://api.vstore.cloud/api/v1/health
 ```
 
 **Wallet Linking**:
 ```bash
-curl https://link.mycodigital.io
+curl https://api.vstore.cloud
 ```
 
 ---

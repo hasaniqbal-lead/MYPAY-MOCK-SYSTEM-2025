@@ -62,7 +62,7 @@ export default function Layout({ children }: LayoutProps) {
             <div className="flex items-center gap-2">
               <img 
                 src="/12cfc784-5cca-41b2-968b-2ab31add4c8d.png" 
-                alt="MyPay Logo" 
+                alt="DarPay Logo" 
                 className="h-14 w-auto flex-shrink-0"
               />
             </div>
@@ -83,7 +83,7 @@ export default function Layout({ children }: LayoutProps) {
                     href={item.href}
                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                       isActive
-                        ? 'bg-mypay-green/10 text-mypay-green font-medium border-r-2 border-mypay-green'
+                        ? 'bg-darpay-primary/10 text-darpay-primary font-medium border-r-2 border-darpay-primary'
                         : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
                     }`}
                     onClick={() => setSidebarOpen(false)}
@@ -123,13 +123,13 @@ export default function Layout({ children }: LayoutProps) {
             >
               <Menu className="h-6 w-6" />
             </Button>
-            <Badge variant="secondary" className="text-xs bg-mypay-green/10 text-mypay-green">
+            <Badge variant="secondary" className="text-xs bg-darpay-primary/10 text-darpay-primary">
               Admin Portal
             </Badge>
           </div>
           <div className="flex items-center gap-2 md:gap-4">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-mypay-green rounded-full flex items-center justify-center text-white font-semibold text-sm">
+              <div className="w-8 h-8 bg-darpay-primary rounded-full flex items-center justify-center text-white font-semibold text-sm">
                 A
               </div>
               <div className="text-sm hidden md:block">
@@ -139,7 +139,7 @@ export default function Layout({ children }: LayoutProps) {
             </div>
             <button
               onClick={handleLogout}
-              className="px-4 py-2 bg-mypay-green hover:bg-mypay-green-dark text-white text-sm font-medium rounded-lg transition-colors"
+              className="px-4 py-2 bg-darpay-primary hover:bg-darpay-primary-dark text-white text-sm font-medium rounded-lg transition-colors"
             >
               Logout
             </button>

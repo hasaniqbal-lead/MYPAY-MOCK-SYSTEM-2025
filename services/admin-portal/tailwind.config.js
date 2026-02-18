@@ -50,12 +50,12 @@ module.exports = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
         },
-        mypay: {
-          green: 'hsl(var(--mypay-green))',
-          'green-dark': 'hsl(var(--mypay-green-dark))',
-          dark: 'hsl(var(--mypay-dark))',
-          'dark-bg': 'hsl(var(--mypay-dark-bg))',
-          light: 'hsl(var(--mypay-light))'
+        darpay: {
+          primary: 'hsl(var(--darpay-primary))',
+          'primary-dark': 'hsl(var(--darpay-primary-dark))',
+          dark: 'hsl(var(--darpay-dark))',
+          'dark-bg': 'hsl(var(--darpay-dark-bg))',
+          light: 'hsl(var(--darpay-light))'
         },
         status: {
           success: 'hsl(var(--status-success))',

@@ -4,13 +4,13 @@ import { generateApiKey, hashApiKey } from '../src/shared/utils';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Seeding database...');
+  console.log('🌱 Seeding DarPay Payout database...');
 
   // Clear existing data
   await prisma.ledgerEntry.deleteMany();
   await prisma.webhookDelivery.deleteMany();
   await prisma.outboxEvent.deleteMany();
-  await prisma.idempotencyKey.deleteMany();
+  await prisma.payoutIdempotencyKey.deleteMany();
   await prisma.payout.deleteMany();
   await prisma.merchantBalance.deleteMany();
   await prisma.merchant.deleteMany();
@@ -27,20 +27,15 @@ async function main() {
     { code: 'BAHL', name: 'Bank Al Habib Limited' },
     { code: 'MEEZAN', name: 'Meezan Bank Limited' },
     { code: 'ASKARI', name: 'Askari Bank Limited' },
-    { code: 'BANKALHABIB', name: 'Bank Al Habib' },
     { code: 'SONERI', name: 'Soneri Bank Limited' },
     { code: 'FBL', name: 'Faysal Bank Limited' },
     { code: 'BOP', name: 'Bank of Punjab' },
     { code: 'NBP', name: 'National Bank of Pakistan' },
-    { code: 'SBP', name: 'State Bank of Pakistan' },
   ];
 
   for (const bank of banks) {
-    await prisma.bankDirectory.create({
-      data: bank,
-    });
+    await prisma.bankDirectory.create({ data: bank });
   }
-
   console.log(`✅ Created ${banks.length} banks`);
 
   // Create wallets
@@ -52,46 +47,44 @@ async function main() {
   ];
 
   for (const wallet of wallets) {
-    await prisma.walletDirectory.create({
-      data: wallet,
-    });
+    await prisma.walletDirectory.create({ data: wallet });
   }
-
   console.log(`✅ Created ${wallets.length} wallets`);
 
-  // Create test merchant
+  // Create test merchant with payout API key
   const apiKey = generateApiKey();
   const hashedKey = hashApiKey(apiKey);
 
   const merchant = await prisma.merchant.create({
     data: {
-      name: 'Test Merchant',
-      email: 'merchant@test.com',
+      name: 'DarPay Test Merchant',
+      email: 'test@darpay.com',
       apiKey: hashedKey,
-      webhookUrl: process.env.WEBHOOK_URL || 'https://webhook.site/test',
+      apiKeyPlain: apiKey,
+      webhookUrl: 'https://webhook.site/darpay-test',
       isActive: true,
     },
   });
 
   console.log(`✅ Created merchant: ${merchant.name}`);
 
-  // Create merchant balance with initial balance
+  // Create merchant balance
   await prisma.merchantBalance.create({
     data: {
       merchantId: merchant.id,
-      balance: 1000000.00, // 1 million PKR
+      balance: 1000000.00,
       lockedBalance: 0.00,
       version: 0,
     },
   });
 
-  console.log('✅ Created merchant balance: 1,000,000 PKR');
+  console.log('✅ Created merchant balance: PKR 1,000,000');
 
-  console.log('\n🎉 Seeding completed!');
+  console.log('\n🎉 DarPay Payout Seeding Complete!');
   console.log('\n📋 Test Credentials:');
   console.log(`   API Key: ${apiKey}`);
   console.log(`   Merchant ID: ${merchant.id}`);
-  console.log('\n💡 Use this API key in the X-API-KEY header for testing');
+  console.log('\n💡 Use this API key in the X-API-KEY header');
   console.log('\n🧪 Test Account Numbers:');
   console.log('   123450001 → SUCCESS');
   console.log('   987650002 → RETRY then SUCCESS');

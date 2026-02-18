@@ -2,11 +2,11 @@
 
 ## 🎉 Both Services Deployed Successfully
 
-### 1. ✅ Payment API (sandbox.mycodigital.io)
+### 1. ✅ Payment API (api.vstore.cloud)
 - **Status**: ✅ Running and Updated
 - **Container**: `dummy-payment-api`
 - **Port**: 3000
-- **URL**: https://sandbox.mycodigital.io
+- **URL**: https://api.vstore.cloud
 
 #### What's Deployed:
 - ✅ Portal API endpoints (`/api/portal/*`)
@@ -29,11 +29,11 @@
 - `GET /api/portal/transactions/export/:format` - Export transactions
 - `GET /api/portal/dashboard/stats` - Dashboard statistics
 
-### 2. ✅ Merchant Portal (devportal.mycodigital.io)
+### 2. ✅ Merchant Portal (merchant.vstore.cloud)
 - **Status**: ✅ Running
 - **Container**: `dummy-portal-frontend`
 - **Port**: 3001
-- **URL**: https://devportal.mycodigital.io
+- **URL**: https://merchant.vstore.cloud
 
 #### What's Deployed:
 - ✅ Login page with Register button
@@ -48,24 +48,24 @@
 ## 🔗 Connection Status
 
 - ✅ Portal → API: Connected
-- ✅ Portal uses: `NEXT_PUBLIC_API_URL=https://sandbox.mycodigital.io`
+- ✅ Portal uses: `NEXT_PUBLIC_API_URL=https://api.vstore.cloud`
 - ✅ API CORS: Configured for portal access
 - ✅ Database: All tables migrated (merchants, merchant_id columns)
 
 ## 📊 Existing Merchants
 
 1. **Myco**
-   - Email: `myco@mycodigital.io`
+   - Email: `myco@vstore.cloud`
    - Password: `Myco@2024`
    - API Key: `test-myco-vendor-001-abc12345`
 
 2. **Emirates Draw**
-   - Email: `emiratesdraw@mycodigital.io`
+   - Email: `emiratesdraw@vstore.cloud`
    - Password: `Emirates@2024`
    - API Key: `test-emirates-vendor-001-def67890`
 
 3. **TJ Marketing**
-   - Email: `tjm@mycodigital.io`
+   - Email: `tjm@vstore.cloud`
    - Password: `TJM@2024`
    - API Key: `test-tjm-vendor-001-ghi11223`
 
@@ -74,7 +74,7 @@
 1. ✅ Uploaded portal files to VPS
 2. ✅ Built portal Docker image
 3. ✅ Started portal container
-4. ✅ Configured Nginx for devportal.mycodigital.io
+4. ✅ Configured Nginx for merchant.vstore.cloud
 5. ✅ Set up SSL certificate (HTTPS)
 6. ✅ Rebuilt API container with new portal endpoints
 7. ✅ Verified all dependencies installed
@@ -83,8 +83,8 @@
 
 ## ✅ Everything is Ready!
 
-- **Portal**: https://devportal.mycodigital.io
-- **API**: https://sandbox.mycodigital.io
+- **Portal**: https://merchant.vstore.cloud
+- **API**: https://api.vstore.cloud
 - **Database**: All migrations applied
 - **SSL**: Both domains secured
 - **Containers**: Both running and healthy

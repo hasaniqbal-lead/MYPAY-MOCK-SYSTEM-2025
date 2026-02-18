@@ -92,11 +92,11 @@ After deployment, your services will be available at:
 ## 🔑 Test Credentials
 
 ### Merchant Portal
-- **Email:** test@mycodigital.io
+- **Email:** test@vstore.cloud
 - **Password:** test123456
 
 ### Admin Portal
-- **Email:** admin@mycodigital.io
+- **Email:** admin@vstore.cloud
 - **Password:** admin123456
 
 ### API Keys
