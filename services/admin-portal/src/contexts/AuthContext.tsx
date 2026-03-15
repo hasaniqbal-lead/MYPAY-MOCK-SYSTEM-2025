@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // In a real app, validate token with backend
       setAdmin({
         id: 1,
-        email: 'admin@mycodigital.io',
+        email: 'admin@mint.pay',
         name: 'System Admin',
         role: 'super_admin',
       })
@@ -43,12 +43,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       // Mock login - in production, call the API
-      if (email === 'admin@mycodigital.io' && password === 'admin123456') {
+      if (email === 'admin@mint.pay' && password === 'admin123456') {
         const mockToken = 'mock-admin-token-' + Date.now()
         Cookies.set('admin_token', mockToken, { expires: 1 })
         setAdmin({
           id: 1,
-          email: 'admin@mycodigital.io',
+          email: 'admin@mint.pay',
           name: 'System Admin',
           role: 'super_admin',
         })

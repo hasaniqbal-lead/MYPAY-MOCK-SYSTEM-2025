@@ -13,7 +13,7 @@ function hashApiKey(apiKey: string): string {
 }
 
 async function main() {
-  console.log('🌱 Seeding DarPay database (clean)...');
+  console.log('🌱 Seeding Mint database (clean)...');
 
   // Clear ALL existing data (order matters for FK constraints)
   await prisma.paymentWebhookLog.deleteMany();
@@ -159,17 +159,17 @@ async function main() {
   // SUMMARY
   // ============================================
   console.log('\n' + '='.repeat(50));
-  console.log('  🎉 DarPay Database Seeding Complete!');
+  console.log('  🎉 Mint Database Seeding Complete!');
   console.log('='.repeat(50));
 
   console.log('\n📋 MERCHANT CREDENTIALS:');
-  console.log('   Email:        test@darpay.com');
+  console.log('   Email:        test@mint.pay');
   console.log('   Password:     test123456');
   console.log('   Payment Key:  test-api-key-123');
   console.log(`   Payout Key:   ${payoutApiKey}`);
 
   console.log('\n👤 ADMIN CREDENTIALS:');
-  console.log('   Email:        admin@darpay.com');
+  console.log('   Email:        admin@mint.pay');
   console.log('   Password:     admin@@1234');
 
   console.log('\n🧪 PAYMENT TEST SCENARIOS:');

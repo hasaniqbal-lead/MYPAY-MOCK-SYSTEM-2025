@@ -111,11 +111,11 @@ export default function RegisterForm() {
                   className="h-10 rounded-r-none"
                 />
                 <span className="inline-flex items-center px-4 rounded-r-md border border-l-0 border-input bg-muted text-muted-foreground text-sm">
-                  @mycodigital.io
+                  @mint.pay
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Letters only, no spaces. Your login email will be: <span className="font-mono text-mypay-green">{formData.username || 'username'}@mycodigital.io</span>
+                Letters only, no spaces. Your login email will be: <span className="font-mono text-mypay-green">{formData.username || 'username'}@mint.pay</span>
               </p>
             </div>
 

@@ -4,7 +4,7 @@ import { generateApiKey, hashApiKey } from '../src/shared/utils';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Seeding DarPay Payout database...');
+  console.log('🌱 Seeding Mint Payout database...');
 
   // Clear existing data
   await prisma.ledgerEntry.deleteMany();
@@ -57,11 +57,11 @@ async function main() {
 
   const merchant = await prisma.merchant.create({
     data: {
-      name: 'DarPay Test Merchant',
-      email: 'test@darpay.com',
+      name: 'Mint Test Merchant',
+      email: 'test@mint.pay',
       apiKey: hashedKey,
       apiKeyPlain: apiKey,
-      webhookUrl: 'https://webhook.site/darpay-test',
+      webhookUrl: 'https://webhook.site/mint-test',
       isActive: true,
     },
   });
@@ -80,7 +80,7 @@ async function main() {
 
   console.log('✅ Created merchant balance: PKR 1,000,000');
 
-  console.log('\n🎉 DarPay Payout Seeding Complete!');
+  console.log('\n🎉 Mint Payout Seeding Complete!');
   console.log('\n📋 Test Credentials:');
   console.log(`   API Key: ${apiKey}`);
   console.log(`   Merchant ID: ${merchant.id}`);

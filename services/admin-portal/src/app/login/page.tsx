@@ -70,7 +70,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@mycodigital.io"
+                placeholder="admin@mint.pay"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

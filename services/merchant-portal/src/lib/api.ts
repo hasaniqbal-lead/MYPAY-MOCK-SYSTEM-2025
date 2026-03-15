@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://sandbox.mycodigital.io'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api-mint.0000.mx'
 
 const api = axios.create({
   baseURL: API_URL,
@@ -41,13 +41,13 @@ export const authAPI = {
       return response.data
     } catch (error) {
       // Mock login for local development when API is unreachable
-      if (email === 'test@mycodigital.io' && password === 'test123456') {
+      if (email === 'test@mint.pay' && password === 'test123456') {
         return {
           success: true,
           token: 'mock-merchant-token-' + Date.now(),
           merchant: {
             id: '1',
-            email: 'test@mycodigital.io',
+            email: 'test@mint.pay',
             companyName: 'Test Merchant Company',
           },
         }
@@ -65,7 +65,7 @@ export const authAPI = {
         success: true,
         password: 'Generated' + Math.random().toString(36).substring(2, 10),
         merchant: {
-          email: data.username + '@mycodigital.io',
+          email: data.username + '@mint.pay',
           companyName: data.companyName,
         },
       }
@@ -93,7 +93,7 @@ export const merchantAPI = {
         success: true,
         merchant: {
           id: '1',
-          email: 'test@mycodigital.io',
+          email: 'test@mint.pay',
           companyName: 'Test Merchant Company',
         },
       }

@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node vps-ssh.js \"docker exec super-admin-portal ls /app/services/super-admin-portal/ && echo ''---'' && docker exec super-admin-portal ls /app/services/super-admin-portal/app/ 2>/dev/null || docker exec super-admin-portal ls /app/services/super-admin-portal/src/ 2>/dev/null\")",
+      "Bash(node vps-ssh.js \"docker exec super-admin-api cat /app/services/super-admin-api/src/config/database.ts\")",
+      "Bash(node vps-ssh.js \"docker inspect super-admin-mysql --format=''{{json .Config.Env}}'' 2>/dev/null | tr '','' ''\\\\n''\")",
+      "Bash(node vps-ssh.js \"cat /opt/darpay/docker-compose.super-admin.yml\")",
+      "Bash(node vps-ssh.js \"cat /etc/nginx/sites-enabled/mint-vstore.conf\")",
+      "Bash(node vps-ssh.js \"docker exec super-admin-api find /app/services/super-admin-api -name ''Dockerfile'' -exec cat {} \\\\; && echo ''===PKG==='' && docker exec super-admin-api cat /app/services/super-admin-api/package.json && echo ''===TSCONFIG==='' && docker exec super-admin-api cat /app/services/super-admin-api/tsconfig.json 2>/dev/null\")",
+      "Bash(node vps-ssh.js \"docker exec super-admin-portal cat /app/services/super-admin-portal/package.json && echo ''===NEXT_CONFIG==='' && docker exec super-admin-portal cat /app/services/super-admin-portal/next.config.js && echo ''===DOCKERFILE==='' && docker exec super-admin-portal find /app/services/super-admin-portal -name ''Dockerfile'' -exec cat {} \\\\; && echo ''===ENTRYPOINT==='' && docker exec super-admin-portal cat /app/docker-entrypoint.sh\")"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\Katana\\Desktop\\Projects\\darpay-super-admin\\services\\super-admin-api\\src\\templates",
+      "C:\\Users\\Katana\\Desktop\\Projects\\darpay-super-admin",
+      "\\tmp"
+    ]
+  }
+}

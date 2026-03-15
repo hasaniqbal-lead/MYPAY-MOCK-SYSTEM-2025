@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://mock.mycodigital.io'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api-mint.0000.mx'
 
 const api = axios.create({
   baseURL: API_URL,
@@ -41,7 +41,7 @@ export const authAPI = {
       success: true,
       password: 'Generated' + Math.random().toString(36).substring(2, 10),
       merchant: {
-        email: data.username + '@mycodigital.io',
+        email: data.username + '@mint.pay',
         companyName: data.companyName,
       },
     }

@@ -6,7 +6,7 @@ import { BrandStyleInjector } from '@/components/BrandStyleInjector'
 
 const inter = Inter({ subsets: ['latin'] })
 
-const brandName = process.env.NEXT_PUBLIC_ORG_BRAND_NAME || 'DarPay'
+const brandName = process.env.NEXT_PUBLIC_ORG_BRAND_NAME || 'Mint'
 
 export const metadata: Metadata = {
   title: `${brandName} Admin Portal`,

@@ -121,7 +121,7 @@ export default function CredentialsPage() {
                       </Badge>
                     </div>
                     <div className="text-xs text-muted-foreground mb-2">
-                      Use this key for Payment API requests (mock.mycodigital.io)
+                      Use this key for Payment API requests (api-mint.0000.mx)
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Created: {new Date(credentials.createdAt || Date.now()).toLocaleDateString()}
@@ -146,7 +146,7 @@ export default function CredentialsPage() {
                       </Badge>
                     </div>
                     <div className="text-xs text-muted-foreground mb-2">
-                      Use this key for Payout API requests (sandbox.mycodigital.io)
+                      Use this key for Payout API requests (api-mint.0000.mx)
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Created: {new Date(credentials.createdAt || Date.now()).toLocaleDateString()}
