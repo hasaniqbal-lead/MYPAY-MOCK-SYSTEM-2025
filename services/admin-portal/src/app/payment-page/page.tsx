@@ -67,7 +67,7 @@ interface MerchantConfig {
 }
 
 const FIELD_PATHS = [
-  { value: 'advanced.showPoweredBy', label: 'Show "Powered by MyPay"' },
+  { value: 'advanced.showPoweredBy', label: 'Show "Powered by" branding' },
   { value: 'advanced.customCSS', label: 'Custom CSS' },
   { value: 'branding.merchantName', label: 'Merchant Name' },
   { value: 'branding.merchantLogo', label: 'Merchant Logo' },

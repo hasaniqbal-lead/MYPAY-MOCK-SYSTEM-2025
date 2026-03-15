@@ -61,7 +61,7 @@ class CheckoutController {
 
       // Generate checkout URL - points to the payment-page service
       // In production: https://payment-darpay.vstore.cloud
-      const paymentPageUrl = process.env.PAYMENT_PAGE_URL || 'https://payment-darpay.vstore.cloud';
+      const paymentPageUrl = process.env.PAYMENT_PAGE_URL || 'http://localhost:80';
       const checkoutUrl = `${paymentPageUrl}/${checkoutId}`;
 
       // Return success response

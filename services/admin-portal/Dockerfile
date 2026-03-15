@@ -20,6 +20,16 @@ COPY services/admin-portal ./services/admin-portal/
 
 # Build the service
 ENV NEXT_TELEMETRY_DISABLED=1
+
+# Branding build args — baked into the Next.js build
+ARG NEXT_PUBLIC_ORG_BRAND_NAME
+ARG NEXT_PUBLIC_ORG_PRIMARY_COLOR
+ARG NEXT_PUBLIC_ORG_LOGO_URL
+ARG NEXT_PUBLIC_ORG_LOGO_DARK_URL
+ARG NEXT_PUBLIC_ORG_SUPPORT_EMAIL
+ARG NEXT_PUBLIC_ORG_SLUG
+ARG NEXT_PUBLIC_ADMIN_API_URL
+
 RUN pnpm --filter @darpay/admin-portal build
 
 # Production stage

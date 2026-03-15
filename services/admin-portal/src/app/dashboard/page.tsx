@@ -90,7 +90,7 @@ export default function DashboardPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-foreground">System Dashboard</h1>
-          <p className="text-muted-foreground">Overview of the MyPay Mock Platform</p>
+          <p className="text-muted-foreground">Platform Overview</p>
         </div>
 
         {/* Overview Cards */}

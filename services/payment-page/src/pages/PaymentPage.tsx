@@ -304,7 +304,7 @@ function Footer({ config }: { config: ThemeConfiguration | null }) {
       {showPoweredBy && (
         <p className="text-xs text-text-disabled">
           Powered by{' '}
-          <span className="text-primary font-medium">DarPay</span>
+          <span className="text-primary font-medium">{import.meta.env.VITE_BRAND_NAME || 'DarPay'}</span>
         </p>
       )}
     </div>

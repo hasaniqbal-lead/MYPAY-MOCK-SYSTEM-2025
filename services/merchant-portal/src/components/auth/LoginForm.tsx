@@ -40,7 +40,7 @@ export default function LoginForm() {
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-bold text-mypay-dark">Welcome Back</CardTitle>
         <CardDescription>
-          Sign in to your MyPay developer account
+          Sign in to your merchant account
         </CardDescription>
       </CardHeader>
       <CardContent>

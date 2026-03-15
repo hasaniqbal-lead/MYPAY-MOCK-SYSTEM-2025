@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Code, Shield, Zap } from 'lucide-react'
 import LoginForm from '@/components/auth/LoginForm'
+import { brandConfig } from '@/lib/brand-config'
 import RegisterForm from '@/components/auth/RegisterForm'
 
 export default function LandingPage() {
@@ -93,9 +94,9 @@ export default function LandingPage() {
             {/* Logo and Main Heading */}
             <div className="text-center lg:text-left">
               <div className="flex items-center justify-center lg:justify-start gap-4 mb-8">
-                <img 
-                  src="/68b701ed-8fcb-48ba-a850-5d370741bcd5.png" 
-                  alt="MyPay Logo" 
+                <img
+                  src={brandConfig.logoUrl}
+                  alt={`${brandConfig.brandName} Logo`}
                   className="h-24 w-auto lg:h-32"
                 />
                 <Badge variant="secondary" className="bg-mypay-green/10 text-mypay-green text-sm">

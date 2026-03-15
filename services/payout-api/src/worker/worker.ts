@@ -234,8 +234,8 @@ async function processWebhook(
     const response = await axios.post(merchant.webhookUrl, JSON.parse(webhookPayload), {
       headers: {
         'Content-Type': 'application/json',
-        'X-DarPay-Signature': signature,
-        'X-DarPay-Event': eventType,
+        'X-Payout-Signature': signature,
+        'X-Payout-Event': eventType,
       },
       timeout: 10000,
     });

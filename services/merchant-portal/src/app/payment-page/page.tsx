@@ -1047,11 +1047,11 @@ export default function PaymentPageSettingsPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <div className="font-medium text-foreground">
-                  Show "Powered by MyPay"
+                  Show "Powered by" branding
                   <LockedIndicator path="advanced.showPoweredBy" />
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Display MyPay branding on the payment page
+                  Display platform branding on the payment page
                 </div>
               </div>
               <Switch

@@ -201,10 +201,10 @@ class AdminMerchantsController {
       const passwordHash = await bcrypt.hash(password, 10);
 
       // Generate Payment API key (for checkouts)
-      const paymentApiKey = `darpay_${crypto.randomBytes(32).toString('hex')}`;
+      const paymentApiKey = `${process.env.ORG_SLUG || 'pay'}_${crypto.randomBytes(32).toString('hex')}`;
 
       // Generate Payout API key (plain and hashed)
-      const payoutApiKeyPlain = `darpay_${crypto.randomBytes(32).toString('hex')}`;
+      const payoutApiKeyPlain = `${process.env.ORG_SLUG || 'pay'}_${crypto.randomBytes(32).toString('hex')}`;
       const payoutApiKeyHash = await bcrypt.hash(payoutApiKeyPlain, 10);
 
       // Create merchant

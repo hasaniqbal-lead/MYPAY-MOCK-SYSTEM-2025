@@ -145,6 +145,14 @@ export const merchantAPI = {
       }
     }
   },
+  getRateLimits: async () => {
+    try {
+      const response = await api.get('/api/v1/portal/rate-limits')
+      return response.data
+    } catch {
+      return null
+    }
+  },
 }
 
 // Transactions API

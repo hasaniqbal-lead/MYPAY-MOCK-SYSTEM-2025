@@ -13,9 +13,15 @@ COPY services/payment-page ./services/payment-page/
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# Build the app
-ARG VITE_API_URL=https://api-darpay.vstore.cloud
+# Build the app — branding baked at build time
+ARG VITE_API_URL
+ARG VITE_BRAND_NAME
+ARG VITE_PRIMARY_COLOR
+ARG VITE_SUPPORT_EMAIL
 ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_BRAND_NAME=$VITE_BRAND_NAME
+ENV VITE_PRIMARY_COLOR=$VITE_PRIMARY_COLOR
+ENV VITE_SUPPORT_EMAIL=$VITE_SUPPORT_EMAIL
 
 WORKDIR /app/services/payment-page
 RUN pnpm build

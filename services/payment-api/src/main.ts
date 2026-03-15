@@ -20,6 +20,9 @@ import { adminPaymentPageController } from './controllers/adminPaymentPageContro
 import { requireAdminAuth } from './middleware/adminAuth';
 import { webhookService } from './services/webhookService';
 import { AuthenticatedRequest } from './types';
+import { rateLimitMiddleware, getRateLimitInfo } from './middleware/rateLimit';
+import { requireFeature } from './middleware/featureGate';
+import { enforceTransactionCap, enforceVolumeCap, enforceMerchantLimit } from './middleware/limitsEnforcement';
 
 dotenv.config();
 
@@ -45,10 +48,23 @@ const apiRouter = express.Router();
 apiRouter.get('/health', (_req: Request, res: Response) => {
   res.json({
     status: 'OK',
-    service: 'DarPay Payment API',
+    service: `${process.env.ORG_BRAND_NAME || 'Payment'} API`,
     timestamp: new Date().toISOString(),
   });
 });
+
+// Rate limiting (applied to all API routes below)
+apiRouter.use(rateLimitMiddleware as express.RequestHandler);
+
+// Rate limit info endpoint (for merchant portal display)
+apiRouter.get(
+  '/portal/rate-limits',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => {
+    const info = getRateLimitInfo(req);
+    res.json({ success: true, ...info });
+  }
+);
 
 // ============================================
 // Checkout API Routes
@@ -57,6 +73,9 @@ apiRouter.get('/health', (_req: Request, res: Response) => {
 // Create checkout session
 apiRouter.post(
   '/checkouts',
+  requireFeature('payments') as express.RequestHandler,
+  enforceTransactionCap as express.RequestHandler,
+  enforceVolumeCap as express.RequestHandler,
   simpleValidation as express.RequestHandler,
   validateCheckoutParams as express.RequestHandler,
   (req: Request, res: Response) => checkoutController.createCheckout(req as AuthenticatedRequest, res)
@@ -175,9 +194,10 @@ apiRouter.get(
   (req: Request, res: Response) => portalTransactionsController.export(req as AuthenticatedRequest, res)
 );
 
-// Payout routes (auth required)
+// Payout routes (auth required, feature-gated)
 apiRouter.get(
   '/portal/payouts',
+  requireFeature('payouts') as express.RequestHandler,
   requireAuth as express.RequestHandler,
   (req: Request, res: Response) => portalPayoutsController.list(req as AuthenticatedRequest, res)
 );
@@ -301,6 +321,7 @@ apiRouter.get(
 apiRouter.post(
   '/admin/merchants',
   requireAdminAuth as express.RequestHandler,
+  enforceMerchantLimit as express.RequestHandler,
   (req: Request, res: Response) => adminMerchantsController.createMerchant(req as any, res)
 );
 
@@ -490,7 +511,7 @@ apiRouter.get('/payment-page/session/:checkoutId', async (req: Request, res: Res
       paymentMethod: transaction.payment_method,
       status: transaction.status,
       merchantId: transaction.merchant_id,
-      merchantName: transaction.merchant?.company_name || transaction.merchant?.name || 'DarPay',
+      merchantName: transaction.merchant?.company_name || transaction.merchant?.name || process.env.ORG_BRAND_NAME || 'Payment',
       configuration: config ? {
         id: config.id,
         name: config.name,

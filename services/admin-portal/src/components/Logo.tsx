@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { brandConfig } from '@/lib/brand-config'
 
 interface LogoProps {
   className?: string
@@ -11,9 +12,9 @@ export default function Logo({ className = '', showTag = false }: LogoProps) {
   return (
     <Link href="/dashboard" className={`flex items-center ${className}`}>
       <div className="flex items-center">
-        <img 
-          src="/12cfc784-5cca-41b2-968b-2ab31add4c8d.png" 
-          alt="DarPay Logo" 
+        <img
+          src={brandConfig.logoUrl}
+          alt={`${brandConfig.brandName} Logo`}
           className="h-14 w-auto flex-shrink-0"
         />
         {showTag && (

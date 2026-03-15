@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { brandConfig } from '@/lib/brand-config'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -60,9 +61,9 @@ export default function Layout({ children }: LayoutProps) {
           {/* Logo */}
           <div className="p-4 md:p-6 border-b border-border">
             <div className="flex items-center gap-2">
-              <img 
-                src="/12cfc784-5cca-41b2-968b-2ab31add4c8d.png" 
-                alt="DarPay Logo" 
+              <img
+                src={brandConfig.logoUrl}
+                alt={`${brandConfig.brandName} Logo`}
                 className="h-14 w-auto flex-shrink-0"
               />
             </div>

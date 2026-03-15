@@ -1,0 +1,115 @@
+name: Build & Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REGISTRY: docker.io
+  IMAGE_PREFIX: hasanvatrix/darpay
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - name: payment-api
+            dockerfile: services/payment-api/Dockerfile
+            image: darpay-payment-api
+          - name: payout-api
+            dockerfile: services/payout-api/Dockerfile
+            image: darpay-payout-api
+          - name: merchant-portal
+            dockerfile: services/merchant-portal/Dockerfile
+            image: darpay-merchant-portal
+          - name: admin-portal
+            dockerfile: services/admin-portal/Dockerfile
+            image: darpay-admin-portal
+          - name: payment-page
+            dockerfile: services/payment-page/Dockerfile
+            image: darpay-payment-page
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push ${{ matrix.service.name }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.service.dockerfile }}
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/hasanvatrix/${{ matrix.service.image }}:latest
+            ${{ env.REGISTRY }}/hasanvatrix/${{ matrix.service.image }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            echo "=========================================="
+            echo "  Deploying DarPay Platform Services"
+            echo "  Commit: ${{ github.sha }}"
+            echo "=========================================="
+
+            # Pull latest images
+            echo "[1/4] Pulling latest images..."
+            docker pull hasanvatrix/darpay-payment-api:latest
+            docker pull hasanvatrix/darpay-payout-api:latest
+            docker pull hasanvatrix/darpay-merchant-portal:latest
+            docker pull hasanvatrix/darpay-admin-portal:latest
+            docker pull hasanvatrix/darpay-payment-page:latest
+
+            # Restart DarPay main containers
+            echo "[2/4] Restarting DarPay containers..."
+            cd /opt/darpay
+            docker compose pull 2>/dev/null || true
+            docker compose up -d --remove-orphans
+
+            # Restart any org instances that use the same images
+            echo "[3/4] Restarting org containers..."
+            for orgdir in /opt/darpay/orgs/*/; do
+              if [ -f "$orgdir/docker-compose.yml" ]; then
+                orgname=$(basename "$orgdir")
+                echo "  Restarting org: $orgname"
+                cd "$orgdir"
+                docker compose pull 2>/dev/null || true
+                docker compose up -d --remove-orphans
+              fi
+            done
+
+            # Health checks
+            echo "[4/4] Running health checks..."
+            sleep 10
+
+            # DarPay health
+            if curl -sf http://localhost:4102/api/v1/health > /dev/null 2>&1; then
+              echo "  ✅ DarPay Payment API: healthy"
+            else
+              echo "  ⚠️  DarPay Payment API: not responding (may still be starting)"
+            fi
+
+            echo ""
+            echo "=========================================="
+            echo "  Deployment complete!"
+            echo "=========================================="

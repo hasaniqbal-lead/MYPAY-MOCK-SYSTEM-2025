@@ -89,7 +89,7 @@ class WebhookService {
       const response = await axios.post(url, payload, {
         headers: {
           'Content-Type': 'application/json',
-          'X-Webhook-Source': 'darpay-payment-api',
+          'X-Webhook-Source': `${process.env.ORG_SLUG || 'payment'}-api`,
         },
         timeout: 10000,
       });

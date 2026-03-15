@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { brandConfig } from '@/lib/brand-config'
 import { adminAPI } from '@/lib/api'
 
 export default function LoginPage() {
@@ -44,9 +45,9 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex flex-col items-center justify-center gap-2">
-            <img 
-              src="/12cfc784-5cca-41b2-968b-2ab31add4c8d.png" 
-              alt="MyPay Logo" 
+            <img
+              src={brandConfig.logoUrl}
+              alt={`${brandConfig.brandName} Logo`}
               className="h-16 w-auto"
             />
             <div className="text-xs text-mypay-green font-medium tracking-wider">ADMIN PORTAL</div>

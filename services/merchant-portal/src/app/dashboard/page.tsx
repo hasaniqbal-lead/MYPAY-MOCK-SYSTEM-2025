@@ -57,7 +57,7 @@ export default function DashboardPage() {
           <div>
             <h1 className="text-3xl font-bold text-foreground">Welcome back, {user?.companyName || 'User'}</h1>
             <p className="text-muted-foreground">
-              Here's what's happening with your MyPay merchant account today.
+              Here's what's happening with your account today.
             </p>
           </div>
         </div>

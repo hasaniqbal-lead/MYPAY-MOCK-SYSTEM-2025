@@ -13,7 +13,7 @@ export const defaultThemeConfiguration: ThemeConfiguration = {
 
   branding: {
     merchantLogo: '',
-    merchantName: 'DarPay',
+    merchantName: import.meta.env.VITE_BRAND_NAME || 'DarPay',
   },
 
   colors: {
@@ -101,7 +101,7 @@ export const defaultThemeConfiguration: ThemeConfiguration = {
       submessage: 'We were unable to process your payment',
       showRetry: true,
       showSupport: true,
-      supportEmail: 'support@darpay.net',
+      supportEmail: import.meta.env.VITE_SUPPORT_EMAIL || 'support@darpay.net',
     },
   },
 

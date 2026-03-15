@@ -81,7 +81,7 @@ export default function RegisterForm() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-mypay-dark">Create Merchant Account</CardTitle>
           <CardDescription>
-            Get started with MyPay's payment solutions
+            Get started with our payment solutions
           </CardDescription>
         </CardHeader>
         <CardContent>

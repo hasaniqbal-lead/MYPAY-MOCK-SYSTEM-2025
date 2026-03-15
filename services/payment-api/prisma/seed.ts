@@ -103,9 +103,9 @@ async function main() {
 
   const merchant = await prisma.merchant.create({
     data: {
-      name: 'DarPay Test Merchant',
-      company_name: 'DarPay Test Merchant',
-      email: 'test@darpay.com',
+      name: `${process.env.ORG_BRAND_NAME || 'Test'} Test Merchant`,
+      company_name: `${process.env.ORG_BRAND_NAME || 'Test'} Test Merchant`,
+      email: `test@${process.env.ORG_EMAIL_DOMAIN || 'test.com'}`,
       password_hash: merchantPassword,
       apiKey: payoutApiKeyHash,
       apiKeyPlain: payoutApiKey,
@@ -146,9 +146,9 @@ async function main() {
 
   await prisma.adminUser.create({
     data: {
-      email: 'admin@darpay.com',
+      email: process.env.ORG_ADMIN_EMAIL || `admin@${process.env.ORG_EMAIL_DOMAIN || 'test.com'}`,
       password_hash: adminPassword,
-      name: 'DarPay Admin',
+      name: `${process.env.ORG_BRAND_NAME || 'System'} Admin`,
       role: 'super_admin',
       is_active: true,
     },

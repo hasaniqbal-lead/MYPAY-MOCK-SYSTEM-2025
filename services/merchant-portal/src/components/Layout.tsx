@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Home, ArrowUpDown, Shield, Settings, Palette } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { brandConfig } from '@/lib/brand-config'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth()
@@ -44,9 +45,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {/* Logo */}
           <div className="p-4 md:p-6 border-b border-border">
             <div className="flex items-center gap-2">
-              <img 
-                src="/12cfc784-5cca-41b2-968b-2ab31add4c8d.png" 
-                alt="DarPay Logo" 
+              <img
+                src={brandConfig.logoUrl}
+                alt={`${brandConfig.brandName} Logo`}
                 className="h-14 w-auto flex-shrink-0"
               />
             </div>

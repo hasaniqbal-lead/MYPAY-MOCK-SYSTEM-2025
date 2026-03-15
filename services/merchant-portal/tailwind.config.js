@@ -57,6 +57,9 @@ module.exports = {
           'dark-bg': 'hsl(var(--darpay-dark-bg))',
           light: 'hsl(var(--darpay-light))'
         },
+        'mypay-green': 'hsl(var(--darpay-primary))',
+        'mypay-green-dark': 'hsl(var(--darpay-primary-dark))',
+        'mypay-dark': 'hsl(var(--darpay-dark))',
         status: {
           success: 'hsl(var(--status-success))',
           warning: 'hsl(var(--status-warning))',

@@ -6,19 +6,35 @@ import Layout from '@/components/Layout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Copy, Eye, EyeOff, Plus } from 'lucide-react'
+import { ArrowLeft, Copy, Eye, EyeOff, Plus, Zap } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+
+interface RateLimitInfo {
+  limits: Record<string, number>
+  usage: Record<string, { used: number; remaining: number; resetsAt: string }>
+}
 
 export default function CredentialsPage() {
   const [credentials, setCredentials] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [showKeys, setShowKeys] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [rateLimits, setRateLimits] = useState<RateLimitInfo | null>(null)
   const router = useRouter()
 
   useEffect(() => {
     loadCredentials()
+    loadRateLimits()
   }, [])
+
+  const loadRateLimits = async () => {
+    try {
+      const data = await merchantAPI.getRateLimits()
+      setRateLimits(data)
+    } catch {
+      // Rate limits endpoint may not exist yet
+    }
+  }
 
   const loadCredentials = async () => {
     try {
@@ -170,6 +186,38 @@ export default function CredentialsPage() {
           <div className="text-center py-12 text-muted-foreground">
             No credentials found
           </div>
+        )}
+
+        {/* API Rate Limits */}
+        {rateLimits && (
+          <Card className="shadow-elevation">
+            <CardHeader>
+              <CardTitle className="text-foreground flex items-center gap-2">
+                <Zap className="h-5 w-5 text-darpay-primary" />
+                API Rate Limits
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">Your current API rate limits. Each API call uses 1 credit.</p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {Object.entries(rateLimits.limits).map(([window, limit]) => {
+                  const usage = rateLimits.usage[window]
+                  const labels: Record<string, string> = { day: 'Per Day', hour: 'Per Hour', minute: 'Per Minute', second: 'Per Second' }
+                  return (
+                    <div key={window} className="text-center p-4 border rounded-lg">
+                      <div className="text-2xl font-bold text-foreground">{limit}</div>
+                      <div className="text-sm text-muted-foreground">{labels[window] || window}</div>
+                      {usage && (
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {usage.used} used / {usage.remaining} left
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </CardContent>
+          </Card>
         )}
       </div>
     </Layout>
