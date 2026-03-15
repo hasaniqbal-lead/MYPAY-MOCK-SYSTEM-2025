@@ -16,12 +16,12 @@ export function enforceTransactionCap(req: Request, res: Response, next: NextFun
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
-  prisma.transaction.count({
+  prisma.paymentTransaction.count({
     where: {
       created_at: { gte: monthStart },
     },
   })
-    .then((count) => {
+    .then((count: number) => {
       if (count >= limit) {
         res.status(429).json({
           success: false,
@@ -52,13 +52,13 @@ export function enforceVolumeCap(req: Request, res: Response, next: NextFunction
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
-  prisma.transaction.aggregate({
+  prisma.paymentTransaction.aggregate({
     _sum: { amount: true },
     where: {
       created_at: { gte: monthStart },
     },
   })
-    .then((result) => {
+    .then((result: any) => {
       const totalVolume = Number(result._sum.amount || 0);
       if (totalVolume >= limit) {
         res.status(429).json({
