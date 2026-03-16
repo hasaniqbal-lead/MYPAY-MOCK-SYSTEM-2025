@@ -11,6 +11,10 @@ const brandName = process.env.NEXT_PUBLIC_ORG_BRAND_NAME || 'Mint'
 export const metadata: Metadata = {
   title: `${brandName} Admin Portal`,
   description: `Admin Portal for ${brandName} Payment Platform`,
+  icons: {
+    icon: '/default-logo.webp',
+    apple: '/default-logo.webp',
+  },
 }
 
 export default function RootLayout({

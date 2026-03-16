@@ -121,7 +121,7 @@ export const merchantAPI = {
       // Mock credentials for local development
       return {
         paymentApiKey: 'test-api-key-123',
-        payoutApiKey: 'mypay_mock_payout_key_for_local_testing',
+        payoutApiKey: 'mock_payout_key_for_local_testing',
         merchantId: 'MERCHANT_000001',
         createdAt: new Date().toISOString(),
       }
