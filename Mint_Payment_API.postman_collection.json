@@ -1,11 +1,11 @@
 {
   "info": {
-    "name": "DarPay Payment API",
-    "description": "Complete Payment API collection for DarPay Mock Payment Platform.\n\n## Auth\n- Checkout/Transaction endpoints: `X-Api-Key` header\n- Portal endpoints: `Authorization: Bearer <jwt>` (login first)\n- Admin endpoints: `Authorization: Bearer <jwt>` (admin login first)\n\n## Test Credentials\n- Merchant: test@mycodigital.io / test123456\n- Merchant 2: hasaniqbal@mycodigital.io / hasan123456\n- Admin: admin@mycodigital.io / admin@@1234\n- API Key: test-api-key-123\n\n## Test Scenarios\n- Success: 03030000000 / 4242424242424242\n- Failed: 03021111111\n- Declined card: 4000000000000002",
+    "name": "Mint Payment API",
+    "description": "Complete Payment API collection for Mint Mock Payment Platform.\n\n## Auth\n- Checkout/Transaction endpoints: `X-Api-Key` header\n- Portal endpoints: `Authorization: Bearer <jwt>` (login first)\n- Admin endpoints: `Authorization: Bearer <jwt>` (admin login first)\n\n## Test Credentials\n- Merchant: merchant@mint.pay / test123456\n- Admin: admin@mint.pay / admin@@1234\n- API Key: test-api-key-123\n\n## Test Scenarios\n- Success: 03030000000 / 4242424242424242\n- Failed: 03021111111\n- Declined card: 4000000000000002",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "https://api-darpay.vstore.cloud", "type": "string" },
+    { "key": "baseUrl", "value": "https://api-mint.0000.mx", "type": "string" },
     { "key": "apiKey", "value": "test-api-key-123", "type": "string" },
     { "key": "merchantToken", "value": "", "type": "string" },
     { "key": "adminToken", "value": "", "type": "string" },
@@ -282,37 +282,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"test@mycodigital.io\",\n  \"password\": \"test123456\"\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "auth", "login"] }
-          }
-        },
-        {
-          "name": "Merchant Login (Hasan)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var jsonData = pm.response.json();",
-                  "if (jsonData.data && jsonData.data.token) {",
-                  "    pm.collectionVariables.set('merchantToken', jsonData.data.token);",
-                  "}",
-                  "if (jsonData.token) {",
-                  "    pm.collectionVariables.set('merchantToken', jsonData.token);",
-                  "}"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"hasaniqbal@mycodigital.io\",\n  \"password\": \"hasan123456\"\n}"
+              "raw": "{\n  \"email\": \"merchant@mint.pay\",\n  \"password\": \"test123456\"\n}"
             },
             "url": { "raw": "{{baseUrl}}/api/v1/portal/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "auth", "login"] }
           }
@@ -626,7 +596,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@mycodigital.io\",\n  \"password\": \"admin@@1234\"\n}"
+              "raw": "{\n  \"email\": \"admin@mint.pay\",\n  \"password\": \"admin@@1234\"\n}"
             },
             "url": { "raw": "{{baseUrl}}/api/v1/admin/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "auth", "login"] }
           }

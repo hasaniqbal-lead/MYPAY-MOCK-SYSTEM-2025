@@ -1,11 +1,11 @@
 {
   "info": {
-    "name": "DarPay Payout API",
-    "description": "Complete Payout API collection for DarPay Mock Payment Platform.\n\n## Auth\n- All endpoints require `X-API-KEY` header with merchant's payout API key\n- POST/PUT/PATCH also require `X-Idempotency-Key` header (UUID v4)\n\n## Getting Your Payout API Key\n1. Login to Payment API: POST /api/v1/portal/auth/login\n2. Get credentials: GET /api/v1/portal/merchant/credentials\n3. Use the payout API key from the response\n\n## Test Scenarios (Account Number Suffixes)\n- Ending 0001: SUCCESS\n- Ending 0002: RETRY then SUCCESS\n- Ending 0003: FAILED\n- Ending 0004: PENDING\n- Ending 0005: ON_HOLD\n- Amount >= 100,000: IN_REVIEW\n\n## Valid Bank Codes\nHBL, UBL, MCB, ABL, JSBL, BAHL, MEEZAN, ASKARI, BANKALHABIB, SONERI, FBL, BOP, NBP, SBP\n\n## Valid Wallet Codes\nEASYPAISA, JAZZCASH, SADAPAY, NAYAPAY",
+    "name": "Mint Payout API",
+    "description": "Complete Payout API collection for Mint Mock Payment Platform.\n\n## Auth\n- All endpoints require `X-API-KEY` header with merchant's payout API key\n- POST/PUT/PATCH also require `X-Idempotency-Key` header (UUID v4)\n\n## Getting Your Payout API Key\n1. Login to Payment API: POST /api/v1/portal/auth/login\n2. Get credentials: GET /api/v1/portal/merchant/credentials\n3. Use the payout API key from the response\n\n## Test Scenarios (Account Number Suffixes)\n- Ending 0001: SUCCESS\n- Ending 0002: RETRY then SUCCESS\n- Ending 0003: FAILED\n- Ending 0004: PENDING\n- Ending 0005: ON_HOLD\n- Amount >= 100,000: IN_REVIEW\n\n## Valid Bank Codes\nHBL, UBL, MCB, ABL, JSBL, BAHL, MEEZAN, ASKARI, BANKALHABIB, SONERI, FBL, BOP, NBP, SBP\n\n## Valid Wallet Codes\nEASYPAISA, JAZZCASH, SADAPAY, NAYAPAY",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "https://payout-darpay.vstore.cloud", "type": "string" },
+    { "key": "baseUrl", "value": "https://api-mint.0000.mx", "type": "string" },
     { "key": "payoutApiKey", "value": "PASTE_YOUR_PAYOUT_API_KEY_HERE", "type": "string" },
     { "key": "payoutId", "value": "", "type": "string" }
   ],
