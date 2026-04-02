@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-import { testConnection } from './config/database';
+import { testConnection, prisma } from './config/database';
 import { simpleValidation, validateCheckoutParams } from './middleware/validation';
 import { requireAuth } from './middleware/auth';
 import { auditRequestLogger, auditResponseLogger } from './middleware/auditLogger';
