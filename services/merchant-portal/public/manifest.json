@@ -1,0 +1,17 @@
+{
+  "name": "Merchant Portal",
+  "short_name": "Merchant",
+  "description": "Payment gateway merchant portal",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3B9EE8",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/settlix-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

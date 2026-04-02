@@ -101,3 +101,14 @@ All colors MUST be HSL.
   }
 }
 
+/* Safe area for mobile bottom navigation (notched devices) */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (display-mode: standalone) {
+  .safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+  }
+}
+
