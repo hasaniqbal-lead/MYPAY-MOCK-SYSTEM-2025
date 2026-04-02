@@ -44,21 +44,6 @@ export default function DashboardPage() {
         }
       } catch (error) {
         console.error('Failed to fetch stats:', error)
-        // Set mock data for demo
-        setStats({
-          totalMerchants: 15,
-          activeMerchants: 12,
-          totalPaymentTransactions: 1250,
-          totalPayoutTransactions: 890,
-          paymentVolume: 2500000,
-          payoutVolume: 1800000,
-          successfulPayments: 1100,
-          failedPayments: 100,
-          pendingPayments: 50,
-          successfulPayouts: 800,
-          failedPayouts: 50,
-          pendingPayouts: 40,
-        })
       } finally {
         setLoading(false)
       }

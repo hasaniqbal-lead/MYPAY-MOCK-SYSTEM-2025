@@ -75,29 +75,8 @@ export const adminAPI = {
   },
 
   getSystemStats: async () => {
-    try {
-      const response = await api.get('/api/admin/stats')
-      return response.data
-    } catch {
-      // Return mock data
-      return {
-        success: true,
-        stats: {
-          totalMerchants: 15,
-          activeMerchants: 12,
-          totalPaymentTransactions: 1250,
-          totalPayoutTransactions: 890,
-          paymentVolume: 2500000,
-          payoutVolume: 1800000,
-          successfulPayments: 1100,
-          failedPayments: 100,
-          pendingPayments: 50,
-          successfulPayouts: 800,
-          failedPayouts: 50,
-          pendingPayouts: 40,
-        },
-      }
-    }
+    const response = await api.get('/api/v1/admin/stats')
+    return response.data
   },
 
   getMerchants: async () => {
