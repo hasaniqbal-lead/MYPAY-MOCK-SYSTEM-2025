@@ -305,6 +305,73 @@ apiRouter.post(
   (req: Request, res: Response) => adminAuthController.login(req, res)
 );
 
+// Admin dashboard stats
+apiRouter.get(
+  '/admin/stats',
+  requireAdminAuth as express.RequestHandler,
+  async (_req: Request, res: Response) => {
+    try {
+      const [
+        totalMerchants,
+        activeMerchants,
+        transactions,
+        payouts,
+      ] = await Promise.all([
+        prisma.merchant.count(),
+        prisma.merchant.count({ where: { isActive: true } }),
+        prisma.paymentTransaction.groupBy({
+          by: ['status'],
+          _count: true,
+          _sum: { amount: true },
+        }),
+        prisma.payout.groupBy({
+          by: ['status'],
+          _count: true,
+          _sum: { amount: true },
+        }),
+      ]);
+
+      const txMap: Record<string, { count: number; sum: number }> = {};
+      for (const t of transactions) {
+        txMap[t.status] = { count: t._count, sum: Number(t._sum.amount || 0) };
+      }
+      const payoutMap: Record<string, { count: number; sum: number }> = {};
+      for (const p of payouts) {
+        payoutMap[p.status] = { count: p._count, sum: Number(p._sum.amount || 0) };
+      }
+
+      const totalPayments = Object.values(txMap).reduce((s, v) => s + v.count, 0);
+      const totalPaymentVolume = Object.values(txMap).reduce((s, v) => s + v.sum, 0);
+      const totalPayoutCount = Object.values(payoutMap).reduce((s, v) => s + v.count, 0);
+      const totalPayoutVolume = Object.values(payoutMap).reduce((s, v) => s + v.sum, 0);
+      const successfulPayments = txMap['completed']?.count || txMap['success']?.count || 0;
+      const successRate = totalPayments > 0 ? Math.round((successfulPayments / totalPayments) * 1000) / 10 : 0;
+
+      res.json({
+        success: true,
+        stats: {
+          totalMerchants,
+          activeMerchants,
+          totalPaymentTransactions: totalPayments,
+          totalPayoutTransactions: totalPayoutCount,
+          paymentVolume: totalPaymentVolume,
+          payoutVolume: totalPayoutVolume,
+          successfulPayments,
+          failedPayments: txMap['failed']?.count || 0,
+          pendingPayments: txMap['pending']?.count || 0,
+          successfulPayouts: payoutMap['COMPLETED']?.count || 0,
+          failedPayouts: payoutMap['FAILED']?.count || 0,
+          pendingPayouts: payoutMap['PROCESSING']?.count || payoutMap['PENDING']?.count || 0,
+          successRate,
+        },
+      });
+    } catch (error) {
+      console.error('Admin stats error:', error);
+      res.status(500).json({ success: false, error: 'Failed to fetch stats' });
+    }
+  }
+);
+
 // Admin protected routes - Merchant Management
 apiRouter.get(
   '/admin/merchants',
