@@ -1,0 +1,92 @@
+name: Build Branded Images
+
+on:
+  workflow_dispatch:
+    inputs:
+      brand_slug:
+        description: 'Brand slug (used as Docker tag)'
+        required: true
+        default: 'settlix'
+      brand_name:
+        description: 'Brand display name'
+        required: true
+        default: 'Settlix'
+      primary_color:
+        description: 'Primary color hex'
+        required: true
+        default: '#3B9EE8'
+      support_email:
+        description: 'Support email'
+        required: true
+        default: 'support@settlix.net'
+      api_url:
+        description: 'API base URL'
+        required: true
+        default: 'https://sbx-api.settlix.net'
+      portal_url:
+        description: 'Merchant portal URL'
+        required: true
+        default: 'https://sbx-merchant.settlix.net'
+      admin_url:
+        description: 'Admin portal URL'
+        required: true
+        default: 'https://sbx-admin.settlix.net'
+      payment_page_url:
+        description: 'Payment page URL'
+        required: true
+        default: 'https://sbx-pay.settlix.net'
+
+jobs:
+  build-branded:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - service: merchant-portal
+            dockerfile: services/merchant-portal/Dockerfile
+            image: darpay-merchant-portal
+          - service: admin-portal
+            dockerfile: services/admin-portal/Dockerfile
+            image: darpay-admin-portal
+          - service: payment-page
+            dockerfile: services/payment-page/Dockerfile
+            image: darpay-payment-page
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push ${{ matrix.service }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}:${{ inputs.brand_slug }}
+          build-args: |
+            NEXT_PUBLIC_ORG_BRAND_NAME=${{ inputs.brand_name }}
+            NEXT_PUBLIC_ORG_SLUG=${{ inputs.brand_slug }}
+            NEXT_PUBLIC_ORG_PRIMARY_COLOR=${{ inputs.primary_color }}
+            NEXT_PUBLIC_ORG_SUPPORT_EMAIL=${{ inputs.support_email }}
+            NEXT_PUBLIC_ORG_LOGO_URL=/${{ inputs.brand_slug }}-logo.png
+            NEXT_PUBLIC_ORG_LOGO_DARK_URL=/${{ inputs.brand_slug }}-logo.png
+            NEXT_PUBLIC_API_URL=${{ inputs.api_url }}
+            NEXT_PUBLIC_ADMIN_API_URL=${{ inputs.api_url }}
+            NEXT_PUBLIC_PORTAL_URL=${{ inputs.portal_url }}
+            NEXT_PUBLIC_ADMIN_PORTAL_URL=${{ inputs.admin_url }}
+            NEXT_PUBLIC_PAYMENT_PAGE_URL=${{ inputs.payment_page_url }}
+            VITE_API_URL=${{ inputs.api_url }}
+            VITE_BRAND_NAME=${{ inputs.brand_name }}
+            VITE_PRIMARY_COLOR=${{ inputs.primary_color }}
+            VITE_SUPPORT_EMAIL=${{ inputs.support_email }}
+          cache-from: type=gha,scope=${{ matrix.service }}-${{ inputs.brand_slug }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}-${{ inputs.brand_slug }}
