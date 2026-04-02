@@ -12,8 +12,8 @@ export const metadata: Metadata = {
   title: `${brandName} Admin Portal`,
   description: `Admin Portal for ${brandName} Payment Platform`,
   icons: {
-    icon: '/default-logo.webp',
-    apple: '/default-logo.webp',
+    icon: process.env.NEXT_PUBLIC_ORG_LOGO_URL || '/default-logo.webp',
+    apple: process.env.NEXT_PUBLIC_ORG_LOGO_URL || '/default-logo.webp',
   },
 }
 

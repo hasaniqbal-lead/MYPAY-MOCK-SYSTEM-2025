@@ -17,7 +17,7 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 214 32% 16%;
 
-    --primary: 174 72% 52%;
+    --primary: 210 79% 57%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 214 32% 91%;
@@ -34,11 +34,11 @@ All colors MUST be HSL.
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 174 72% 52%;
+    --ring: 210 79% 57%;
 
-    /* DarPay brand colors */
-    --darpay-primary: 174 72% 52%;              /* Teal primary */
-    --darpay-primary-dark: 174 72% 42%;         /* Darker teal */
+    /* Brand colors (overridden at runtime by BrandStyleInjector) */
+    --darpay-primary: 210 79% 57%;              /* Blue default */
+    --darpay-primary-dark: 210 79% 47%;         /* Darker blue */
     --darpay-dark: 220 20% 6%;                  /* Dark background */
     --darpay-dark-bg: 220 18% 10%;              /* Darker background */
     --darpay-light: 210 20% 95%;                /* Light text */

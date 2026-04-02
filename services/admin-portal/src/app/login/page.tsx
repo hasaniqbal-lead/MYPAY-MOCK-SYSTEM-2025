@@ -70,7 +70,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@mint.pay"
+                placeholder={`admin@${brandConfig.supportEmail.split('@')[1] || 'settlix.net'}`}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

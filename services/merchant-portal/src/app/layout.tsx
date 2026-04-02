@@ -12,8 +12,8 @@ export const metadata: Metadata = {
   title: `${brandName} Merchant Portal`,
   description: `Merchant portal for managing payment API credentials and transactions`,
   icons: {
-    icon: '/default-logo.webp',
-    apple: '/default-logo.webp',
+    icon: process.env.NEXT_PUBLIC_ORG_LOGO_URL || '/default-logo.webp',
+    apple: process.env.NEXT_PUBLIC_ORG_LOGO_URL || '/default-logo.webp',
   },
 }
 

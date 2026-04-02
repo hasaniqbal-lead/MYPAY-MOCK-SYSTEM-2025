@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2 } from 'lucide-react'
 import { authAPI } from '@/lib/api'
 import PasswordModal from '@/components/PasswordModal'
+import { brandConfig } from '@/lib/brand-config'
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -111,11 +112,11 @@ export default function RegisterForm() {
                   className="h-10 rounded-r-none"
                 />
                 <span className="inline-flex items-center px-4 rounded-r-md border border-l-0 border-input bg-muted text-muted-foreground text-sm">
-                  @mint.pay
+                  @{brandConfig.supportEmail.split('@')[1] || 'settlix.net'}
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Letters only, no spaces. Your login email will be: <span className="font-mono text-darpay-primary">{formData.username || 'username'}@mint.pay</span>
+                Letters only, no spaces. Your login email will be: <span className="font-mono text-darpay-primary">{formData.username || 'username'}@{brandConfig.supportEmail.split('@')[1] || 'settlix.net'}</span>
               </p>
             </div>
 
