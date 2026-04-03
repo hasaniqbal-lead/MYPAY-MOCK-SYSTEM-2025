@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { dashboardAPI, transactionsAPI } from '@/lib/api'
+import { dashboardAPI, transactionsAPI, merchantAPI } from '@/lib/api'
 import { MetricsCard } from '@/components/dashboard/MetricsCard'
 import { RecentTransactionsCard } from '@/components/dashboard/RecentTransactionsCard'
 import Layout from '@/components/Layout'
@@ -12,7 +12,6 @@ import { DollarSign, TrendingUp, CreditCard, AlertCircle, Zap, Copy, Check, Exte
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { credentialsAPI } from '@/lib/api'
 
 interface DashboardStats {
   totalTransactions: number
@@ -149,8 +148,8 @@ function QuickCheckout() {
     setLoading(true)
     setResult(null)
     try {
-      const creds = await credentialsAPI.getCredentials()
-      const apiKey = creds?.credentials?.paymentApiKey || creds?.credentials?.apiKey
+      const creds = await merchantAPI.getCredentials()
+      const apiKey = creds?.paymentApiKey || creds?.apiKey
       if (!apiKey) throw new Error('No API key found')
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
