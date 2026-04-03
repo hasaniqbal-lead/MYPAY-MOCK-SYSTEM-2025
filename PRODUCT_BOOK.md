@@ -560,7 +560,174 @@ For containerized run:
 4. Run DB migrations and seed from API container.
 5. Validate health endpoints and portal logins.
 
-## 24. Final Notes
+## 24. Settlix Deployment (Client Organization)
+
+### 24.1 Overview
+
+Settlix is the first standalone client deployment — a fully branded payment platform running on its own VPS with its own domain. It uses the same Docker images from this monorepo but with all branding, colors, logos, and API URLs configured via environment variables and build args.
+
+- **Domain:** `settlix.net` (wildcard DNS)
+- **VPS:** `168.144.66.40` (Contabo, Ubuntu)
+- **Deployment repo:** `hasaniqbal-lead/settlix-deployment` (private)
+- **Approach:** Pull `hasanvatrix/darpay-*` images from Docker Hub, brand via env vars + `:settlix` tagged frontend images
+
+### 24.2 Live URLs (Sandbox)
+
+| Service | URL | Port |
+|---------|-----|------|
+| Payment API + Payout API | `https://sbx-api.settlix.net` | 5002 / 5001 |
+| Merchant Portal | `https://sbx-merchant.settlix.net` | 5010 |
+| Admin Portal | `https://sbx-admin.settlix.net` | 5011 |
+| Payment Page | `https://sbx-pay.settlix.net` | 5012 |
+| API Documentation | `https://docs.settlix.net` | static (nginx) |
+
+Reserved (future): `sbx-send`, `sbx-wallet`, `sbx-card`, `sbx-qr`, `sbx-raast`, `sbx-payout`, `sbx-webhook`, `sbx-listener`
+
+### 24.3 Docker Images & Tags
+
+| Service | Image | Tag |
+|---------|-------|-----|
+| Payment API | `hasanvatrix/darpay-payment-api` | `latest` |
+| Payout API | `hasanvatrix/darpay-payout-api` | `latest` |
+| Merchant Portal | `hasanvatrix/darpay-merchant-portal` | `settlix` |
+| Admin Portal | `hasanvatrix/darpay-admin-portal` | `settlix` |
+| Payment Page | `hasanvatrix/darpay-payment-page` | `settlix` |
+| MySQL | `mysql:8.0` | `8.0` |
+
+The `:settlix` tagged images are built via the `build-branded.yml` GitHub Actions workflow with Settlix-specific build args (brand name, color, logo, API URLs baked in at Next.js/Vite build time).
+
+### 24.4 Branding Configuration
+
+| Variable | Value |
+|----------|-------|
+| `ORG_BRAND_NAME` | Settlix |
+| `ORG_SLUG` | settlix |
+| `ORG_EMAIL_DOMAIN` | settlix.net |
+| `ORG_PRIMARY_COLOR` | #3B9EE8 |
+| `NEXT_PUBLIC_ORG_BRAND_NAME` | Settlix |
+| `NEXT_PUBLIC_ORG_PRIMARY_COLOR` | #3B9EE8 |
+| `NEXT_PUBLIC_ORG_LOGO_URL` | /settlix-logo.png |
+| `NEXT_PUBLIC_API_URL` | https://sbx-api.settlix.net |
+
+### 24.5 API Key Format
+
+Unified format across all organizations:
+
+| Key Type | Format | Purpose |
+|----------|--------|---------|
+| Payment Key | `{org}_pk_{64 hex chars}` | Checkout creation, transaction queries |
+| Send Key | `{org}_sk_{64 hex chars}` | Payout disbursements, balance queries |
+
+Examples:
+- `settlix_pk_46dc9cec...` (payment key for vatrix merchant)
+- `settlix_sk_c56afd1c...` (send key for vatrix merchant)
+
+Payment keys are stored in the `payment_api_keys` table (plain text, matched directly).
+Send keys are stored as SHA256 hash in `merchants.apiKey`, plain text in `merchants.apiKeyPlain`.
+
+### 24.6 Database
+
+- Container: `settlix-mysql` (port 5306)
+- Database: `settlix_db`
+- Schema: identical to all orgs (managed by Prisma)
+
+### 24.7 Admin Credentials
+
+| Email | Password | Role |
+|-------|----------|------|
+| `admin@settlix.net` | `admin@@1234` | System admin (seeded) |
+| `osama@settlix.net` | `osama@@321@` | Admin |
+
+### 24.8 Test Merchant
+
+| Field | Value |
+|-------|-------|
+| Name | vatrix |
+| Email | `vatrix@settlix.net` |
+| Payment Key | `settlix_pk_46dc9cecf61278c3862e27ab633f9daf36550e58438ac2f8458834b2dba56375` |
+| Send Key | `settlix_sk_c56afd1c5e6ce3831a1b13a12b5b00e1d6787423bd41427667076c86bfb65b31` |
+| Sandbox Balance | 10,000,000 PKR |
+
+### 24.9 CI/CD
+
+**Core images:** Built by `.github/workflows/deploy.yml` on push to `main` in MYPAY-MOCK-SYSTEM-2025. Pushes `:latest` tags.
+
+**Branded images:** Built by `.github/workflows/build-branded.yml` (manual trigger / workflow_dispatch). Pushes `:settlix` tags with build args for branding.
+
+**Deployment:** `settlix-deployment` repo has its own `.github/workflows/deploy.yml` — SSHs to Settlix VPS, pulls images, restarts containers.
+
+### 24.10 Nginx
+
+Config at `/etc/nginx/sites-available/settlix-sbx.conf`:
+- `sbx-api.settlix.net` → localhost:5002 (catch-all) + localhost:5001 (`/api/v1/payouts` prefix)
+- `sbx-merchant.settlix.net` → localhost:5010 (WebSocket upgrade for Next.js HMR)
+- `sbx-admin.settlix.net` → localhost:5011
+- `sbx-pay.settlix.net` → localhost:5012
+- `docs.settlix.net` → static files at `/opt/settlix/docs/`
+
+SSL: Let's Encrypt via Certbot, auto-redirect HTTP → HTTPS, auto-renewal.
+
+### 24.11 API Documentation
+
+Live at `https://docs.settlix.net`:
+- Powered by Scalar (CDN) with light theme forced via CSS overrides
+- OpenAPI 3.0 spec at `/openapi.yaml` — merchant-facing endpoints only (12 endpoints)
+- Settlix header bar with logo
+- No dark mode, no "Powered by Scalar" branding
+- Covers: Health, Checkout (create/get/status), Payouts (CRUD + balance + directory + verify), Webhooks
+
+### 24.12 Postman Collections
+
+| Collection | File | Endpoints | Pre-configured Key |
+|------------|------|-----------|-------------------|
+| Settlix Payment API | `Settlix_Payment_API.postman_collection.json` | 53 | `settlix_pk_46dc...` |
+| Settlix Payout API | `Settlix_Payout_API.postman_collection.json` | 16 | `settlix_sk_c56a...` |
+
+Both collections:
+- Base URL: `https://sbx-api.settlix.net`
+- Auto-save tokens and IDs via test scripts
+- Ready to import and run — no environment setup needed
+
+### 24.13 Features Deployed
+
+| Feature | Status |
+|---------|--------|
+| Payment checkout (Easypaisa, JazzCash, Card) | Live |
+| Configurable checkout expiry (15min to 7 days) | Live |
+| Quick Payment Link generator (merchant dashboard) | Live |
+| Payout disbursements (Bank + Wallet) | Live |
+| Merchant self-registration with auto payout key | Live |
+| Mobile-native bottom nav (merchant + admin portals) | Live |
+| PWA manifest for app install | Live |
+| Admin dashboard with real DB stats | Live |
+| Rate limiting (5/sec, 30/min, 500/hr, 5000/day) | Live |
+| Feature gates (ORG_FEATURES JSON) | Live |
+
+### 24.14 Changelog
+
+| Date | Change |
+|------|--------|
+| 2026-04-02 | Initial Settlix VPS deployment (6 containers + MySQL) |
+| 2026-04-02 | SSL certificates issued for 5 subdomains + docs |
+| 2026-04-02 | API documentation live at docs.settlix.net |
+| 2026-04-02 | `:settlix` branded images built (merchant, admin, payment page) |
+| 2026-04-02 | Favicon, logo, colors fixed across all portals |
+| 2026-04-02 | Mock dashboard data removed — real DB aggregations |
+| 2026-04-02 | Admin stats endpoint `GET /admin/stats` created |
+| 2026-04-02 | Vatrix merchant payout key + 10M PKR balance created |
+| 2026-04-02 | All payout APIs verified end-to-end |
+| 2026-04-03 | Auto payout key generation on merchant registration |
+| 2026-04-03 | Configurable checkout expiry (`expiresIn` param) |
+| 2026-04-03 | Quick Payment Link widget on merchant dashboard |
+| 2026-04-03 | Mobile bottom nav + PWA for merchant and admin portals |
+| 2026-04-03 | Unified API key format: `{org}_pk_` / `{org}_sk_` |
+| 2026-04-03 | Dedicated Settlix Postman collections created |
+
+---
+
+## 25. Final Notes
+
+Last updated: 2026-04-03
 
 This Product Book intentionally reflects the implementation currently present in code. If behavior changes, update this document together with:
 
