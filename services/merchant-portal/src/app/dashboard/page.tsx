@@ -121,6 +121,7 @@ export default function DashboardPage() {
               {/* Right Column - 1/3 width */}
               <div className="space-y-6">
                 <QuickCheckout />
+                <ApiUsageCard />
               </div>
             </div>
           </>
@@ -263,6 +264,57 @@ function QuickCheckout() {
             </p>
           </div>
         )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function ApiUsageCard() {
+  const [data, setData] = useState<any>(null)
+
+  useEffect(() => {
+    merchantAPI.getRateLimits().then(setData).catch(() => {})
+  }, [])
+
+  if (!data?.limits) return null
+
+  const dayLimit = data.limits.day || 5000
+  const dayUsed = data.usage?.day?.used || 0
+  const pct = Math.min(Math.round((dayUsed / dayLimit) * 100), 100)
+  const color = pct > 90 ? 'text-red-500' : pct > 75 ? 'text-yellow-500' : 'text-darpay-primary'
+  const bg = pct > 90 ? 'bg-red-500' : pct > 75 ? 'bg-yellow-500' : 'bg-darpay-primary'
+
+  return (
+    <Card className="shadow-elevation">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base flex items-center gap-2">
+          <Zap className="h-4 w-4 text-darpay-primary" />
+          API Usage
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-center py-2">
+          <div className={`text-3xl font-bold ${color}`}>{dayUsed.toLocaleString()}</div>
+          <div className="text-xs text-muted-foreground">of {dayLimit.toLocaleString()} daily credits</div>
+          {/* Progress bar */}
+          <div className="mt-3 h-2 bg-muted rounded-full overflow-hidden">
+            <div className={`h-full ${bg} rounded-full transition-all`} style={{ width: `${pct}%` }} />
+          </div>
+          <div className="text-[10px] text-muted-foreground mt-1">{pct}% used today</div>
+        </div>
+        <div className="grid grid-cols-3 gap-2 mt-3">
+          {['hour', 'minute', 'second'].map(w => {
+            const limit = data.limits[w] || 0
+            const used = data.usage?.[w]?.used || 0
+            const labels: Record<string, string> = { hour: 'Hourly', minute: 'Min', second: 'Sec' }
+            return (
+              <div key={w} className="text-center p-2 bg-muted rounded-lg">
+                <div className="text-sm font-semibold">{used}/{limit}</div>
+                <div className="text-[10px] text-muted-foreground">{labels[w]}</div>
+              </div>
+            )
+          })}
+        </div>
       </CardContent>
     </Card>
   )
