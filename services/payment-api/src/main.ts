@@ -24,6 +24,9 @@ import { rateLimitMiddleware, getRateLimitInfo } from './middleware/rateLimit';
 import { requireFeature } from './middleware/featureGate';
 import { enforceTransactionCap, enforceVolumeCap, enforceMerchantLimit } from './middleware/limitsEnforcement';
 import { refundController } from './controllers/refundController';
+import { teamController } from './controllers/teamController';
+import { ticketController } from './controllers/ticketController';
+import { settlementController } from './controllers/settlementController';
 
 dotenv.config();
 
@@ -323,6 +326,48 @@ apiRouter.get(
 );
 
 // ============================================
+// Portal Team Routes
+// ============================================
+
+apiRouter.get('/portal/team', requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => teamController.list(req as AuthenticatedRequest, res));
+
+apiRouter.post('/portal/team', requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => teamController.create(req as AuthenticatedRequest, res));
+
+apiRouter.put('/portal/team/:id', requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => teamController.update(req as AuthenticatedRequest, res));
+
+apiRouter.delete('/portal/team/:id', requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => teamController.delete(req as AuthenticatedRequest, res));
+
+// ============================================
+// Portal Ticket Routes
+// ============================================
+
+apiRouter.post('/portal/tickets', requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => ticketController.create(req as AuthenticatedRequest, res));
+
+apiRouter.get('/portal/tickets', requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => ticketController.list(req as AuthenticatedRequest, res));
+
+apiRouter.get('/portal/tickets/:id', requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => ticketController.get(req as AuthenticatedRequest, res));
+
+apiRouter.post('/portal/tickets/:id/reply', requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => ticketController.reply(req as AuthenticatedRequest, res));
+
+// ============================================
+// Portal Settlement Routes
+// ============================================
+
+apiRouter.post('/portal/settlements', requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => settlementController.create(req as AuthenticatedRequest, res));
+
+apiRouter.get('/portal/settlements', requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => settlementController.list(req as AuthenticatedRequest, res));
+
+// ============================================
 // Portal Refund Routes
 // ============================================
 
@@ -576,6 +621,26 @@ apiRouter.put(
   requireAdminAuth as express.RequestHandler,
   (req: Request, res: Response) => refundController.adminUpdateStatus(req as AuthenticatedRequest, res)
 );
+
+// Admin Ticket Routes
+apiRouter.get('/admin/tickets', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => ticketController.adminList(req as AuthenticatedRequest, res));
+
+apiRouter.get('/admin/tickets/:id', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => ticketController.get(req as AuthenticatedRequest, res));
+
+apiRouter.post('/admin/tickets/:id/reply', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => ticketController.adminReply(req as AuthenticatedRequest, res));
+
+apiRouter.put('/admin/tickets/:id/status', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => ticketController.adminUpdateStatus(req as AuthenticatedRequest, res));
+
+// Admin Settlement Routes
+apiRouter.get('/admin/settlements', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => settlementController.adminList(req as AuthenticatedRequest, res));
+
+apiRouter.put('/admin/settlements/:id/status', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => settlementController.adminUpdateStatus(req as AuthenticatedRequest, res));
 
 // ============================================
 // Public Payment Page Session Routes
