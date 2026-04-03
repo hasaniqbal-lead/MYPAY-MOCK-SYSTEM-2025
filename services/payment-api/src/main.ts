@@ -176,6 +176,25 @@ apiRouter.post(
   (req: Request, res: Response) => portalMerchantController.generateApiKey(req as AuthenticatedRequest, res)
 );
 
+// API Key management routes
+apiRouter.get(
+  '/portal/merchant/keys',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => portalMerchantController.listKeys(req as AuthenticatedRequest, res)
+);
+
+apiRouter.put(
+  '/portal/merchant/keys/:id',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => portalMerchantController.toggleKey(req as AuthenticatedRequest, res)
+);
+
+apiRouter.delete(
+  '/portal/merchant/keys/:id',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => portalMerchantController.deleteKey(req as AuthenticatedRequest, res)
+);
+
 // Transactions routes (auth required)
 apiRouter.get(
   '/portal/transactions',

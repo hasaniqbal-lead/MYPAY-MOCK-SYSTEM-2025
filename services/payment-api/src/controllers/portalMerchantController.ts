@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '../config/database';
@@ -205,26 +206,29 @@ class PortalMerchantController {
   }
 
   /**
-   * Generate new API key
+   * Generate new API key (additive — does NOT deactivate old keys)
    */
   async generateApiKey(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const merchantId = req.merchantId;
+      const { label } = req.body || {};
+      const orgSlug = process.env.ORG_SLUG || 'pay';
 
-      // Deactivate old keys
-      await prisma.apiKey.updateMany({
-        where: { merchant_id: merchantId },
-        data: { is_active: false },
-      });
+      // Count existing keys (limit to 10 per merchant)
+      const keyCount = await prisma.apiKey.count({ where: { merchant_id: merchantId } });
+      if (keyCount >= 10) {
+        res.status(400).json({ success: false, error: 'Maximum 10 API keys per merchant' });
+        return;
+      }
 
-      // Generate new key
-      const merchantIdStr = `MERCHANT_${merchantId!.toString().padStart(6, '0')}`;
-      const apiKey = `api-key-${uuidv4().substring(0, 8)}`;
-      const apiSecret = `api-secret-${uuidv4()}`;
+      // Generate new key with proper format
+      const vendorId = `MERCHANT_${merchantId!.toString().padStart(6, '0')}_K${keyCount + 1}`;
+      const apiKey = `${orgSlug}_pk_${crypto.randomBytes(32).toString('hex')}`;
+      const apiSecret = `${orgSlug}_secret_${crypto.randomBytes(16).toString('hex')}`;
 
-      await prisma.apiKey.create({
+      const created = await prisma.apiKey.create({
         data: {
-          vendor_id: merchantIdStr,
+          vendor_id: vendorId,
           api_key: apiKey,
           api_secret: apiSecret,
           merchant_id: merchantId!,
@@ -232,25 +236,114 @@ class PortalMerchantController {
         },
       });
 
-      // Get merchant for payout API key
-      const merchant = await prisma.merchant.findUnique({
-        where: { id: merchantId! },
-      });
-
       res.json({
         success: true,
-        credentials: {
-          merchantId: merchantIdStr,
-          paymentApiKey: apiKey,
-          payoutApiKey: merchant?.apiKeyPlain || '', // Return plain key, not hashed
+        key: {
+          id: created.id,
+          vendorId: vendorId,
+          apiKey: apiKey,
+          label: label || 'Default',
+          isActive: true,
+          createdAt: created.created_at,
         },
       });
     } catch (error) {
       console.error('Generate API key error:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to generate API key',
+      res.status(500).json({ success: false, error: 'Failed to generate API key' });
+    }
+  }
+
+  /**
+   * List all API keys for merchant
+   */
+  async listKeys(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const merchantId = req.merchantId;
+
+      const keys = await prisma.apiKey.findMany({
+        where: { merchant_id: merchantId },
+        orderBy: { created_at: 'desc' },
       });
+
+      const merchant = await prisma.merchant.findUnique({ where: { id: merchantId! } });
+
+      res.json({
+        success: true,
+        keys: keys.map(k => ({
+          id: k.id,
+          vendorId: k.vendor_id,
+          apiKey: k.api_key.substring(0, 12) + '...' + k.api_key.slice(-4),
+          apiKeyFull: k.api_key, // Only shown once ideally, but needed for copy
+          isActive: k.is_active,
+          createdAt: k.created_at,
+        })),
+        payoutKey: merchant?.apiKeyPlain
+          ? merchant.apiKeyPlain.substring(0, 12) + '...' + merchant.apiKeyPlain.slice(-4)
+          : null,
+        payoutKeyFull: merchant?.apiKeyPlain || null,
+      });
+    } catch (error) {
+      console.error('List keys error:', error);
+      res.status(500).json({ success: false, error: 'Failed to list keys' });
+    }
+  }
+
+  /**
+   * Toggle API key active status
+   */
+  async toggleKey(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const merchantId = req.merchantId;
+      const { id } = req.params;
+
+      const key = await prisma.apiKey.findFirst({
+        where: { id: Number(id), merchant_id: merchantId },
+      });
+
+      if (!key) {
+        res.status(404).json({ success: false, error: 'Key not found' });
+        return;
+      }
+
+      const updated = await prisma.apiKey.update({
+        where: { id: Number(id) },
+        data: { is_active: !key.is_active },
+      });
+
+      res.json({
+        success: true,
+        key: { id: updated.id, isActive: updated.is_active },
+      });
+    } catch (error) {
+      console.error('Toggle key error:', error);
+      res.status(500).json({ success: false, error: 'Failed to toggle key' });
+    }
+  }
+
+  /**
+   * Delete API key (soft — deactivates)
+   */
+  async deleteKey(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const merchantId = req.merchantId;
+      const { id } = req.params;
+
+      // Ensure at least one key remains active
+      const activeKeys = await prisma.apiKey.count({
+        where: { merchant_id: merchantId, is_active: true, id: { not: Number(id) } },
+      });
+
+      if (activeKeys === 0) {
+        res.status(400).json({ success: false, error: 'Cannot delete last active key' });
+        return;
+      }
+
+      await prisma.apiKey.delete({ where: { id: Number(id) } });
+
+      res.json({ success: true, message: 'Key deleted' });
+    } catch (error) {
+      console.error('Delete key error:', error);
+      res.status(500).json({ success: false, error: 'Failed to delete key' });
     }
   }
 }

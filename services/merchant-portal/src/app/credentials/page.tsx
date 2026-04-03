@@ -6,8 +6,18 @@ import Layout from '@/components/Layout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Copy, Eye, EyeOff, Plus, Zap } from 'lucide-react'
+import { ArrowLeft, Copy, Check, Eye, EyeOff, Plus, Zap, Trash2, Power } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import Cookies from 'js-cookie'
+
+interface ApiKeyItem {
+  id: number
+  vendorId: string
+  apiKey: string
+  apiKeyFull: string
+  isActive: boolean
+  createdAt: string
+}
 
 interface RateLimitInfo {
   limits: Record<string, number>
@@ -15,209 +25,243 @@ interface RateLimitInfo {
 }
 
 export default function CredentialsPage() {
-  const [credentials, setCredentials] = useState<any>(null)
+  const [keys, setKeys] = useState<ApiKeyItem[]>([])
+  const [payoutKey, setPayoutKey] = useState('')
+  const [payoutKeyFull, setPayoutKeyFull] = useState('')
   const [loading, setLoading] = useState(true)
   const [showKeys, setShowKeys] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState('')
   const [rateLimits, setRateLimits] = useState<RateLimitInfo | null>(null)
+  const [generating, setGenerating] = useState(false)
   const router = useRouter()
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
+  const getToken = () => Cookies.get('auth_token') || ''
+
   useEffect(() => {
-    loadCredentials()
+    loadKeys()
     loadRateLimits()
   }, [])
 
-  const loadRateLimits = async () => {
+  const loadKeys = async () => {
     try {
-      const data = await merchantAPI.getRateLimits()
-      setRateLimits(data)
+      const res = await fetch(`${apiUrl}/api/v1/portal/merchant/keys`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      })
+      const data = await res.json()
+      if (data.success) {
+        setKeys(data.keys || [])
+        setPayoutKey(data.payoutKey || '')
+        setPayoutKeyFull(data.payoutKeyFull || '')
+      }
     } catch {
-      // Rate limits endpoint may not exist yet
-    }
-  }
-
-  const loadCredentials = async () => {
-    try {
-      const data = await merchantAPI.getCredentials()
-      setCredentials(data)
-    } catch (error) {
-      console.error('Failed to load credentials:', error)
+      // Fallback to old credentials endpoint
+      try {
+        const creds = await merchantAPI.getCredentials()
+        setKeys([{
+          id: 0,
+          vendorId: creds.merchantId,
+          apiKey: creds.paymentApiKey?.substring(0, 12) + '...',
+          apiKeyFull: creds.paymentApiKey,
+          isActive: true,
+          createdAt: creds.createdAt,
+        }])
+        setPayoutKeyFull(creds.payoutApiKey || '')
+        setPayoutKey(creds.payoutApiKey ? creds.payoutApiKey.substring(0, 12) + '...' : '')
+      } catch {}
     } finally {
       setLoading(false)
     }
   }
 
+  const loadRateLimits = async () => {
+    try {
+      const data = await merchantAPI.getRateLimits()
+      setRateLimits(data)
+    } catch {}
+  }
+
   const handleGenerateNew = async () => {
+    setGenerating(true)
     try {
       await merchantAPI.generateApiKey()
-      await loadCredentials()
-    } catch (error) {
-      console.error('Failed to generate new key:', error)
-      alert('Failed to generate new key. Please try again.')
+      await loadKeys()
+    } catch {
+      alert('Failed to generate new key')
+    } finally {
+      setGenerating(false)
     }
   }
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+  const handleToggleKey = async (id: number) => {
+    try {
+      await fetch(`${apiUrl}/api/v1/portal/merchant/keys/${id}`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${getToken()}` },
+      })
+      await loadKeys()
+    } catch {}
   }
 
-  const maskKey = (key: string) => {
-    if (!key) return ''
-    return key.length > 8 ? `${key.substring(0, 4)}${'•'.repeat(key.length - 8)}${key.substring(key.length - 4)}` : key
+  const handleDeleteKey = async (id: number) => {
+    if (!confirm('Delete this API key? This cannot be undone.')) return
+    try {
+      const res = await fetch(`${apiUrl}/api/v1/portal/merchant/keys/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${getToken()}` },
+      })
+      const data = await res.json()
+      if (!data.success) alert(data.error)
+      await loadKeys()
+    } catch {}
   }
+
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text)
+    setCopied(field)
+    setTimeout(() => setCopied(''), 2000)
+  }
+
+  const CopyBtn = ({ text, field }: { text: string; field: string }) => (
+    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => copyToClipboard(text, field)}>
+      {copied === field ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+    </Button>
+  )
 
   return (
     <Layout>
       <div className="space-y-6">
+        {/* Header */}
         <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => router.back()}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
+          <Button variant="ghost" size="sm" onClick={() => router.back()} className="gap-2">
+            <ArrowLeft className="h-4 w-4" /> Back
           </Button>
           <div className="flex-1">
-            <h1 className="text-2xl font-semibold text-foreground">API Keys</h1>
-            <p className="text-muted-foreground">Manage your API keys for secure integration</p>
+            <h1 className="text-2xl font-semibold">API Keys</h1>
+            <p className="text-muted-foreground text-sm">Manage your API keys for secure integration</p>
           </div>
-          <Button className="gap-2 bg-mypay-green hover:bg-mypay-green-dark" onClick={handleGenerateNew}>
+          <Button variant="outline" size="sm" onClick={() => setShowKeys(!showKeys)} className="gap-2">
+            {showKeys ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {showKeys ? 'Hide' : 'Show'}
+          </Button>
+          <Button className="gap-2 bg-darpay-primary hover:bg-darpay-primary-dark text-white" onClick={handleGenerateNew} disabled={generating}>
             <Plus className="h-4 w-4" />
-            Create New Key
+            {generating ? 'Creating...' : 'New Key'}
           </Button>
         </div>
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-mypay-green"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-darpay-primary" />
           </div>
-        ) : credentials ? (
-          <Card className="shadow-elevation">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-foreground">Your API Keys</CardTitle>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setShowKeys(!showKeys)}
-                className="gap-2"
-              >
-                {showKeys ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                {showKeys ? 'Hide' : 'Show'} Keys
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* Payment API Key */}
-                <div className="flex items-center justify-between p-4 border rounded-lg border-blue-200 bg-blue-50/50">
-                  <div className="space-y-1 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-foreground">Payment API Key</span>
-                      <Badge variant="default" className="bg-blue-500 text-white">
-                        Active
-                      </Badge>
-                    </div>
-                    <div className="text-xs text-muted-foreground mb-2">
-                      Use this key for Payment API requests (api-mint.0000.mx)
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Created: {new Date(credentials.createdAt || Date.now()).toLocaleDateString()}
-                    </div>
-                    <div className="font-mono text-sm bg-white p-2 rounded text-foreground mt-2 border">
-                      {showKeys ? (credentials.paymentApiKey || credentials.apiKey || 'N/A') : '••••••••••••••••••••••••••••••••'}
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm" className="gap-2" onClick={() => copyToClipboard(credentials.paymentApiKey || credentials.apiKey || '')}>
-                    <Copy className="h-4 w-4" />
-                    Copy
-                  </Button>
-                </div>
-
-                {/* Payout API Key */}
-                <div className="flex items-center justify-between p-4 border rounded-lg border-purple-200 bg-purple-50/50">
-                  <div className="space-y-1 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-foreground">Payout API Key</span>
-                      <Badge variant="default" className="bg-purple-500 text-white">
-                        Active
-                      </Badge>
-                    </div>
-                    <div className="text-xs text-muted-foreground mb-2">
-                      Use this key for Payout API requests (api-mint.0000.mx)
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Created: {new Date(credentials.createdAt || Date.now()).toLocaleDateString()}
-                    </div>
-                    <div className="font-mono text-sm bg-white p-2 rounded text-foreground mt-2 border">
-                      {showKeys ? (credentials.payoutApiKey || 'N/A') : '••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••'}
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm" className="gap-2" onClick={() => copyToClipboard(credentials.payoutApiKey || '')}>
-                    <Copy className="h-4 w-4" />
-                    Copy
-                  </Button>
-                </div>
-
-                {/* Merchant ID */}
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="space-y-1 flex-1">
-                    <div className="text-sm font-medium text-muted-foreground mb-1">
-                      Merchant ID:
-                    </div>
-                    <div className="text-xs text-muted-foreground mb-2">
-                      Your unique merchant identifier
-                    </div>
-                    <div className="font-mono text-sm bg-muted p-2 rounded text-foreground">
-                      {credentials.merchantId || credentials.vendorId || 'N/A'}
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm" className="gap-2" onClick={() => copyToClipboard(credentials.merchantId || credentials.vendorId || '')}>
-                    <Copy className="h-4 w-4" />
-                    Copy
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         ) : (
-          <div className="text-center py-12 text-muted-foreground">
-            No credentials found
-          </div>
-        )}
-
-        {/* API Rate Limits */}
-        {rateLimits && (
-          <Card className="shadow-elevation">
-            <CardHeader>
-              <CardTitle className="text-foreground flex items-center gap-2">
-                <Zap className="h-5 w-5 text-darpay-primary" />
-                API Rate Limits
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">Your current API rate limits. Each API call uses 1 credit.</p>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {Object.entries(rateLimits.limits).map(([window, limit]) => {
-                  const usage = rateLimits.usage[window]
-                  const labels: Record<string, string> = { day: 'Per Day', hour: 'Per Hour', minute: 'Per Minute', second: 'Per Second' }
-                  return (
-                    <div key={window} className="text-center p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-foreground">{limit}</div>
-                      <div className="text-sm text-muted-foreground">{labels[window] || window}</div>
-                      {usage && (
-                        <div className="text-xs text-muted-foreground mt-1">
-                          {usage.used} used / {usage.remaining} left
-                        </div>
-                      )}
+          <>
+            {/* Payment API Keys */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Payment Keys (pk)</CardTitle>
+                <p className="text-xs text-muted-foreground">{keys.length} key{keys.length !== 1 ? 's' : ''} — {keys.filter(k => k.isActive).length} active</p>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {keys.map((key) => (
+                  <div key={key.id} className={`flex items-center gap-3 p-3 border rounded-lg ${key.isActive ? 'border-blue-200 bg-blue-50/30' : 'border-gray-200 bg-gray-50/30 opacity-60'}`}>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-mono text-muted-foreground">{key.vendorId}</span>
+                        <Badge variant={key.isActive ? 'default' : 'secondary'} className={key.isActive ? 'bg-green-500 text-white text-[10px]' : 'text-[10px]'}>
+                          {key.isActive ? 'Active' : 'Disabled'}
+                        </Badge>
+                      </div>
+                      <div className="font-mono text-sm truncate">
+                        {showKeys ? key.apiKeyFull : key.apiKey}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground mt-1">
+                        Created: {new Date(key.createdAt).toLocaleDateString()}
+                      </div>
                     </div>
-                  )
-                })}
-              </div>
-            </CardContent>
-          </Card>
+                    <CopyBtn text={key.apiKeyFull} field={`pk-${key.id}`} />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => handleToggleKey(key.id)}
+                      title={key.isActive ? 'Disable' : 'Enable'}
+                    >
+                      <Power className={`h-3.5 w-3.5 ${key.isActive ? 'text-green-500' : 'text-gray-400'}`} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                      onClick={() => handleDeleteKey(key.id)}
+                      title="Delete key"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                ))}
+                {keys.length === 0 && (
+                  <p className="text-center py-6 text-muted-foreground text-sm">No payment keys. Click "New Key" to create one.</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Payout (Send) Key */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Send Key (sk)</CardTitle>
+                <p className="text-xs text-muted-foreground">Used for payout/disbursement API requests</p>
+              </CardHeader>
+              <CardContent>
+                {payoutKeyFull ? (
+                  <div className="flex items-center gap-3 p-3 border rounded-lg border-purple-200 bg-purple-50/30">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge className="bg-purple-500 text-white text-[10px]">Active</Badge>
+                      </div>
+                      <div className="font-mono text-sm truncate">
+                        {showKeys ? payoutKeyFull : payoutKey}
+                      </div>
+                    </div>
+                    <CopyBtn text={payoutKeyFull} field="sk" />
+                  </div>
+                ) : (
+                  <p className="text-center py-4 text-muted-foreground text-sm">No payout key configured</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Rate Limits */}
+            {rateLimits && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-darpay-primary" />
+                    API Rate Limits
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {Object.entries(rateLimits.limits).map(([window, limit]) => {
+                      const usage = rateLimits.usage[window]
+                      const labels: Record<string, string> = { day: 'Per Day', hour: 'Per Hour', minute: 'Per Minute', second: 'Per Second' }
+                      return (
+                        <div key={window} className="text-center p-3 border rounded-lg">
+                          <div className="text-xl font-bold">{limit}</div>
+                          <div className="text-xs text-muted-foreground">{labels[window] || window}</div>
+                          {usage && (
+                            <div className="text-[10px] text-muted-foreground mt-1">
+                              {usage.used} used / {usage.remaining} left
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </>
         )}
       </div>
     </Layout>
