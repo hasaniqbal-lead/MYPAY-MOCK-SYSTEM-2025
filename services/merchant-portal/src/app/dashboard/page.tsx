@@ -149,7 +149,7 @@ function QuickCheckout() {
     setResult(null)
     try {
       const creds = await merchantAPI.getCredentials()
-      const apiKey = creds?.paymentApiKey || creds?.apiKey
+      const apiKey = creds?.paymentApiKey
       if (!apiKey) throw new Error('No API key found')
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
