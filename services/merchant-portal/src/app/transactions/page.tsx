@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/table'
 import { Search, Download, Eye, RefreshCw, CreditCard, Wallet } from 'lucide-react'
 import { format } from 'date-fns'
+import TransactionDetailDrawer from '@/components/TransactionDetailDrawer'
 
 interface Transaction {
   checkout_id: string
@@ -93,6 +94,10 @@ export default function TransactionsPage() {
   const [paymentSearchQuery, setPaymentSearchQuery] = useState('')
   const [paymentStatusFilter, setPaymentStatusFilter] = useState('all')
   const [paymentMethodFilter, setPaymentMethodFilter] = useState('all')
+
+  // Detail drawer state
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   // Payout states
   const [payouts, setPayouts] = useState<Payout[]>([])
@@ -340,7 +345,12 @@ export default function TransactionsPage() {
                               {format(new Date(transaction.created_at || transaction.createdAt || new Date()), 'MMM dd, yyyy HH:mm')}
                             </TableCell>
                             <TableCell>
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => { setSelectedTransaction(transaction); setDrawerOpen(true); }}
+                              >
                                 <Eye className="h-4 w-4" />
                               </Button>
                             </TableCell>
@@ -493,6 +503,13 @@ export default function TransactionsPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Transaction Detail Drawer */}
+      <TransactionDetailDrawer
+        transaction={selectedTransaction}
+        isOpen={drawerOpen}
+        onClose={() => { setDrawerOpen(false); setSelectedTransaction(null); }}
+      />
     </Layout>
   )
 }

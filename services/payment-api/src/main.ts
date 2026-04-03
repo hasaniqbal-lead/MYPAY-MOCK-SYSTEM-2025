@@ -194,6 +194,13 @@ apiRouter.get(
   (req: Request, res: Response) => portalTransactionsController.export(req as AuthenticatedRequest, res)
 );
 
+// Transaction receipt
+apiRouter.get(
+  '/portal/transactions/:id/receipt',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => portalTransactionsController.getReceipt(req as AuthenticatedRequest, res)
+);
+
 // Payout routes (auth required, feature-gated)
 apiRouter.get(
   '/portal/payouts',

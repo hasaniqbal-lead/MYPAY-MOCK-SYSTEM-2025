@@ -234,6 +234,69 @@ class PortalTransactionsController {
       });
     }
   }
+  /**
+   * Download transaction receipt as printable HTML
+   */
+  async getReceipt(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const merchantId = req.merchantId;
+
+      const transaction = await prisma.paymentTransaction.findFirst({
+        where: { checkout_id: id, merchant_id: merchantId },
+        include: { merchant: true },
+      });
+
+      if (!transaction) {
+        res.status(404).json({ success: false, error: 'Transaction not found' });
+        return;
+      }
+
+      const brandName = process.env.ORG_BRAND_NAME || 'Payment Platform';
+      const date = new Date(transaction.created_at).toLocaleString('en-PK', { dateStyle: 'long', timeStyle: 'short' });
+      const status = transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1);
+      const method = (transaction.payment_method || 'N/A').charAt(0).toUpperCase() + (transaction.payment_method || 'N/A').slice(1);
+
+      const html = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Receipt - ${transaction.reference}</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #fff; color: #1a1a1a; padding: 40px; max-width: 600px; margin: 0 auto; }
+  .header { text-align: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 20px; margin-bottom: 24px; }
+  .header h1 { font-size: 20px; font-weight: 600; color: #111; }
+  .header p { font-size: 12px; color: #6b7280; margin-top: 4px; }
+  .amount { text-align: center; padding: 24px 0; }
+  .amount .value { font-size: 36px; font-weight: 700; }
+  .amount .status { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 8px; }
+  .status-completed, .status-success { background: #dcfce7; color: #166534; }
+  .status-pending { background: #fef9c3; color: #854d0e; }
+  .status-failed { background: #fee2e2; color: #991b1b; }
+  .details { margin: 24px 0; }
+  .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f3f4f6; }
+  .row .label { color: #6b7280; font-size: 13px; }
+  .row .val { font-size: 13px; font-weight: 500; text-align: right; max-width: 300px; word-break: break-all; }
+  .footer { text-align: center; margin-top: 32px; padding-top: 16px; border-top: 1px solid #e5e7eb; font-size: 11px; color: #9ca3af; }
+  @media print { body { padding: 20px; } }
+</style></head><body>
+<div class="header"><h1>${brandName}</h1><p>Transaction Receipt</p></div>
+<div class="amount"><div class="value">PKR ${Number(transaction.amount).toLocaleString()}</div><div class="status status-${transaction.status.toLowerCase()}">${status}</div></div>
+<div class="details">
+<div class="row"><span class="label">Transaction ID</span><span class="val">${transaction.checkout_id}</span></div>
+<div class="row"><span class="label">Reference</span><span class="val">${transaction.reference}</span></div>
+<div class="row"><span class="label">Payment Method</span><span class="val">${method}</span></div>
+<div class="row"><span class="label">Date</span><span class="val">${date}</span></div>
+<div class="row"><span class="label">Merchant</span><span class="val">${transaction.merchant?.company_name || transaction.merchant?.name || brandName}</span></div>
+</div>
+<div class="footer"><p>This is a system-generated receipt.</p><p>${brandName} &mdash; ${new Date().getFullYear()}</p></div>
+</body></html>`;
+
+      res.setHeader('Content-Type', 'text/html');
+      res.send(html);
+    } catch (error) {
+      console.error('Receipt error:', error);
+      res.status(500).json({ success: false, error: 'Failed to generate receipt' });
+    }
+  }
 }
 
 export const portalTransactionsController = new PortalTransactionsController();
