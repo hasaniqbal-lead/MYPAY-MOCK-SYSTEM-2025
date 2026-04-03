@@ -56,9 +56,18 @@ export default function TransactionDetailDrawer({ transaction, isOpen, onClose, 
     setTimeout(() => setCopied(''), 1500)
   }
 
-  const handleDownloadReceipt = () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
-    window.open(`${apiUrl}/api/v1/portal/transactions/${transaction.checkout_id}/receipt`, '_blank')
+  const handleDownloadReceipt = async () => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
+      const token = document.cookie.split(';').find(c => c.trim().startsWith('auth_token='))?.split('=')[1]
+      const res = await fetch(`${apiUrl}/api/v1/portal/transactions/${transaction.checkout_id}/receipt`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const html = await res.text()
+      // Open in new window for print/save
+      const win = window.open('', '_blank')
+      if (win) { win.document.write(html); win.document.close(); }
+    } catch { alert('Failed to download receipt') }
   }
 
   const rows = [

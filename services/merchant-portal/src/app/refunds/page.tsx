@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Search, RotateCcw, RefreshCw, Loader2 } from 'lucide-react'
+import { Search, RotateCcw, RefreshCw, Loader2, Eye, Download } from 'lucide-react'
 import { format } from 'date-fns'
 import RefundDialog from '@/components/RefundDialog'
 import Cookies from 'js-cookie'
@@ -179,6 +179,7 @@ export default function RefundsPage() {
                     <TableHead>Type</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Date</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -193,6 +194,24 @@ export default function RefundsPage() {
                         <TableCell>{statusBadge(r.status)}</TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           {format(new Date(r.createdAt), 'MMM dd, yyyy HH:mm')}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            <Button variant="ghost" size="icon" className="h-7 w-7" title="View transaction"
+                              onClick={() => { setSearchQuery(r.transactionId); handleSearch(); }}>
+                              <Eye className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7" title="Download receipt"
+                              onClick={async () => {
+                                const token = getToken();
+                                const res = await fetch(`${apiUrl}/api/v1/portal/transactions/${r.transactionId}/receipt`, { headers: { Authorization: `Bearer ${token}` } });
+                                const html = await res.text();
+                                const win = window.open('', '_blank');
+                                if (win) { win.document.write(html); win.document.close(); }
+                              }}>
+                              <Download className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))

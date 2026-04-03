@@ -47,7 +47,7 @@ class TeamController {
         return;
       }
 
-      const validRoles = ['admin', 'viewer', 'accountant'];
+      const validRoles = ['admin', 'viewer', 'accountant', 'ops', 'marketing', 'hr', 'finance', 'business', 'hod', 'custom'];
       if (!validRoles.includes(role)) {
         res.status(400).json({ success: false, error: `Invalid role. Use: ${validRoles.join(', ')}` });
         return;

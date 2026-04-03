@@ -17,8 +17,14 @@ interface TeamMember {
 }
 
 const roleBadge = (role: string) => {
-  const c: Record<string, string> = { admin: 'bg-blue-100 text-blue-700', viewer: 'bg-gray-100 text-gray-700', accountant: 'bg-purple-100 text-purple-700' }
-  return <Badge className={c[role] || 'bg-gray-100'} variant="outline">{role}</Badge>
+  const c: Record<string, string> = {
+    admin: 'bg-blue-100 text-blue-700', ops: 'bg-orange-100 text-orange-700',
+    finance: 'bg-green-100 text-green-700', business: 'bg-indigo-100 text-indigo-700',
+    marketing: 'bg-pink-100 text-pink-700', hr: 'bg-yellow-100 text-yellow-700',
+    hod: 'bg-red-100 text-red-700', accountant: 'bg-purple-100 text-purple-700',
+    viewer: 'bg-gray-100 text-gray-700', custom: 'bg-teal-100 text-teal-700',
+  }
+  return <Badge className={c[role] || 'bg-gray-100 text-gray-600'} variant="outline">{role}</Badge>
 }
 
 export default function TeamPage() {
@@ -100,8 +106,15 @@ export default function TeamPage() {
                   <Label>Role</Label>
                   <select value={role} onChange={e => setRole(e.target.value)} className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm">
                     <option value="admin">Admin</option>
-                    <option value="viewer">Viewer</option>
+                    <option value="ops">Operations</option>
+                    <option value="finance">Finance</option>
+                    <option value="business">Business</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="hr">HR</option>
+                    <option value="hod">Head of Department</option>
                     <option value="accountant">Accountant</option>
+                    <option value="viewer">Viewer</option>
+                    <option value="custom">Custom</option>
                   </select>
                 </div>
                 <div className="flex items-end">

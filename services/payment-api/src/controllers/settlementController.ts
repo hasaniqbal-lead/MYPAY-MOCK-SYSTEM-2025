@@ -44,7 +44,7 @@ class SettlementController {
       const txResult = await prisma.paymentTransaction.aggregate({
         where: {
           merchant_id: merchantId!,
-          status: { in: ['completed', 'success'] },
+          status: { in: ['completed', 'success', 'refunded'] },
           created_at: { gte: start, lte: end },
         },
         _sum: { amount: true },
@@ -53,7 +53,7 @@ class SettlementController {
       const refundResult = await prisma.refund.aggregate({
         where: {
           merchant_id: merchantId!,
-          status: 'completed',
+          status: { in: ['completed', 'approved'] },
           created_at: { gte: start, lte: end },
         },
         _sum: { amount: true },
@@ -61,10 +61,10 @@ class SettlementController {
 
       const totalRevenue = Number(txResult._sum.amount || 0);
       const totalRefunds = Number(refundResult._sum.amount || 0);
-      const eligibleAmount = totalRevenue - totalRefunds;
+      const eligibleAmount = Math.max(totalRevenue - totalRefunds, 0);
 
-      if (eligibleAmount <= 0) {
-        res.status(400).json({ success: false, error: 'No eligible amount for settlement in this period' });
+      if (eligibleAmount === 0) {
+        res.status(400).json({ success: false, error: 'No completed transactions found in this period' });
         return;
       }
 
