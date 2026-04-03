@@ -84,9 +84,8 @@
               "script": {
                 "exec": [
                   "var jsonData = pm.response.json();",
-                  "if (jsonData.data && jsonData.data.checkoutId) {",
-                  "    pm.collectionVariables.set('checkoutId', jsonData.data.checkoutId);",
-                  "}"
+                  "var cid = jsonData.checkoutId || (jsonData.data && jsonData.data.checkoutId);",
+                  "if (cid) { pm.collectionVariables.set(\"checkoutId\", cid); }"
                 ]
               }
             }
@@ -128,9 +127,8 @@
               "script": {
                 "exec": [
                   "var jsonData = pm.response.json();",
-                  "if (jsonData.data && jsonData.data.checkoutId) {",
-                  "    pm.collectionVariables.set('checkoutId', jsonData.data.checkoutId);",
-                  "}"
+                  "var cid = jsonData.checkoutId || (jsonData.data && jsonData.data.checkoutId);",
+                  "if (cid) { pm.collectionVariables.set(\"checkoutId\", cid); }"
                 ]
               }
             }
@@ -172,9 +170,8 @@
               "script": {
                 "exec": [
                   "var jsonData = pm.response.json();",
-                  "if (jsonData.data && jsonData.data.checkoutId) {",
-                  "    pm.collectionVariables.set('checkoutId', jsonData.data.checkoutId);",
-                  "}"
+                  "var cid = jsonData.checkoutId || (jsonData.data && jsonData.data.checkoutId);",
+                  "if (cid) { pm.collectionVariables.set(\"checkoutId\", cid); }"
                 ]
               }
             }
@@ -488,12 +485,8 @@
               "script": {
                 "exec": [
                   "var jsonData = pm.response.json();",
-                  "if (jsonData.data && jsonData.data.token) {",
-                  "    pm.collectionVariables.set('merchantToken', jsonData.data.token);",
-                  "}",
-                  "if (jsonData.token) {",
-                  "    pm.collectionVariables.set('merchantToken', jsonData.token);",
-                  "}"
+                  "var token = jsonData.token || (jsonData.data && jsonData.data.token);",
+                  "if (token) { pm.collectionVariables.set(\"merchantToken\", token); }"
                 ]
               }
             }
@@ -1175,12 +1168,8 @@
               "script": {
                 "exec": [
                   "var jsonData = pm.response.json();",
-                  "if (jsonData.data && jsonData.data.token) {",
-                  "    pm.collectionVariables.set('adminToken', jsonData.data.token);",
-                  "}",
-                  "if (jsonData.token) {",
-                  "    pm.collectionVariables.set('adminToken', jsonData.token);",
-                  "}"
+                  "var token = jsonData.token || (jsonData.data && jsonData.data.token);",
+                  "if (token) { pm.collectionVariables.set(\"adminToken\", token); }"
                 ]
               }
             }
