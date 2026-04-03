@@ -79,9 +79,10 @@ class PortalAuthController {
       });
 
       // Create default API key for merchant
+      const orgSlug = process.env.ORG_SLUG || 'pay';
       const merchantId = `MERCHANT_${merchant.id.toString().padStart(6, '0')}`;
-      const apiKey = `test-${normalizedUsername}-merchant-${merchant.id.toString().padStart(6, '0')}-${uuidv4().substring(0, 8)}`;
-      const apiSecret = `api-secret-${uuidv4()}`;
+      const apiKey = `${orgSlug}_pk_${crypto.randomBytes(32).toString('hex')}`;
+      const apiSecret = `${orgSlug}_secret_${crypto.randomBytes(16).toString('hex')}`;
 
       await prisma.apiKey.create({
         data: {
@@ -93,9 +94,8 @@ class PortalAuthController {
         },
       });
 
-      // Generate payout API key
-      const orgSlug = process.env.ORG_SLUG || 'pay';
-      const payoutApiKeyPlain = `${orgSlug}_payo${crypto.randomBytes(32).toString('hex')}`;
+      // Generate payout (send) API key
+      const payoutApiKeyPlain = `${orgSlug}_sk_${crypto.randomBytes(32).toString('hex')}`;
       const payoutApiKeyHash = crypto.createHash('sha256').update(payoutApiKeyPlain).digest('hex');
 
       // Update merchant with payout key (SHA256 hash for payout-api auth, plain for display)

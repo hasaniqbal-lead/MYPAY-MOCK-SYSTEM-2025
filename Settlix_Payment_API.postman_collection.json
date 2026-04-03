@@ -5,11 +5,31 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "https://sbx-api.settlix.net", "type": "string" },
-    { "key": "apiKey", "value": "test-vatrix-merchant-000001-8242df6e", "type": "string" },
-    { "key": "merchantToken", "value": "", "type": "string" },
-    { "key": "adminToken", "value": "", "type": "string" },
-    { "key": "checkoutId", "value": "", "type": "string" }
+    {
+      "key": "baseUrl",
+      "value": "https://sbx-api.settlix.net",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "settlix_pk_46dc9cecf61278c3862e27ab633f9daf36550e58438ac2f8458834b2dba56375",
+      "type": "string"
+    },
+    {
+      "key": "merchantToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "checkoutId",
+      "value": "",
+      "type": "string"
+    }
   ],
   "item": [
     {
@@ -20,7 +40,17 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "{{baseUrl}}/api/v1/health", "host": ["{{baseUrl}}"], "path": ["api", "v1", "health"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "health"
+              ]
+            }
           }
         },
         {
@@ -28,7 +58,17 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "{{baseUrl}}/api/v1/test-scenarios", "host": ["{{baseUrl}}"], "path": ["api", "v1", "test-scenarios"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/test-scenarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "test-scenarios"
+              ]
+            }
           }
         }
       ]
@@ -54,14 +94,30 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "X-Api-Key", "value": "{{apiKey}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Api-Key",
+                "value": "{{apiKey}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reference\": \"ORDER-001\",\n  \"amount\": 1500,\n  \"paymentMethod\": \"easypaisa\",\n  \"paymentType\": \"onetime\",\n  \"successUrl\": \"https://example.com/success\",\n  \"returnUrl\": \"https://example.com/return\",\n  \"user\": {\n    \"id\": \"user123\",\n    \"email\": \"user@example.com\"\n  }\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/checkouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "checkouts"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/checkouts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "checkouts"
+              ]
+            }
           }
         },
         {
@@ -82,14 +138,30 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "X-Api-Key", "value": "{{apiKey}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Api-Key",
+                "value": "{{apiKey}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reference\": \"ORDER-002\",\n  \"amount\": 2500,\n  \"paymentMethod\": \"jazzcash\",\n  \"paymentType\": \"onetime\",\n  \"successUrl\": \"https://example.com/success\",\n  \"returnUrl\": \"https://example.com/return\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/checkouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "checkouts"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/checkouts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "checkouts"
+              ]
+            }
           }
         },
         {
@@ -110,14 +182,30 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "X-Api-Key", "value": "{{apiKey}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Api-Key",
+                "value": "{{apiKey}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reference\": \"ORDER-003\",\n  \"amount\": 5000,\n  \"paymentMethod\": \"card\",\n  \"paymentType\": \"onetime\",\n  \"successUrl\": \"https://example.com/success\",\n  \"returnUrl\": \"https://example.com/return\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/checkouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "checkouts"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/checkouts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "checkouts"
+              ]
+            }
           }
         },
         {
@@ -125,9 +213,23 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "X-Api-Key", "value": "{{apiKey}}" }
+              {
+                "key": "X-Api-Key",
+                "value": "{{apiKey}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/checkouts/{{checkoutId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "checkouts", "{{checkoutId}}"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/checkouts/{{checkoutId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "checkouts",
+                "{{checkoutId}}"
+              ]
+            }
           }
         },
         {
@@ -135,9 +237,23 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "X-Api-Key", "value": "{{apiKey}}" }
+              {
+                "key": "X-Api-Key",
+                "value": "{{apiKey}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/transactions/ORDER-001", "host": ["{{baseUrl}}"], "path": ["api", "v1", "transactions", "ORDER-001"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/transactions/ORDER-001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "transactions",
+                "ORDER-001"
+              ]
+            }
           }
         }
       ]
@@ -150,13 +266,27 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"checkoutId\": \"{{checkoutId}}\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/webhooks/test", "host": ["{{baseUrl}}"], "path": ["api", "v1", "webhooks", "test"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/webhooks/test",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "webhooks",
+                "test"
+              ]
+            }
           }
         },
         {
@@ -164,9 +294,23 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "X-Api-Key", "value": "{{apiKey}}" }
+              {
+                "key": "X-Api-Key",
+                "value": "{{apiKey}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/webhooks/process-pending", "host": ["{{baseUrl}}"], "path": ["api", "v1", "webhooks", "process-pending"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/webhooks/process-pending",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "webhooks",
+                "process-pending"
+              ]
+            }
           }
         }
       ]
@@ -179,7 +323,19 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "{{baseUrl}}/api/v1/payment-page/session/{{checkoutId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payment-page", "session", "{{checkoutId}}"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payment-page/session/{{checkoutId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payment-page",
+                "session",
+                "{{checkoutId}}"
+              ]
+            }
           }
         },
         {
@@ -187,13 +343,26 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"mobileNumber\": \"03030000000\",\n  \"pin\": \"1234\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/payment/{{checkoutId}}/complete", "host": ["{{baseUrl}}"], "path": ["payment", "{{checkoutId}}", "complete"] }
+            "url": {
+              "raw": "{{baseUrl}}/payment/{{checkoutId}}/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payment",
+                "{{checkoutId}}",
+                "complete"
+              ]
+            }
           }
         },
         {
@@ -201,13 +370,26 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"mobileNumber\": \"03021111111\",\n  \"pin\": \"1234\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/payment/{{checkoutId}}/complete", "host": ["{{baseUrl}}"], "path": ["payment", "{{checkoutId}}", "complete"] }
+            "url": {
+              "raw": "{{baseUrl}}/payment/{{checkoutId}}/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payment",
+                "{{checkoutId}}",
+                "complete"
+              ]
+            }
           }
         },
         {
@@ -215,13 +397,26 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"cardNumber\": \"4242424242424242\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/payment/{{checkoutId}}/complete", "host": ["{{baseUrl}}"], "path": ["payment", "{{checkoutId}}", "complete"] }
+            "url": {
+              "raw": "{{baseUrl}}/payment/{{checkoutId}}/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payment",
+                "{{checkoutId}}",
+                "complete"
+              ]
+            }
           }
         },
         {
@@ -229,13 +424,26 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"cardNumber\": \"4000000000000002\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/payment/{{checkoutId}}/complete", "host": ["{{baseUrl}}"], "path": ["payment", "{{checkoutId}}", "complete"] }
+            "url": {
+              "raw": "{{baseUrl}}/payment/{{checkoutId}}/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payment",
+                "{{checkoutId}}",
+                "complete"
+              ]
+            }
           }
         }
       ]
@@ -248,13 +456,28 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"companyName\": \"My Test Company\",\n  \"username\": \"testcompany\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "auth", "register"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "auth",
+                "register"
+              ]
+            }
           }
         },
         {
@@ -278,13 +501,28 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"vatrix@settlix.net\",\n  \"password\": \"test123456\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "auth", "login"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "auth",
+                "login"
+              ]
+            }
           }
         },
         {
@@ -292,9 +530,24 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/auth/logout", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "auth", "logout"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "auth",
+                "logout"
+              ]
+            }
           }
         }
       ]
@@ -307,9 +560,24 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/merchant/profile", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "merchant", "profile"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/merchant/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "merchant",
+                "profile"
+              ]
+            }
           }
         },
         {
@@ -317,14 +585,32 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"companyName\": \"Updated Company Name\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/merchant/profile", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "merchant", "profile"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/merchant/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "merchant",
+                "profile"
+              ]
+            }
           }
         },
         {
@@ -332,9 +618,24 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/merchant/credentials", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "merchant", "credentials"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/merchant/credentials",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "merchant",
+                "credentials"
+              ]
+            }
           }
         },
         {
@@ -342,9 +643,24 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/merchant/credentials", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "merchant", "credentials"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/merchant/credentials",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "merchant",
+                "credentials"
+              ]
+            }
           }
         }
       ]
@@ -357,19 +673,51 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/api/v1/portal/transactions?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "portal", "transactions"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "transactions"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "20" },
-                { "key": "status", "value": "completed", "disabled": true },
-                { "key": "paymentMethod", "value": "easypaisa", "disabled": true },
-                { "key": "startDate", "value": "2025-01-01", "disabled": true },
-                { "key": "endDate", "value": "2025-12-31", "disabled": true }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "status",
+                  "value": "completed",
+                  "disabled": true
+                },
+                {
+                  "key": "paymentMethod",
+                  "value": "easypaisa",
+                  "disabled": true
+                },
+                {
+                  "key": "startDate",
+                  "value": "2025-01-01",
+                  "disabled": true
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-12-31",
+                  "disabled": true
+                }
               ]
             }
           }
@@ -379,9 +727,24 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/transactions/{{checkoutId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "transactions", "{{checkoutId}}"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/transactions/{{checkoutId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "transactions",
+                "{{checkoutId}}"
+              ]
+            }
           }
         },
         {
@@ -389,15 +752,35 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/api/v1/portal/transactions/export/csv",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "portal", "transactions", "export", "csv"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "transactions",
+                "export",
+                "csv"
+              ],
               "query": [
-                { "key": "startDate", "value": "2025-01-01", "disabled": true },
-                { "key": "endDate", "value": "2025-12-31", "disabled": true }
+                {
+                  "key": "startDate",
+                  "value": "2025-01-01",
+                  "disabled": true
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-12-31",
+                  "disabled": true
+                }
               ]
             }
           }
@@ -407,9 +790,25 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/transactions/export/json", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "transactions", "export", "json"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/transactions/export/json",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "transactions",
+                "export",
+                "json"
+              ]
+            }
           }
         }
       ]
@@ -422,16 +821,36 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/api/v1/portal/payouts?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "portal", "payouts"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "payouts"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "20" },
-                { "key": "status", "value": "SUCCESS", "disabled": true }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "status",
+                  "value": "SUCCESS",
+                  "disabled": true
+                }
               ]
             }
           }
@@ -441,9 +860,24 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/payouts/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payouts", "1"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/payouts/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "payouts",
+                "1"
+              ]
+            }
           }
         },
         {
@@ -451,9 +885,25 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/payouts/export/csv", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payouts", "export", "csv"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/payouts/export/csv",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "payouts",
+                "export",
+                "csv"
+              ]
+            }
           }
         }
       ]
@@ -466,9 +916,24 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/dashboard/stats", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "dashboard", "stats"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/dashboard/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "dashboard",
+                "stats"
+              ]
+            }
           }
         }
       ]
@@ -481,9 +946,24 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payment-page", "configs"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "payment-page",
+                "configs"
+              ]
+            }
           }
         },
         {
@@ -491,9 +971,25 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs/default", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payment-page", "configs", "default"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs/default",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "payment-page",
+                "configs",
+                "default"
+              ]
+            }
           }
         },
         {
@@ -501,9 +997,25 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payment-page", "configs", "1"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "payment-page",
+                "configs",
+                "1"
+              ]
+            }
           }
         },
         {
@@ -511,14 +1023,32 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"My Custom Theme\",\n  \"primaryColor\": \"#4F46E5\",\n  \"logoUrl\": \"https://example.com/logo.png\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payment-page", "configs"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "payment-page",
+                "configs"
+              ]
+            }
           }
         },
         {
@@ -526,14 +1056,33 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"templateId\": 1\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs/from-template", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payment-page", "configs", "from-template"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs/from-template",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "payment-page",
+                "configs",
+                "from-template"
+              ]
+            }
           }
         },
         {
@@ -541,9 +1090,26 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs/1/activate", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payment-page", "configs", "1", "activate"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs/1/activate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "payment-page",
+                "configs",
+                "1",
+                "activate"
+              ]
+            }
           }
         },
         {
@@ -551,9 +1117,24 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/payment-page/templates", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payment-page", "templates"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/payment-page/templates",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "payment-page",
+                "templates"
+              ]
+            }
           }
         },
         {
@@ -561,9 +1142,24 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchantToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/portal/payment-page/rules", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payment-page", "rules"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/payment-page/rules",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "portal",
+                "payment-page",
+                "rules"
+              ]
+            }
           }
         }
       ]
@@ -592,13 +1188,28 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"osama@settlix.net\",\n  \"password\": \"osama@@321@\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/admin/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "auth", "login"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "auth",
+                "login"
+              ]
+            }
           }
         }
       ]
@@ -611,9 +1222,23 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/admin/merchants", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "merchants"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/merchants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "merchants"
+              ]
+            }
           }
         },
         {
@@ -621,9 +1246,24 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/admin/merchants/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "merchants", "1"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/merchants/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "merchants",
+                "1"
+              ]
+            }
           }
         },
         {
@@ -631,14 +1271,31 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"new@merchant.com\",\n  \"name\": \"New Merchant\",\n  \"company_name\": \"New Merchant Co\",\n  \"webhookUrl\": \"https://webhook.site/test\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/admin/merchants", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "merchants"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/merchants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "merchants"
+              ]
+            }
           }
         },
         {
@@ -646,14 +1303,32 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Updated Merchant Name\",\n  \"company_name\": \"Updated Co\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/admin/merchants/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "merchants", "1"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/merchants/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "merchants",
+                "1"
+              ]
+            }
           }
         },
         {
@@ -661,9 +1336,25 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/admin/merchants/1/toggle-status", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "merchants", "1", "toggle-status"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/merchants/1/toggle-status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "merchants",
+                "1",
+                "toggle-status"
+              ]
+            }
           }
         },
         {
@@ -671,9 +1362,25 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/admin/merchants/1/reset-password", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "merchants", "1", "reset-password"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/merchants/1/reset-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "merchants",
+                "1",
+                "reset-password"
+              ]
+            }
           }
         },
         {
@@ -681,14 +1388,33 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"newemail@merchant.com\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/admin/merchants/1/email", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "merchants", "1", "email"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/merchants/1/email",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "merchants",
+                "1",
+                "email"
+              ]
+            }
           }
         }
       ]
@@ -701,15 +1427,31 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/transactions?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "transactions"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "transactions"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "20" }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
               ]
             }
           }
@@ -719,15 +1461,31 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/payouts?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "payouts"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "payouts"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "20" }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
               ]
             }
           }
@@ -742,9 +1500,24 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/admin/payment-page/rules", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "payment-page", "rules"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/payment-page/rules",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "payment-page",
+                "rules"
+              ]
+            }
           }
         },
         {
@@ -752,14 +1525,32 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Test Rule\",\n  \"type\": \"field\",\n  \"config\": {}\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/admin/payment-page/rules", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "payment-page", "rules"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/payment-page/rules",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "payment-page",
+                "rules"
+              ]
+            }
           }
         },
         {
@@ -767,9 +1558,26 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/admin/payment-page/rules/1/toggle", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "payment-page", "rules", "1", "toggle"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/payment-page/rules/1/toggle",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "payment-page",
+                "rules",
+                "1",
+                "toggle"
+              ]
+            }
           }
         },
         {
@@ -777,9 +1585,24 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/admin/payment-page/templates", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "payment-page", "templates"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/payment-page/templates",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "payment-page",
+                "templates"
+              ]
+            }
           }
         },
         {
@@ -787,14 +1610,32 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Modern Dark\",\n  \"config\": {\n    \"primaryColor\": \"#1a1a2e\",\n    \"backgroundColor\": \"#16213e\"\n  }\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/admin/payment-page/templates", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "payment-page", "templates"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/payment-page/templates",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "payment-page",
+                "templates"
+              ]
+            }
           }
         },
         {
@@ -802,9 +1643,24 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/admin/payment-page/configs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "payment-page", "configs"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/payment-page/configs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "payment-page",
+                "configs"
+              ]
+            }
           }
         }
       ]

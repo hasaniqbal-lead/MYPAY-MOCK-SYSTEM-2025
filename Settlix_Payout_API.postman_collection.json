@@ -5,9 +5,21 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "https://sbx-api.settlix.net", "type": "string" },
-    { "key": "payoutApiKey", "value": "settlix_payod319e475c0d9a430dc97518f36ab944a5fce11f5609a4d9fb5f0845bc5ad39aa", "type": "string" },
-    { "key": "payoutId", "value": "", "type": "string" }
+    {
+      "key": "baseUrl",
+      "value": "https://sbx-api.settlix.net",
+      "type": "string"
+    },
+    {
+      "key": "payoutApiKey",
+      "value": "settlix_sk_c56afd1c5e6ce3831a1b13a12b5b00e1d6787423bd41427667076c86bfb65b31",
+      "type": "string"
+    },
+    {
+      "key": "payoutId",
+      "value": "",
+      "type": "string"
+    }
   ],
   "item": [
     {
@@ -18,7 +30,17 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "{{baseUrl}}/api/v1/health", "host": ["{{baseUrl}}"], "path": ["api", "v1", "health"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "health"
+              ]
+            }
           }
         }
       ]
@@ -44,15 +66,34 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
-              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-KEY",
+                "value": "{{payoutApiKey}}"
+              },
+              {
+                "key": "X-Idempotency-Key",
+                "value": "{{$guid}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"merchantReference\": \"PAYOUT-001\",\n  \"amount\": 5000,\n  \"currency\": \"PKR\",\n  \"destType\": \"BANK\",\n  \"bankCode\": \"HBL\",\n  \"accountNumber\": \"1234567890001\",\n  \"accountTitle\": \"Test User Success\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/payouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payouts"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payouts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payouts"
+              ]
+            }
           }
         },
         {
@@ -60,15 +101,34 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
-              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-KEY",
+                "value": "{{payoutApiKey}}"
+              },
+              {
+                "key": "X-Idempotency-Key",
+                "value": "{{$guid}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"merchantReference\": \"PAYOUT-002\",\n  \"amount\": 3000,\n  \"currency\": \"PKR\",\n  \"destType\": \"BANK\",\n  \"bankCode\": \"UBL\",\n  \"accountNumber\": \"5555555550003\",\n  \"accountTitle\": \"Test User Failed\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/payouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payouts"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payouts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payouts"
+              ]
+            }
           }
         },
         {
@@ -76,15 +136,34 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
-              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-KEY",
+                "value": "{{payoutApiKey}}"
+              },
+              {
+                "key": "X-Idempotency-Key",
+                "value": "{{$guid}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"merchantReference\": \"PAYOUT-003\",\n  \"amount\": 2000,\n  \"currency\": \"PKR\",\n  \"destType\": \"WALLET\",\n  \"walletCode\": \"EASYPAISA\",\n  \"accountNumber\": \"03001234560001\",\n  \"accountTitle\": \"Wallet User\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/payouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payouts"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payouts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payouts"
+              ]
+            }
           }
         },
         {
@@ -92,15 +171,34 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
-              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-KEY",
+                "value": "{{payoutApiKey}}"
+              },
+              {
+                "key": "X-Idempotency-Key",
+                "value": "{{$guid}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"merchantReference\": \"PAYOUT-004\",\n  \"amount\": 1500,\n  \"currency\": \"PKR\",\n  \"destType\": \"WALLET\",\n  \"walletCode\": \"JAZZCASH\",\n  \"accountNumber\": \"03101234560001\",\n  \"accountTitle\": \"JazzCash User\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/payouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payouts"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payouts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payouts"
+              ]
+            }
           }
         },
         {
@@ -108,15 +206,34 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
-              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-KEY",
+                "value": "{{payoutApiKey}}"
+              },
+              {
+                "key": "X-Idempotency-Key",
+                "value": "{{$guid}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"merchantReference\": \"PAYOUT-005\",\n  \"amount\": 150000,\n  \"currency\": \"PKR\",\n  \"destType\": \"BANK\",\n  \"bankCode\": \"MCB\",\n  \"accountNumber\": \"9876543210001\",\n  \"accountTitle\": \"Large Transfer User\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/payouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payouts"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payouts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payouts"
+              ]
+            }
           }
         },
         {
@@ -124,15 +241,34 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
-              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-KEY",
+                "value": "{{payoutApiKey}}"
+              },
+              {
+                "key": "X-Idempotency-Key",
+                "value": "{{$guid}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"merchantReference\": \"PAYOUT-006\",\n  \"amount\": 4000,\n  \"currency\": \"PKR\",\n  \"destType\": \"BANK\",\n  \"bankCode\": \"ABL\",\n  \"accountNumber\": \"9999999990005\",\n  \"accountTitle\": \"On Hold User\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/payouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payouts"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payouts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payouts"
+              ]
+            }
           }
         },
         {
@@ -140,16 +276,35 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" }
+              {
+                "key": "X-API-KEY",
+                "value": "{{payoutApiKey}}"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/api/v1/payouts?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "payouts"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payouts"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "20" },
-                { "key": "status", "value": "PENDING", "disabled": true }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "status",
+                  "value": "PENDING",
+                  "disabled": true
+                }
               ]
             }
           }
@@ -159,9 +314,23 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" }
+              {
+                "key": "X-API-KEY",
+                "value": "{{payoutApiKey}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/payouts/{{payoutId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payouts", "{{payoutId}}"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payouts/{{payoutId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payouts",
+                "{{payoutId}}"
+              ]
+            }
           }
         },
         {
@@ -169,10 +338,28 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
-              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+              {
+                "key": "X-API-KEY",
+                "value": "{{payoutApiKey}}"
+              },
+              {
+                "key": "X-Idempotency-Key",
+                "value": "{{$guid}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/payouts/{{payoutId}}/reinitiate", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payouts", "{{payoutId}}", "reinitiate"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payouts/{{payoutId}}/reinitiate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payouts",
+                "{{payoutId}}",
+                "reinitiate"
+              ]
+            }
           }
         }
       ]
@@ -185,9 +372,22 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" }
+              {
+                "key": "X-API-KEY",
+                "value": "{{payoutApiKey}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/balance", "host": ["{{baseUrl}}"], "path": ["api", "v1", "balance"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/balance",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "balance"
+              ]
+            }
           }
         },
         {
@@ -195,15 +395,31 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" }
+              {
+                "key": "X-API-KEY",
+                "value": "{{payoutApiKey}}"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/api/v1/balance/history?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "balance", "history"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "balance",
+                "history"
+              ],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "20" }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
               ]
             }
           }
@@ -218,9 +434,22 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" }
+              {
+                "key": "X-API-KEY",
+                "value": "{{payoutApiKey}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/api/v1/directory", "host": ["{{baseUrl}}"], "path": ["api", "v1", "directory"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/directory",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "directory"
+              ]
+            }
           }
         },
         {
@@ -228,15 +457,34 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
-              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-KEY",
+                "value": "{{payoutApiKey}}"
+              },
+              {
+                "key": "X-Idempotency-Key",
+                "value": "{{$guid}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"destType\": \"BANK\",\n  \"bankCode\": \"HBL\",\n  \"accountNumber\": \"1234567890001\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/verify-account", "host": ["{{baseUrl}}"], "path": ["api", "v1", "verify-account"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/verify-account",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "verify-account"
+              ]
+            }
           }
         },
         {
@@ -244,15 +492,34 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
-              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-KEY",
+                "value": "{{payoutApiKey}}"
+              },
+              {
+                "key": "X-Idempotency-Key",
+                "value": "{{$guid}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"destType\": \"BANK\",\n  \"bankCode\": \"HBL\",\n  \"accountNumber\": \"1234567890003\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/verify-account", "host": ["{{baseUrl}}"], "path": ["api", "v1", "verify-account"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/verify-account",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "verify-account"
+              ]
+            }
           }
         },
         {
@@ -260,15 +527,34 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
-              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-KEY",
+                "value": "{{payoutApiKey}}"
+              },
+              {
+                "key": "X-Idempotency-Key",
+                "value": "{{$guid}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"destType\": \"WALLET\",\n  \"walletCode\": \"EASYPAISA\",\n  \"accountNumber\": \"03001234560001\"\n}"
             },
-            "url": { "raw": "{{baseUrl}}/api/v1/verify-account", "host": ["{{baseUrl}}"], "path": ["api", "v1", "verify-account"] }
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/verify-account",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "verify-account"
+              ]
+            }
           }
         }
       ]

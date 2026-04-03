@@ -200,11 +200,12 @@ class AdminMerchantsController {
       const password = crypto.randomBytes(8).toString('hex');
       const passwordHash = await bcrypt.hash(password, 10);
 
-      // Generate Payment API key (for checkouts)
-      const paymentApiKey = `${process.env.ORG_SLUG || 'pay'}_${crypto.randomBytes(32).toString('hex')}`;
+      // Generate Payment API key (pk = payment key)
+      const orgSlug = process.env.ORG_SLUG || 'pay';
+      const paymentApiKey = `${orgSlug}_pk_${crypto.randomBytes(32).toString('hex')}`;
 
-      // Generate Payout API key (plain and hashed)
-      const payoutApiKeyPlain = `${process.env.ORG_SLUG || 'pay'}_${crypto.randomBytes(32).toString('hex')}`;
+      // Generate Payout API key (sk = send key)
+      const payoutApiKeyPlain = `${orgSlug}_sk_${crypto.randomBytes(32).toString('hex')}`;
       const payoutApiKeyHash = await bcrypt.hash(payoutApiKeyPlain, 10);
 
       // Create merchant
