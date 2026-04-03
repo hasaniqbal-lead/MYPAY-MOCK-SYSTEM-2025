@@ -9,7 +9,7 @@ class CheckoutController {
    */
   async createCheckout(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const { reference, amount, paymentMethod, paymentType, successUrl, returnUrl, user } =
+      const { reference, amount, paymentMethod, paymentType, successUrl, returnUrl, user, expiresIn } =
         req.body;
 
       // Check if reference already exists
@@ -64,12 +64,16 @@ class CheckoutController {
       const paymentPageUrl = process.env.PAYMENT_PAGE_URL || 'http://localhost:80';
       const checkoutUrl = `${paymentPageUrl}/${checkoutId}`;
 
+      // Calculate expiry: default 15 minutes, max 7 days (10080 minutes)
+      const expiryMinutes = Math.min(Math.max(Number(expiresIn) || 15, 1), 10080);
+      const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000);
+
       // Return success response
       res.status(200).json({
         success: true,
         checkoutUrl,
         checkoutId,
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(), // 15 minutes
+        expiresAt: expiresAt.toISOString(),
       });
     } catch (error) {
       console.error('Checkout creation error:', error);

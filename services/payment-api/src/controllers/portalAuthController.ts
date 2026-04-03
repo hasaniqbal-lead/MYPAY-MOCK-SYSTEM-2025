@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '../config/database';
@@ -92,18 +93,50 @@ class PortalAuthController {
         },
       });
 
+      // Generate payout API key
+      const orgSlug = process.env.ORG_SLUG || 'pay';
+      const payoutApiKeyPlain = `${orgSlug}_payo${crypto.randomBytes(32).toString('hex')}`;
+      const payoutApiKeyHash = crypto.createHash('sha256').update(payoutApiKeyPlain).digest('hex');
+
+      // Update merchant with payout key (SHA256 hash for payout-api auth, plain for display)
+      await prisma.merchant.update({
+        where: { id: merchant.id },
+        data: {
+          apiKey: payoutApiKeyHash,
+          apiKeyPlain: payoutApiKeyPlain,
+        },
+      });
+
+      // Create initial merchant balance (sandbox: 10M PKR)
+      try {
+        await prisma.merchantBalance.create({
+          data: {
+            merchantId: merchant.id,
+            balance: 10000000,
+            lockedBalance: 0,
+          },
+        });
+      } catch (_) {
+        // Balance may already exist
+      }
+
       // Generate token
       const token = generateToken(merchant.id);
 
       res.status(201).json({
         success: true,
         token,
-        password, // Return generated password
+        password,
         merchant: {
           id: merchant.id,
           email: merchant.email,
           companyName: merchant.company_name,
           status: merchant.status,
+        },
+        credentials: {
+          paymentApiKey: apiKey,
+          payoutApiKey: payoutApiKeyPlain,
+          vendorId: merchantId,
         },
       });
     } catch (error) {

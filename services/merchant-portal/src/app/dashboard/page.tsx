@@ -8,7 +8,11 @@ import { RecentTransactionsCard } from '@/components/dashboard/RecentTransaction
 import Layout from '@/components/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { DollarSign, TrendingUp, CreditCard, Users, AlertCircle } from 'lucide-react'
+import { DollarSign, TrendingUp, CreditCard, AlertCircle, Zap, Copy, Check, ExternalLink } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { credentialsAPI } from '@/lib/api'
 
 interface DashboardStats {
   totalTransactions: number
@@ -99,12 +103,12 @@ export default function DashboardPage() {
                 changeType="increase" 
                 icon={<TrendingUp className="h-4 w-4" />} 
               />
-              <MetricsCard 
-                title="Active Customers" 
-                value="892" 
-                change={-1.2} 
-                changeType="decrease" 
-                icon={<Users className="h-4 w-4" />} 
+              <MetricsCard
+                title="Success Rate"
+                value={stats.successfulTransactions.toString()}
+                change={0}
+                changeType="increase"
+                icon={<Check className="h-4 w-4" />}
               />
             </div>
 
@@ -117,35 +121,7 @@ export default function DashboardPage() {
 
               {/* Right Column - 1/3 width */}
               <div className="space-y-6">
-                {/* System Status */}
-                <Card className="shadow-elevation">
-                  <CardHeader>
-                    <CardTitle>System Status</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-foreground">API Status</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-status-success rounded-full"></div>
-                        <span className="text-sm text-status-success">Operational</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-foreground">Payment Gateway</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-status-success rounded-full"></div>
-                        <span className="text-sm text-status-success">Operational</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-foreground">Webhook Delivery</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-status-warning rounded-full"></div>
-                        <span className="text-sm text-status-warning">Degraded</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <QuickCheckout />
               </div>
             </div>
           </>
@@ -156,5 +132,139 @@ export default function DashboardPage() {
         )}
       </div>
     </Layout>
+  )
+}
+
+function QuickCheckout() {
+  const [amount, setAmount] = useState('')
+  const [method, setMethod] = useState('all')
+  const [expiry, setExpiry] = useState('1440') // 24 hours default
+  const [reference, setReference] = useState(`QC-${Date.now().toString(36).toUpperCase()}`)
+  const [loading, setLoading] = useState(false)
+  const [result, setResult] = useState<{ url: string; id: string; expiresAt: string } | null>(null)
+  const [copied, setCopied] = useState(false)
+
+  const handleGenerate = async () => {
+    if (!amount || Number(amount) <= 0) return
+    setLoading(true)
+    setResult(null)
+    try {
+      const creds = await credentialsAPI.getCredentials()
+      const apiKey = creds?.credentials?.paymentApiKey || creds?.credentials?.apiKey
+      if (!apiKey) throw new Error('No API key found')
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
+      const body: any = {
+        reference,
+        amount: Number(amount),
+        paymentType: 'onetime',
+        successUrl: window.location.origin + '/dashboard',
+        returnUrl: window.location.origin + '/dashboard',
+        expiresIn: Number(expiry),
+      }
+      if (method !== 'all') body.paymentMethod = method
+
+      const res = await fetch(`${apiUrl}/api/v1/checkouts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Api-Key': apiKey },
+        body: JSON.stringify(body),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setResult({ url: data.checkoutUrl, id: data.checkoutId, expiresAt: data.expiresAt })
+        setReference(`QC-${Date.now().toString(36).toUpperCase()}`)
+      }
+    } catch (err) {
+      console.error('Quick checkout failed:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const copyLink = () => {
+    if (result?.url) {
+      navigator.clipboard.writeText(result.url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  return (
+    <Card className="shadow-elevation">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Zap className="h-4 w-4 text-darpay-primary" />
+          Quick Payment Link
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div>
+          <Label className="text-xs">Amount (PKR)</Label>
+          <Input
+            type="number"
+            placeholder="1000"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="h-9"
+          />
+        </div>
+        <div>
+          <Label className="text-xs">Payment Method</Label>
+          <select
+            value={method}
+            onChange={(e) => setMethod(e.target.value)}
+            className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm"
+          >
+            <option value="all">All Methods</option>
+            <option value="easypaisa">Easypaisa</option>
+            <option value="jazzcash">JazzCash</option>
+            <option value="card">Card</option>
+          </select>
+        </div>
+        <div>
+          <Label className="text-xs">Expires In</Label>
+          <select
+            value={expiry}
+            onChange={(e) => setExpiry(e.target.value)}
+            className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm"
+          >
+            <option value="15">15 minutes</option>
+            <option value="60">1 hour</option>
+            <option value="1440">24 hours</option>
+            <option value="10080">7 days</option>
+          </select>
+        </div>
+        <Button
+          onClick={handleGenerate}
+          disabled={loading || !amount}
+          className="w-full bg-darpay-primary hover:bg-darpay-primary-dark text-white"
+        >
+          {loading ? 'Generating...' : 'Generate Link'}
+        </Button>
+
+        {result && (
+          <div className="mt-3 p-3 bg-muted rounded-lg space-y-2">
+            <div className="flex items-center gap-2">
+              <input
+                readOnly
+                value={result.url}
+                className="flex-1 text-xs bg-background border rounded px-2 py-1.5 truncate"
+              />
+              <Button size="sm" variant="outline" onClick={copyLink} className="h-8 px-2">
+                {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+              </Button>
+              <a href={result.url} target="_blank" rel="noopener noreferrer">
+                <Button size="sm" variant="outline" className="h-8 px-2">
+                  <ExternalLink className="h-3 w-3" />
+                </Button>
+              </a>
+            </div>
+            <p className="text-[10px] text-muted-foreground">
+              Expires: {new Date(result.expiresAt).toLocaleString()}
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }
