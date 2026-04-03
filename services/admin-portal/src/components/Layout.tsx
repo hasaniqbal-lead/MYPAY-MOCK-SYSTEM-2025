@@ -14,6 +14,8 @@ import {
   Palette,
   Wrench,
   RefreshCcw,
+  MessageSquare,
+  Banknote,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { brandConfig } from '@/lib/brand-config'
@@ -22,11 +24,12 @@ import MobileDrawer from '@/components/MobileDrawer'
 
 const allNavItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/operations', label: 'Operations', icon: Wrench },
   { href: '/merchants', label: 'Merchants', icon: Users },
-  { href: '/payments', label: 'Payments', icon: CreditCard },
+  { href: '/transactions', label: 'Payments', icon: CreditCard },
   { href: '/payouts', label: 'Payouts', icon: Wallet },
   { href: '/refunds', label: 'Refunds', icon: RefreshCcw },
+  { href: '/settlements', label: 'Settlements', icon: Banknote },
+  { href: '/tickets', label: 'Support', icon: MessageSquare },
   { href: '/payment-page', label: 'Payment Page', icon: Palette },
   { href: '/settings', label: 'Settings', icon: Settings },
 ]

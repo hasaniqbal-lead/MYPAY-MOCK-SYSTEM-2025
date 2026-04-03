@@ -7,7 +7,7 @@ import { LayoutDashboard, Users, CreditCard, Wallet, MoreHorizontal } from 'luci
 const navItems = [
   { href: '/dashboard', label: 'Home', icon: LayoutDashboard },
   { href: '/merchants', label: 'Merchants', icon: Users },
-  { href: '/payments', label: 'Payments', icon: CreditCard },
+  { href: '/transactions', label: 'Payments', icon: CreditCard },
   { href: '/payouts', label: 'Payouts', icon: Wallet },
 ]
 

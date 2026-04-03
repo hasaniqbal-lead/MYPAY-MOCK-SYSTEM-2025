@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Settings, LogOut, X, ChevronRight, Wrench, RefreshCcw, Palette } from 'lucide-react'
+import { Settings, LogOut, X, ChevronRight, RefreshCcw, Palette, MessageSquare, Banknote } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { brandConfig } from '@/lib/brand-config'
 
@@ -12,8 +12,9 @@ interface MobileDrawerProps {
 }
 
 const drawerItems = [
-  { href: '/operations', label: 'Operations', icon: Wrench },
   { href: '/refunds', label: 'Refunds', icon: RefreshCcw },
+  { href: '/settlements', label: 'Settlements', icon: Banknote },
+  { href: '/tickets', label: 'Support', icon: MessageSquare },
   { href: '/payment-page', label: 'Payment Page', icon: Palette },
   { href: '/settings', label: 'Settings', icon: Settings },
 ]
