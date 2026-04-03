@@ -23,6 +23,7 @@ import { AuthenticatedRequest } from './types';
 import { rateLimitMiddleware, getRateLimitInfo } from './middleware/rateLimit';
 import { requireFeature } from './middleware/featureGate';
 import { enforceTransactionCap, enforceVolumeCap, enforceMerchantLimit } from './middleware/limitsEnforcement';
+import { refundController } from './controllers/refundController';
 
 dotenv.config();
 
@@ -303,6 +304,28 @@ apiRouter.get(
 );
 
 // ============================================
+// Portal Refund Routes
+// ============================================
+
+apiRouter.post(
+  '/portal/refunds',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => refundController.create(req as AuthenticatedRequest, res)
+);
+
+apiRouter.get(
+  '/portal/refunds',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => refundController.list(req as AuthenticatedRequest, res)
+);
+
+apiRouter.get(
+  '/portal/refunds/:id',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => refundController.get(req as AuthenticatedRequest, res)
+);
+
+// ============================================
 // Admin Auth Routes
 // ============================================
 
@@ -521,6 +544,19 @@ apiRouter.get(
   (req: Request, res: Response) => adminPaymentPageController.getConfigById(req as any, res)
 );
 
+
+// Admin Refund Routes
+apiRouter.get(
+  '/admin/refunds',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => refundController.adminList(req as AuthenticatedRequest, res)
+);
+
+apiRouter.put(
+  '/admin/refunds/:id/status',
+  requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => refundController.adminUpdateStatus(req as AuthenticatedRequest, res)
+);
 
 // ============================================
 // Public Payment Page Session Routes

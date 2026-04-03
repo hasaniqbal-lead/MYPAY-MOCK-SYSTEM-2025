@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Settings, LogOut, X, User, ChevronRight } from 'lucide-react'
+import { Settings, LogOut, X, User, ChevronRight, RotateCcw } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { brandConfig } from '@/lib/brand-config'
 
@@ -56,6 +56,15 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
         {/* Menu items */}
         <div className="px-4 py-3 space-y-1">
+          <Link
+            href="/refunds"
+            onClick={onClose}
+            className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-accent transition-colors"
+          >
+            <RotateCcw className="h-5 w-5 text-muted-foreground" />
+            <span className="flex-1 text-sm font-medium">Refunds</span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </Link>
           <Link
             href="/settings"
             onClick={onClose}

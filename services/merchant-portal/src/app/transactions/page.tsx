@@ -23,9 +23,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Search, Download, Eye, RefreshCw, CreditCard, Wallet } from 'lucide-react'
+import { Search, Download, Eye, RefreshCw, CreditCard, Wallet, RotateCcw } from 'lucide-react'
 import { format } from 'date-fns'
 import TransactionDetailDrawer from '@/components/TransactionDetailDrawer'
+import RefundDialog from '@/components/RefundDialog'
 
 interface Transaction {
   checkout_id: string
@@ -98,6 +99,10 @@ export default function TransactionsPage() {
   // Detail drawer state
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
+
+  // Refund dialog state
+  const [refundTransaction, setRefundTransaction] = useState<Transaction | null>(null)
+  const [refundDialogOpen, setRefundDialogOpen] = useState(false)
 
   // Payout states
   const [payouts, setPayouts] = useState<Payout[]>([])
@@ -345,14 +350,28 @@ export default function TransactionsPage() {
                               {format(new Date(transaction.created_at || transaction.createdAt || new Date()), 'MMM dd, yyyy HH:mm')}
                             </TableCell>
                             <TableCell>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => { setSelectedTransaction(transaction); setDrawerOpen(true); }}
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() => { setSelectedTransaction(transaction); setDrawerOpen(true); }}
+                                  title="View details"
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                                {(transaction.status === 'completed' || transaction.status === 'success') && (
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-orange-500 hover:text-orange-600 hover:bg-orange-50"
+                                    onClick={() => { setRefundTransaction(transaction); setRefundDialogOpen(true); }}
+                                    title="Refund"
+                                  >
+                                    <RotateCcw className="h-4 w-4" />
+                                  </Button>
+                                )}
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))
@@ -509,6 +528,19 @@ export default function TransactionsPage() {
         transaction={selectedTransaction}
         isOpen={drawerOpen}
         onClose={() => { setDrawerOpen(false); setSelectedTransaction(null); }}
+        onRefund={(t) => {
+          setDrawerOpen(false);
+          setRefundTransaction(t);
+          setRefundDialogOpen(true);
+        }}
+      />
+
+      {/* Refund Dialog */}
+      <RefundDialog
+        isOpen={refundDialogOpen}
+        onClose={() => { setRefundDialogOpen(false); setRefundTransaction(null); }}
+        transaction={refundTransaction}
+        onRefundCreated={() => { loadTransactions(); }}
       />
     </Layout>
   )

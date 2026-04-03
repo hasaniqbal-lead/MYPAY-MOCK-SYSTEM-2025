@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useState } from 'react'
-import { Home, ArrowUpDown, Shield, Settings, Palette } from 'lucide-react'
+import { Home, ArrowUpDown, Shield, Settings, Palette, RotateCcw } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { brandConfig } from '@/lib/brand-config'
 import BottomNav from '@/components/BottomNav'
@@ -24,6 +24,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home },
     { name: 'Transactions', href: '/transactions', icon: ArrowUpDown },
+    { name: 'Refunds', href: '/refunds', icon: RotateCcw },
     { name: 'Payment Page', href: '/payment-page', icon: Palette },
     { name: 'Credentials', href: '/credentials', icon: Shield },
     { name: 'Settings', href: '/settings', icon: Settings },

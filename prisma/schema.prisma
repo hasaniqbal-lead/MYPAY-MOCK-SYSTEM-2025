@@ -47,6 +47,12 @@ model Merchant {
   // Payment Page Configuration relations
   paymentPageConfigs PaymentPageConfig[]
 
+  // Phase 2-6 relations
+  refunds            Refund[]
+  teamMembers        MerchantTeamMember[]
+  supportTickets     SupportTicket[]
+  settlements        Settlement[]
+
   @@map("merchants")
 }
 
@@ -395,4 +401,103 @@ model PaymentPageTemplate {
   @@index([is_active])
   @@index([is_featured])
   @@map("payment_page_templates")
+}
+
+// ============================================
+// Phase 2-6 Models
+// ============================================
+
+// Refund requests
+model Refund {
+  id               Int       @id @default(autoincrement())
+  transaction_id   Int
+  merchant_id      Int
+  checkout_id      String    // Links to PaymentTransaction.checkout_id
+  amount           Decimal   @db.Decimal(10, 2)
+  original_amount  Decimal   @db.Decimal(10, 2)
+  type             String    @default("full")   // "full" or "partial"
+  reason           String?   @db.Text
+  status           String    @default("pending") // pending, approved, completed, rejected
+  admin_note       String?   @db.Text
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  merchant         Merchant  @relation(fields: [merchant_id], references: [id], onDelete: Cascade)
+
+  @@index([merchant_id])
+  @@index([checkout_id])
+  @@index([status])
+  @@map("refunds")
+}
+
+// Merchant team members
+model MerchantTeamMember {
+  id            Int       @id @default(autoincrement())
+  merchant_id   Int
+  name          String
+  email         String    @unique
+  password_hash String
+  role          String    @default("viewer")  // admin, viewer, accountant
+  is_active     Boolean   @default(true)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  merchant      Merchant  @relation(fields: [merchant_id], references: [id], onDelete: Cascade)
+
+  @@index([merchant_id])
+  @@map("merchant_team_members")
+}
+
+// Support tickets
+model SupportTicket {
+  id          Int       @id @default(autoincrement())
+  merchant_id Int
+  subject     String
+  status      String    @default("open")  // open, in_progress, resolved, closed
+  priority    String    @default("medium") // low, medium, high
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  merchant    Merchant  @relation(fields: [merchant_id], references: [id], onDelete: Cascade)
+  messages    TicketMessage[]
+
+  @@index([merchant_id])
+  @@index([status])
+  @@map("support_tickets")
+}
+
+// Ticket messages (conversation thread)
+model TicketMessage {
+  id             Int       @id @default(autoincrement())
+  ticket_id      Int
+  sender_type    String    // "merchant" or "admin"
+  sender_name    String?
+  message        String    @db.Text
+  attachment_url String?
+  created_at     DateTime  @default(now())
+
+  ticket         SupportTicket @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+
+  @@index([ticket_id])
+  @@map("ticket_messages")
+}
+
+// Settlement requests
+model Settlement {
+  id            Int       @id @default(autoincrement())
+  merchant_id   Int
+  amount        Decimal   @db.Decimal(12, 2)
+  period_start  DateTime
+  period_end    DateTime
+  status        String    @default("pending") // pending, in_review, approved, completed, rejected
+  admin_note    String?   @db.Text
+  requested_at  DateTime  @default(now())
+  completed_at  DateTime?
+  updated_at    DateTime  @updatedAt
+
+  merchant      Merchant  @relation(fields: [merchant_id], references: [id], onDelete: Cascade)
+
+  @@index([merchant_id])
+  @@index([status])
+  @@map("settlements")
 }
