@@ -1,0 +1,277 @@
+{
+  "info": {
+    "name": "Settlix Payout API",
+    "description": "Complete Payout API collection for Settlix Payment Platform.\n\n## Auth\n- All endpoints require `X-API-KEY` header with merchant's payout API key\n- POST/PUT/PATCH also require `X-Idempotency-Key` header (UUID v4)\n\n## Getting Your Payout API Key\n1. Login to Payment API: POST /api/v1/portal/auth/login\n2. Get credentials: GET /api/v1/portal/merchant/credentials\n3. Use the payout API key from the response\n\n## Test Scenarios (Account Number Suffixes)\n- Ending 0001: SUCCESS\n- Ending 0002: RETRY then SUCCESS\n- Ending 0003: FAILED\n- Ending 0004: PENDING\n- Ending 0005: ON_HOLD\n- Amount >= 100,000: IN_REVIEW\n\n## Valid Bank Codes\nHBL, UBL, MCB, ABL, JSBL, BAHL, MEEZAN, ASKARI, BANKALHABIB, SONERI, FBL, BOP, NBP, SBP\n\n## Valid Wallet Codes\nEASYPAISA, JAZZCASH, SADAPAY, NAYAPAY",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://sbx-api.settlix.net", "type": "string" },
+    { "key": "payoutApiKey", "value": "settlix_payod319e475c0d9a430dc97518f36ab944a5fce11f5609a4d9fb5f0845bc5ad39aa", "type": "string" },
+    { "key": "payoutId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/health", "host": ["{{baseUrl}}"], "path": ["api", "v1", "health"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payouts",
+      "item": [
+        {
+          "name": "Create Payout (Bank - Success)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.id) {",
+                  "    pm.collectionVariables.set('payoutId', jsonData.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
+              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"merchantReference\": \"PAYOUT-001\",\n  \"amount\": 5000,\n  \"currency\": \"PKR\",\n  \"destType\": \"BANK\",\n  \"bankCode\": \"HBL\",\n  \"accountNumber\": \"1234567890001\",\n  \"accountTitle\": \"Test User Success\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/payouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payouts"] }
+          }
+        },
+        {
+          "name": "Create Payout (Bank - Failed)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
+              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"merchantReference\": \"PAYOUT-002\",\n  \"amount\": 3000,\n  \"currency\": \"PKR\",\n  \"destType\": \"BANK\",\n  \"bankCode\": \"UBL\",\n  \"accountNumber\": \"5555555550003\",\n  \"accountTitle\": \"Test User Failed\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/payouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payouts"] }
+          }
+        },
+        {
+          "name": "Create Payout (Wallet - Easypaisa)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
+              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"merchantReference\": \"PAYOUT-003\",\n  \"amount\": 2000,\n  \"currency\": \"PKR\",\n  \"destType\": \"WALLET\",\n  \"walletCode\": \"EASYPAISA\",\n  \"accountNumber\": \"03001234560001\",\n  \"accountTitle\": \"Wallet User\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/payouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payouts"] }
+          }
+        },
+        {
+          "name": "Create Payout (Wallet - JazzCash)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
+              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"merchantReference\": \"PAYOUT-004\",\n  \"amount\": 1500,\n  \"currency\": \"PKR\",\n  \"destType\": \"WALLET\",\n  \"walletCode\": \"JAZZCASH\",\n  \"accountNumber\": \"03101234560001\",\n  \"accountTitle\": \"JazzCash User\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/payouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payouts"] }
+          }
+        },
+        {
+          "name": "Create Payout (Large - In Review)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
+              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"merchantReference\": \"PAYOUT-005\",\n  \"amount\": 150000,\n  \"currency\": \"PKR\",\n  \"destType\": \"BANK\",\n  \"bankCode\": \"MCB\",\n  \"accountNumber\": \"9876543210001\",\n  \"accountTitle\": \"Large Transfer User\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/payouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payouts"] }
+          }
+        },
+        {
+          "name": "Create Payout (On Hold)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
+              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"merchantReference\": \"PAYOUT-006\",\n  \"amount\": 4000,\n  \"currency\": \"PKR\",\n  \"destType\": \"BANK\",\n  \"bankCode\": \"ABL\",\n  \"accountNumber\": \"9999999990005\",\n  \"accountTitle\": \"On Hold User\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/payouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payouts"] }
+          }
+        },
+        {
+          "name": "List Payouts",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payouts?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payouts"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "status", "value": "PENDING", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Payout by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/payouts/{{payoutId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payouts", "{{payoutId}}"] }
+          }
+        },
+        {
+          "name": "Reinitiate Failed Payout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
+              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/payouts/{{payoutId}}/reinitiate", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payouts", "{{payoutId}}", "reinitiate"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Balance",
+      "item": [
+        {
+          "name": "Get Balance",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/balance", "host": ["{{baseUrl}}"], "path": ["api", "v1", "balance"] }
+          }
+        },
+        {
+          "name": "Get Balance History (Ledger)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/balance/history?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "balance", "history"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Directory & Verification",
+      "item": [
+        {
+          "name": "List Banks & Wallets",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/directory", "host": ["{{baseUrl}}"], "path": ["api", "v1", "directory"] }
+          }
+        },
+        {
+          "name": "Verify Account (Bank - Valid)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
+              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destType\": \"BANK\",\n  \"bankCode\": \"HBL\",\n  \"accountNumber\": \"1234567890001\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/verify-account", "host": ["{{baseUrl}}"], "path": ["api", "v1", "verify-account"] }
+          }
+        },
+        {
+          "name": "Verify Account (Bank - Invalid)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
+              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destType\": \"BANK\",\n  \"bankCode\": \"HBL\",\n  \"accountNumber\": \"1234567890003\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/verify-account", "host": ["{{baseUrl}}"], "path": ["api", "v1", "verify-account"] }
+          }
+        },
+        {
+          "name": "Verify Account (Wallet)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-KEY", "value": "{{payoutApiKey}}" },
+              { "key": "X-Idempotency-Key", "value": "{{$guid}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destType\": \"WALLET\",\n  \"walletCode\": \"EASYPAISA\",\n  \"accountNumber\": \"03001234560001\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/verify-account", "host": ["{{baseUrl}}"], "path": ["api", "v1", "verify-account"] }
+          }
+        }
+      ]
+    }
+  ]
+}

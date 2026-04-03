@@ -1,0 +1,813 @@
+{
+  "info": {
+    "name": "Settlix Payment API",
+    "description": "Complete Payment API collection for Settlix Payment Platform.\n\n## Auth\n- Checkout/Transaction endpoints: `X-Api-Key` header\n- Portal endpoints: `Authorization: Bearer <jwt>` (login first)\n- Admin endpoints: `Authorization: Bearer <jwt>` (admin login first)\n\n## Test Credentials\n- Merchant: vatrix@settlix.net / test123456\n- Admin: osama@settlix.net / osama@@321@\n- API Key: test-vatrix-merchant-000001-8242df6e\n\n## Test Scenarios\n- Success: 03030000000 / 4242424242424242\n- Failed: 03021111111\n- Declined card: 4000000000000002",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://sbx-api.settlix.net", "type": "string" },
+    { "key": "apiKey", "value": "test-vatrix-merchant-000001-8242df6e", "type": "string" },
+    { "key": "merchantToken", "value": "", "type": "string" },
+    { "key": "adminToken", "value": "", "type": "string" },
+    { "key": "checkoutId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Health & Test",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/health", "host": ["{{baseUrl}}"], "path": ["api", "v1", "health"] }
+          }
+        },
+        {
+          "name": "Get Test Scenarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/test-scenarios", "host": ["{{baseUrl}}"], "path": ["api", "v1", "test-scenarios"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Checkout API",
+      "item": [
+        {
+          "name": "Create Checkout (Easypaisa)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.checkoutId) {",
+                  "    pm.collectionVariables.set('checkoutId', jsonData.data.checkoutId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Api-Key", "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"ORDER-001\",\n  \"amount\": 1500,\n  \"paymentMethod\": \"easypaisa\",\n  \"paymentType\": \"onetime\",\n  \"successUrl\": \"https://example.com/success\",\n  \"returnUrl\": \"https://example.com/return\",\n  \"user\": {\n    \"id\": \"user123\",\n    \"email\": \"user@example.com\"\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/checkouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "checkouts"] }
+          }
+        },
+        {
+          "name": "Create Checkout (JazzCash)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.checkoutId) {",
+                  "    pm.collectionVariables.set('checkoutId', jsonData.data.checkoutId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Api-Key", "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"ORDER-002\",\n  \"amount\": 2500,\n  \"paymentMethod\": \"jazzcash\",\n  \"paymentType\": \"onetime\",\n  \"successUrl\": \"https://example.com/success\",\n  \"returnUrl\": \"https://example.com/return\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/checkouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "checkouts"] }
+          }
+        },
+        {
+          "name": "Create Checkout (Card)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.checkoutId) {",
+                  "    pm.collectionVariables.set('checkoutId', jsonData.data.checkoutId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Api-Key", "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"ORDER-003\",\n  \"amount\": 5000,\n  \"paymentMethod\": \"card\",\n  \"paymentType\": \"onetime\",\n  \"successUrl\": \"https://example.com/success\",\n  \"returnUrl\": \"https://example.com/return\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/checkouts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "checkouts"] }
+          }
+        },
+        {
+          "name": "Get Checkout Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-Api-Key", "value": "{{apiKey}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/checkouts/{{checkoutId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "checkouts", "{{checkoutId}}"] }
+          }
+        },
+        {
+          "name": "Get Transaction by Reference",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-Api-Key", "value": "{{apiKey}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/transactions/ORDER-001", "host": ["{{baseUrl}}"], "path": ["api", "v1", "transactions", "ORDER-001"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "item": [
+        {
+          "name": "Test Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"checkoutId\": \"{{checkoutId}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/webhooks/test", "host": ["{{baseUrl}}"], "path": ["api", "v1", "webhooks", "test"] }
+          }
+        },
+        {
+          "name": "Process Pending Webhooks",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "X-Api-Key", "value": "{{apiKey}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/webhooks/process-pending", "host": ["{{baseUrl}}"], "path": ["api", "v1", "webhooks", "process-pending"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payment Page",
+      "item": [
+        {
+          "name": "Get Payment Session",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/payment-page/session/{{checkoutId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payment-page", "session", "{{checkoutId}}"] }
+          }
+        },
+        {
+          "name": "Complete Payment (Mobile Wallet - Success)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mobileNumber\": \"03030000000\",\n  \"pin\": \"1234\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/payment/{{checkoutId}}/complete", "host": ["{{baseUrl}}"], "path": ["payment", "{{checkoutId}}", "complete"] }
+          }
+        },
+        {
+          "name": "Complete Payment (Mobile Wallet - Failed)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mobileNumber\": \"03021111111\",\n  \"pin\": \"1234\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/payment/{{checkoutId}}/complete", "host": ["{{baseUrl}}"], "path": ["payment", "{{checkoutId}}", "complete"] }
+          }
+        },
+        {
+          "name": "Complete Payment (Card - Success)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cardNumber\": \"4242424242424242\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/payment/{{checkoutId}}/complete", "host": ["{{baseUrl}}"], "path": ["payment", "{{checkoutId}}", "complete"] }
+          }
+        },
+        {
+          "name": "Complete Payment (Card - Declined)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cardNumber\": \"4000000000000002\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/payment/{{checkoutId}}/complete", "host": ["{{baseUrl}}"], "path": ["payment", "{{checkoutId}}", "complete"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Portal - Auth",
+      "item": [
+        {
+          "name": "Register Merchant",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"My Test Company\",\n  \"username\": \"testcompany\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Merchant Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set('merchantToken', jsonData.data.token);",
+                  "}",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set('merchantToken', jsonData.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"vatrix@settlix.net\",\n  \"password\": \"test123456\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Merchant Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/auth/logout", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Portal - Merchant Profile",
+      "item": [
+        {
+          "name": "Get Merchant Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/merchant/profile", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "merchant", "profile"] }
+          }
+        },
+        {
+          "name": "Update Merchant Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"Updated Company Name\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/merchant/profile", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "merchant", "profile"] }
+          }
+        },
+        {
+          "name": "Get API Credentials",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/merchant/credentials", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "merchant", "credentials"] }
+          }
+        },
+        {
+          "name": "Generate New API Key",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/merchant/credentials", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "merchant", "credentials"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Portal - Transactions",
+      "item": [
+        {
+          "name": "List Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/transactions?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "portal", "transactions"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "status", "value": "completed", "disabled": true },
+                { "key": "paymentMethod", "value": "easypaisa", "disabled": true },
+                { "key": "startDate", "value": "2025-01-01", "disabled": true },
+                { "key": "endDate", "value": "2025-12-31", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Transaction by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/transactions/{{checkoutId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "transactions", "{{checkoutId}}"] }
+          }
+        },
+        {
+          "name": "Export Transactions (CSV)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/transactions/export/csv",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "portal", "transactions", "export", "csv"],
+              "query": [
+                { "key": "startDate", "value": "2025-01-01", "disabled": true },
+                { "key": "endDate", "value": "2025-12-31", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Export Transactions (JSON)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/transactions/export/json", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "transactions", "export", "json"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Portal - Payouts",
+      "item": [
+        {
+          "name": "List Payouts",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/portal/payouts?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "portal", "payouts"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "status", "value": "SUCCESS", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Payout by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/payouts/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payouts", "1"] }
+          }
+        },
+        {
+          "name": "Export Payouts (CSV)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/payouts/export/csv", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payouts", "export", "csv"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Portal - Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/dashboard/stats", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "dashboard", "stats"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Portal - Payment Page Config",
+      "item": [
+        {
+          "name": "List Payment Page Configs",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payment-page", "configs"] }
+          }
+        },
+        {
+          "name": "Get Default Config",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs/default", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payment-page", "configs", "default"] }
+          }
+        },
+        {
+          "name": "Get Config by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payment-page", "configs", "1"] }
+          }
+        },
+        {
+          "name": "Create Config",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"My Custom Theme\",\n  \"primaryColor\": \"#4F46E5\",\n  \"logoUrl\": \"https://example.com/logo.png\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payment-page", "configs"] }
+          }
+        },
+        {
+          "name": "Create Config from Template",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"templateId\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs/from-template", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payment-page", "configs", "from-template"] }
+          }
+        },
+        {
+          "name": "Activate Config",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/payment-page/configs/1/activate", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payment-page", "configs", "1", "activate"] }
+          }
+        },
+        {
+          "name": "List Templates",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/payment-page/templates", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payment-page", "templates"] }
+          }
+        },
+        {
+          "name": "Get Admin Rules",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{merchantToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/portal/payment-page/rules", "host": ["{{baseUrl}}"], "path": ["api", "v1", "portal", "payment-page", "rules"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Auth",
+      "item": [
+        {
+          "name": "Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set('adminToken', jsonData.data.token);",
+                  "}",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set('adminToken', jsonData.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"osama@settlix.net\",\n  \"password\": \"osama@@321@\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "auth", "login"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Merchants",
+      "item": [
+        {
+          "name": "List All Merchants",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/merchants", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "merchants"] }
+          }
+        },
+        {
+          "name": "Get Merchant Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/merchants/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "merchants", "1"] }
+          }
+        },
+        {
+          "name": "Create Merchant",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"new@merchant.com\",\n  \"name\": \"New Merchant\",\n  \"company_name\": \"New Merchant Co\",\n  \"webhookUrl\": \"https://webhook.site/test\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/merchants", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "merchants"] }
+          }
+        },
+        {
+          "name": "Update Merchant",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Merchant Name\",\n  \"company_name\": \"Updated Co\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/merchants/1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "merchants", "1"] }
+          }
+        },
+        {
+          "name": "Toggle Merchant Status",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/merchants/1/toggle-status", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "merchants", "1", "toggle-status"] }
+          }
+        },
+        {
+          "name": "Reset Merchant Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/merchants/1/reset-password", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "merchants", "1", "reset-password"] }
+          }
+        },
+        {
+          "name": "Update Merchant Email",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newemail@merchant.com\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/merchants/1/email", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "merchants", "1", "email"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Transactions & Payouts",
+      "item": [
+        {
+          "name": "List All Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/transactions?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "transactions"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List All Payouts",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/payouts?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "payouts"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Payment Page Management",
+      "item": [
+        {
+          "name": "List Rules",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/payment-page/rules", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "payment-page", "rules"] }
+          }
+        },
+        {
+          "name": "Create Rule",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Rule\",\n  \"type\": \"field\",\n  \"config\": {}\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/payment-page/rules", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "payment-page", "rules"] }
+          }
+        },
+        {
+          "name": "Toggle Rule",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/payment-page/rules/1/toggle", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "payment-page", "rules", "1", "toggle"] }
+          }
+        },
+        {
+          "name": "List Templates",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/payment-page/templates", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "payment-page", "templates"] }
+          }
+        },
+        {
+          "name": "Create Template",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Modern Dark\",\n  \"config\": {\n    \"primaryColor\": \"#1a1a2e\",\n    \"backgroundColor\": \"#16213e\"\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/payment-page/templates", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "payment-page", "templates"] }
+          }
+        },
+        {
+          "name": "List All Configs",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/payment-page/configs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "payment-page", "configs"] }
+          }
+        }
+      ]
+    }
+  ]
+}
