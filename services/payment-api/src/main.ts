@@ -27,6 +27,7 @@ import { refundController } from './controllers/refundController';
 import { teamController } from './controllers/teamController';
 import { ticketController } from './controllers/ticketController';
 import { settlementController } from './controllers/settlementController';
+import { operationsController } from './controllers/operationsController';
 
 dotenv.config();
 
@@ -641,6 +642,42 @@ apiRouter.get('/admin/settlements', requireAdminAuth as express.RequestHandler,
 
 apiRouter.put('/admin/settlements/:id/status', requireAdminAuth as express.RequestHandler,
   (req: Request, res: Response) => settlementController.adminUpdateStatus(req as AuthenticatedRequest, res));
+
+// ============================================
+// Admin Operations Routes
+// ============================================
+
+// Admin users
+apiRouter.get('/admin/users', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => operationsController.listAdmins(req as AuthenticatedRequest, res));
+apiRouter.post('/admin/users', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => operationsController.createAdmin(req as AuthenticatedRequest, res));
+apiRouter.post('/admin/users/:id/toggle', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => operationsController.toggleAdmin(req as AuthenticatedRequest, res));
+
+// Blacklist
+apiRouter.get('/admin/blacklist', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => operationsController.listBlacklist(req as AuthenticatedRequest, res));
+apiRouter.post('/admin/blacklist', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => operationsController.addToBlacklist(req as AuthenticatedRequest, res));
+apiRouter.delete('/admin/blacklist/:id', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => operationsController.removeFromBlacklist(req as AuthenticatedRequest, res));
+
+// Payment method controls
+apiRouter.get('/admin/methods', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => operationsController.listMethods(req as AuthenticatedRequest, res));
+apiRouter.put('/admin/methods/:id', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => operationsController.updateMethod(req as AuthenticatedRequest, res));
+
+// Notifications
+apiRouter.get('/admin/notifications', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => operationsController.listNotifications(req as AuthenticatedRequest, res));
+apiRouter.post('/admin/notifications', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => operationsController.createNotification(req as AuthenticatedRequest, res));
+
+// Activity logs
+apiRouter.get('/admin/activity-logs', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => operationsController.listActivityLogs(req as AuthenticatedRequest, res));
 
 // ============================================
 // Public Payment Page Session Routes

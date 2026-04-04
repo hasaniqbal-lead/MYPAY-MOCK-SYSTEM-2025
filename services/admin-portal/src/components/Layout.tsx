@@ -24,6 +24,7 @@ import MobileDrawer from '@/components/MobileDrawer'
 
 const allNavItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/operations', label: 'Operations', icon: Wrench },
   { href: '/merchants', label: 'Merchants', icon: Users },
   { href: '/transactions', label: 'Payments', icon: CreditCard },
   { href: '/payouts', label: 'Payouts', icon: Wallet },

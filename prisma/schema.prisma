@@ -501,3 +501,73 @@ model Settlement {
   @@index([status])
   @@map("settlements")
 }
+
+// ============================================
+// Phase 2: Operations Center Models
+// ============================================
+
+// Blacklist entries (customers, IPs, phones)
+model BlacklistEntry {
+  id          Int       @id @default(autoincrement())
+  type        String    // "phone", "email", "ip", "merchant"
+  value       String
+  reason      String?   @db.Text
+  added_by    String?   // admin email
+  is_active   Boolean   @default(true)
+  created_at  DateTime  @default(now())
+  expires_at  DateTime?
+
+  @@unique([type, value])
+  @@index([type])
+  @@index([is_active])
+  @@map("blacklist_entries")
+}
+
+// Payment method configuration (global)
+model PaymentMethodConfig {
+  id              Int       @id @default(autoincrement())
+  method          String    @unique // "easypaisa", "jazzcash", "card"
+  display_name    String
+  is_enabled      Boolean   @default(true)
+  min_amount      Decimal   @default(1) @db.Decimal(10, 2)
+  max_amount      Decimal   @default(500000) @db.Decimal(10, 2)
+  daily_limit     Decimal?  @db.Decimal(12, 2)
+  icon_url        String?
+  updated_at      DateTime  @updatedAt
+
+  @@map("payment_method_configs")
+}
+
+// Admin notifications (to merchants)
+model AdminNotification {
+  id          Int       @id @default(autoincrement())
+  type        String    @default("info") // "info", "warning", "alert", "maintenance"
+  title       String
+  message     String    @db.Text
+  target      String    @default("all") // "all" or merchant_id
+  sent_by     String?   // admin email
+  is_read     Boolean   @default(false)
+  created_at  DateTime  @default(now())
+
+  @@index([target])
+  @@index([created_at])
+  @@map("admin_notifications")
+}
+
+// Activity logs (admin audit trail)
+model ActivityLog2 {
+  id          Int       @id @default(autoincrement())
+  admin_id    Int?
+  admin_email String?
+  action      String    // "create", "update", "delete", "approve", "reject"
+  entity_type String    // "merchant", "refund", "settlement", "ticket", etc.
+  entity_id   String?
+  details     Json?
+  ip_address  String?
+  created_at  DateTime  @default(now())
+
+  @@index([admin_email])
+  @@index([entity_type])
+  @@index([created_at])
+  @@map("activity_logs_v2")
+}
