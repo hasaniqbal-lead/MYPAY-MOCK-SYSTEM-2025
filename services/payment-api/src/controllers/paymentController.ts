@@ -85,20 +85,39 @@ class PaymentController {
           status === 'completed' ? 'Payment completed successfully' : 'Card payment declined';
       } else {
         // Handle mobile wallet payment (Easypaisa/Jazzcash)
-        const scenario = await prisma.scenarioMapping.findFirst({
-          where: { mobile_number: mobileNumber },
-        });
+        // Hardcoded test scenarios (always available, no DB dependency)
+        const hardcodedScenarios: Record<string, { status: string; statusCode: string; description: string }> = {
+          '03030000000': { status: 'completed', statusCode: 'SUCCESS', description: 'Payment completed successfully' },
+          '03009999999': { status: 'completed', statusCode: 'SUCCESS', description: 'Payment completed successfully' },
+          '03001111111': { status: 'completed', statusCode: 'SUCCESS', description: 'Payment completed successfully' },
+          '03021111111': { status: 'failed', statusCode: 'FAILED', description: 'Payment declined by provider' },
+          '03032222222': { status: 'failed', statusCode: 'TIMEOUT', description: 'Payment timed out' },
+          '03041111111': { status: 'failed', statusCode: 'DECLINED', description: 'Insufficient wallet balance' },
+          '03051111111': { status: 'failed', statusCode: 'BLOCKED', description: 'Account blocked by provider' },
+          '03001234567': { status: 'pending', statusCode: 'PENDING', description: 'Payment pending confirmation' },
+        };
 
-        if (scenario) {
-          status = scenario.status;
-          statusCode = scenario.status_code;
-          description = scenario.description;
+        const hardcoded = hardcodedScenarios[mobileNumber];
+        if (hardcoded) {
+          status = hardcoded.status;
+          statusCode = hardcoded.statusCode;
+          description = hardcoded.description;
         } else {
-          // Default behavior for unknown numbers - random success/fail
-          const isSuccess = Math.random() > 0.5;
-          status = isSuccess ? 'completed' : 'failed';
-          statusCode = isSuccess ? 'SUCCESS' : 'FAILED';
-          description = isSuccess ? 'Payment successful' : 'Payment failed';
+          // Check DB for custom scenarios
+          const scenario = await prisma.scenarioMapping.findFirst({
+            where: { mobile_number: mobileNumber },
+          });
+
+          if (scenario) {
+            status = scenario.status;
+            statusCode = scenario.status_code;
+            description = scenario.description;
+          } else {
+            // Unknown numbers default to SUCCESS in sandbox
+            status = 'completed';
+            statusCode = 'SUCCESS';
+            description = 'Payment completed successfully';
+          }
         }
       }
 
@@ -164,19 +183,17 @@ class PaymentController {
    */
   async getTestScenarios(_req: Request, res: Response): Promise<void> {
     try {
-      const scenarios = await prisma.scenarioMapping.findMany({
-        orderBy: { mobile_number: 'asc' },
-      });
-
-      const walletScenarios = scenarios.map((scenario: any) => ({
-        mobileNumber: scenario.mobile_number,
-        scenario: scenario.scenario,
-        status: scenario.status,
-        statusCode: scenario.status_code,
-        description: scenario.description,
-        paymentMethod: 'wallet',
-        usage: `Use mobile number ${scenario.mobile_number} with any 4-digit PIN`,
-      }));
+      // Hardcoded wallet scenarios (always available)
+      const walletScenarios = [
+        { mobileNumber: '03030000000', scenario: 'success', status: 'completed', statusCode: 'SUCCESS', description: 'Payment completed successfully', paymentMethod: 'wallet', usage: 'Use with any 4-digit PIN for successful payment' },
+        { mobileNumber: '03009999999', scenario: 'success', status: 'completed', statusCode: 'SUCCESS', description: 'Payment completed successfully', paymentMethod: 'wallet', usage: 'Alternative success number' },
+        { mobileNumber: '03001111111', scenario: 'success', status: 'completed', statusCode: 'SUCCESS', description: 'Payment completed successfully', paymentMethod: 'wallet', usage: 'Another success number' },
+        { mobileNumber: '03021111111', scenario: 'failed', status: 'failed', statusCode: 'FAILED', description: 'Payment declined by provider', paymentMethod: 'wallet', usage: 'Simulates declined payment' },
+        { mobileNumber: '03032222222', scenario: 'timeout', status: 'failed', statusCode: 'TIMEOUT', description: 'Payment timed out', paymentMethod: 'wallet', usage: 'Simulates timeout' },
+        { mobileNumber: '03041111111', scenario: 'insufficient', status: 'failed', statusCode: 'DECLINED', description: 'Insufficient wallet balance', paymentMethod: 'wallet', usage: 'Simulates insufficient balance' },
+        { mobileNumber: '03051111111', scenario: 'blocked', status: 'failed', statusCode: 'BLOCKED', description: 'Account blocked by provider', paymentMethod: 'wallet', usage: 'Simulates blocked account' },
+        { mobileNumber: '03001234567', scenario: 'pending', status: 'pending', statusCode: 'PENDING', description: 'Payment pending confirmation', paymentMethod: 'wallet', usage: 'Stays in pending state' },
+      ];
 
       const cardScenarios = [
         {

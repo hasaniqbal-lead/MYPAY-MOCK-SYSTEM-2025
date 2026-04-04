@@ -162,7 +162,7 @@ function QuickCheckout() {
         returnUrl: window.location.origin + '/dashboard',
         expiresIn: Number(expiry),
       }
-      if (method !== 'all') body.paymentMethod = method
+      body.paymentMethod = method
 
       const res = await fetch(`${apiUrl}/api/v1/checkouts`, {
         method: 'POST',

@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useState } from 'react'
-import { Home, ArrowUpDown, Shield, Settings, Palette, RotateCcw, Users, MessageSquare, Banknote } from 'lucide-react'
+import { Home, ArrowUpDown, Shield, Settings, Palette, RotateCcw, Users, MessageSquare, Banknote, Bell } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { brandConfig } from '@/lib/brand-config'
 import BottomNav from '@/components/BottomNav'
@@ -99,6 +99,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           {/* Right side — user info */}
           <div className="flex items-center gap-2 md:gap-4">
+            {/* Notification bell */}
+            <NotificationBell />
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-darpay-primary rounded-full flex items-center justify-center text-white font-semibold text-sm">
                 {user?.companyName?.charAt(0).toUpperCase() || 'U'}
@@ -129,6 +131,64 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Mobile Drawer */}
       <MobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
+    </div>
+  )
+}
+
+function NotificationBell() {
+  const [count, setCount] = useState(0)
+  const [open, setOpen] = useState(false)
+  const [notifications, setNotifications] = useState<any[]>([])
+
+  useEffect(() => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
+    // Fetch notifications from admin (if endpoint exists)
+    fetch(`${apiUrl}/api/v1/portal/tickets`, {
+      headers: { Authorization: `Bearer ${document.cookie.split(';').find(c => c.trim().startsWith('auth_token='))?.split('=')[1] || ''}` },
+    }).then(r => r.json()).then(data => {
+      if (data.success) {
+        const unread = (data.tickets || []).filter((t: any) => t.status === 'open' || t.status === 'in_progress')
+        setCount(unread.length)
+        setNotifications(unread.slice(0, 5))
+      }
+    }).catch(() => {})
+  }, [])
+
+  return (
+    <div className="relative">
+      <button onClick={() => setOpen(!open)} className="relative p-2 rounded-lg hover:bg-muted transition-colors">
+        <Bell className="h-5 w-5 text-muted-foreground" />
+        {count > 0 && (
+          <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+            {count > 9 ? '9+' : count}
+          </span>
+        )}
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 top-10 z-50 w-72 bg-card border border-border rounded-lg shadow-lg">
+            <div className="p-3 border-b border-border">
+              <span className="text-sm font-semibold">Notifications</span>
+            </div>
+            <div className="max-h-48 overflow-y-auto">
+              {notifications.length > 0 ? notifications.map((n: any) => (
+                <a key={n.id} href="/support" className="block p-3 hover:bg-muted border-b border-border/50 last:border-0">
+                  <p className="text-xs font-medium truncate">{n.subject}</p>
+                  <p className="text-[10px] text-muted-foreground">{n.status} | {n.messageCount} messages</p>
+                </a>
+              )) : (
+                <p className="p-4 text-xs text-muted-foreground text-center">No notifications</p>
+              )}
+            </div>
+            {count > 0 && (
+              <a href="/support" className="block p-2 text-center text-xs text-darpay-primary hover:underline border-t border-border">
+                View all
+              </a>
+            )}
+          </div>
+        </>
+      )}
     </div>
   )
 }

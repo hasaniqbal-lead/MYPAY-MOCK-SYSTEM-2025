@@ -96,12 +96,12 @@ export function validateCheckoutParams(
     errors.push('amount must be a positive number');
   }
 
-  // Payment method validation (optional — defaults to easypaisa for quick links)
-  if (paymentMethod && !['jazzcash', 'easypaisa', 'card'].includes(paymentMethod.toLowerCase())) {
-    errors.push('paymentMethod must be either "jazzcash", "easypaisa", or "card"');
+  // Payment method validation (optional — 'all' shows all methods on payment page)
+  if (paymentMethod && !['jazzcash', 'easypaisa', 'card', 'all'].includes(paymentMethod.toLowerCase())) {
+    errors.push('paymentMethod must be "jazzcash", "easypaisa", "card", or "all"');
   }
   if (!paymentMethod) {
-    req.body.paymentMethod = 'easypaisa';
+    req.body.paymentMethod = 'all';
   }
 
   // Payment type validation

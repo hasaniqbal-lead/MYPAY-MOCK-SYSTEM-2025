@@ -64,9 +64,20 @@ export default function TransactionDetailDrawer({ transaction, isOpen, onClose, 
         headers: { Authorization: `Bearer ${token}` },
       })
       const html = await res.text()
-      // Open in new window for print/save
+      // Open in new window with print button
       const win = window.open('', '_blank')
-      if (win) { win.document.write(html); win.document.close(); }
+      if (win) {
+        win.document.write(html)
+        win.document.close()
+        // Add print/save button after content loads
+        setTimeout(() => {
+          const btn = win.document.createElement('button')
+          btn.textContent = 'Save as PDF (Ctrl+P)'
+          btn.style.cssText = 'position:fixed;top:10px;right:10px;padding:8px 16px;background:#3B9EE8;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;z-index:9999;'
+          btn.onclick = () => win.print()
+          win.document.body.appendChild(btn)
+        }, 500)
+      }
     } catch { alert('Failed to download receipt') }
   }
 

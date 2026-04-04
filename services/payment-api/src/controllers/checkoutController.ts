@@ -12,15 +12,16 @@ class CheckoutController {
       const { reference, amount, paymentMethod, paymentType, successUrl, returnUrl, user, expiresIn } =
         req.body;
 
-      // Check if reference already exists
+      // Check if reference already exists for this merchant/vendor
+      const vendorId = req.vendor?.vendor_id || null;
       const existingTransaction = await prisma.paymentTransaction.findFirst({
-        where: { reference },
+        where: { reference, vendor_id: vendorId },
       });
 
       if (existingTransaction) {
         res.status(400).json({
           success: false,
-          error: 'Duplicate reference. Transaction with this reference already exists.',
+          error: 'Duplicate reference. Transaction with this reference already exists for this API key.',
         });
         return;
       }
