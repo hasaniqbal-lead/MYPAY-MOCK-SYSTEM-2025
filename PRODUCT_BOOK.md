@@ -688,22 +688,78 @@ Both collections:
 - Auto-save tokens and IDs via test scripts
 - Ready to import and run — no environment setup needed
 
-### 24.13 Features Deployed
+### 24.13 Merchant Portal Features
 
 | Feature | Status |
 |---------|--------|
 | Payment checkout (Easypaisa, JazzCash, Card) | Live |
 | Configurable checkout expiry (15min to 7 days) | Live |
-| Quick Payment Link generator (merchant dashboard) | Live |
+| Quick Payment Link generator (dashboard widget) | Live |
 | Payout disbursements (Bank + Wallet) | Live |
 | Merchant self-registration with auto payout key | Live |
-| Mobile-native bottom nav (merchant + admin portals) | Live |
-| PWA manifest for app install | Live |
-| Admin dashboard with real DB stats | Live |
+| Transaction detail drawer + receipt download | Live |
+| Refund system (full + partial, dedicated /refunds page) | Live |
+| Multi-key management (create/toggle/delete) | Live |
+| API credit counter (dashboard widget) | Live |
+| Team members + roles (10 role types, auto-gen credentials) | Live |
+| Support tickets (create, reply, conversation thread) | Live |
+| Settlement requests (date range, auto-calculated) | Live |
+| Mobile-native bottom nav + PWA | Live |
 | Rate limiting (5/sec, 30/min, 500/hr, 5000/day) | Live |
-| Feature gates (ORG_FEATURES JSON) | Live |
 
-### 24.14 Changelog
+### 24.14 Admin Portal Features
+
+| Feature | Page | Status |
+|---------|------|--------|
+| Dashboard (real stats + pending actions + health checks) | `/dashboard` | Live |
+| Operations Center (5 tabs: users, methods, blacklist, notifications, logs) | `/operations` | Live |
+| Merchant management (CRUD + keys + password reset) | `/merchants` | Live |
+| Merchant detail (rates, limits, keys — per-merchant config) | `/merchants/[id]` | Live |
+| Payment transactions (table + filters + search) | `/transactions` | Live |
+| Payout transactions (table + filters) | `/payouts` | Live |
+| Refund management (approve/reject with admin notes) | `/refunds` | Live |
+| Settlement management (review/approve/complete/reject) | `/settlements` | Live |
+| Support ticket management (reply + status control) | `/tickets` | Live |
+| Finance & Settlement Engine (revenue, PSP costs, margins, per-merchant) | `/finance` | Live |
+| PSP Management (CRUD, credentials, rates, margin analysis) | `/psp` | Live |
+| Send Money (3-step flow with secret key auth) | `/send-money` | Live |
+| Payment Page admin (rules, templates, merchant configs) | `/payment-page` | Live |
+| System Settings (webhook retry, checkout expiry, maintenance mode) | `/settings` | Live |
+
+### 24.15 Admin Portal API Endpoints (50+)
+
+| Group | Endpoints |
+|-------|-----------|
+| Auth | POST /admin/auth/login |
+| Stats | GET /admin/stats |
+| Merchants | GET/POST/PUT /admin/merchants, toggle-status, reset-password, email |
+| Merchant Rates | GET/POST /admin/merchants/:id/rates |
+| Transactions | GET /admin/transactions |
+| Payouts | GET /admin/payouts |
+| Refunds | GET /admin/refunds, PUT /admin/refunds/:id/status |
+| Tickets | GET /admin/tickets, GET/:id, POST/:id/reply, PUT/:id/status |
+| Settlements | GET /admin/settlements, PUT/:id/status |
+| Admin Users | GET/POST /admin/users, POST/:id/toggle |
+| Blacklist | GET/POST/DELETE /admin/blacklist |
+| Methods | GET/PUT /admin/methods |
+| Notifications | GET/POST /admin/notifications |
+| Activity Logs | GET /admin/activity-logs |
+| PSP | GET/POST/PUT /admin/psps, credentials, rates |
+| Finance | GET /admin/finance/overview, by-method, by-merchant |
+| Margins | GET /admin/margins |
+| Payment Page | Rules CRUD, Templates CRUD, Configs list |
+
+### 24.16 Database Models (25+)
+
+Core: Merchant, ApiKey, PaymentTransaction, Payout, MerchantBalance, LedgerEntry
+Auth: AdminUser, MerchantTeamMember
+Config: PaymentPageConfig, PaymentPageTemplate, PaymentPageRule, SystemConfig
+Finance: PSP, PSPCredential, PSPRate, MerchantRate
+Operations: BlacklistEntry, PaymentMethodConfig, AdminNotification, ActivityLog2
+Transactions: Refund, SupportTicket, TicketMessage, Settlement
+Misc: ScenarioMapping, WebhookDelivery, AuditLog, OutboxEvent
+
+### 24.17 Changelog
 
 | Date | Change |
 |------|--------|
@@ -713,21 +769,28 @@ Both collections:
 | 2026-04-02 | `:settlix` branded images built (merchant, admin, payment page) |
 | 2026-04-02 | Favicon, logo, colors fixed across all portals |
 | 2026-04-02 | Mock dashboard data removed — real DB aggregations |
-| 2026-04-02 | Admin stats endpoint `GET /admin/stats` created |
-| 2026-04-02 | Vatrix merchant payout key + 10M PKR balance created |
-| 2026-04-02 | All payout APIs verified end-to-end |
+| 2026-04-02 | Admin stats endpoint created |
+| 2026-04-02 | All payment + payout APIs verified end-to-end |
 | 2026-04-03 | Auto payout key generation on merchant registration |
-| 2026-04-03 | Configurable checkout expiry (`expiresIn` param) |
-| 2026-04-03 | Quick Payment Link widget on merchant dashboard |
-| 2026-04-03 | Mobile bottom nav + PWA for merchant and admin portals |
+| 2026-04-03 | Quick Payment Link + API credit counter on dashboard |
+| 2026-04-03 | Mobile bottom nav + PWA for both portals |
 | 2026-04-03 | Unified API key format: `{org}_pk_` / `{org}_sk_` |
-| 2026-04-03 | Dedicated Settlix Postman collections created |
+| 2026-04-03 | Merchant portal: transaction drawer, refunds, team, tickets, settlements |
+| 2026-04-03 | Multi-key management + enable/disable |
+| 2026-04-03 | 8 merchant portal bug fixes (payment link, receipt, logo, roles) |
+| 2026-04-04 | Admin: refunds, tickets, settlements UI (Phase 1) |
+| 2026-04-04 | Admin: Operations Center — users, methods, blacklist, notifications, logs (Phase 2) |
+| 2026-04-04 | Admin: PSP Management — CRUD, credentials, rates, margin analysis (Phase 3) |
+| 2026-04-04 | Admin: Finance Engine — revenue, PSP costs, merchant fees, margins (Phase 4) |
+| 2026-04-04 | Admin: Merchant detail page with rates/limits/keys config (Phase 5) |
+| 2026-04-04 | Admin: Send Money — 3-step flow with secret key auth (Phase 9) |
+| 2026-04-04 | Admin: Enhanced dashboard — pending actions, health checks, quick actions (Phase 10) |
 
 ---
 
 ## 25. Final Notes
 
-Last updated: 2026-04-03
+Last updated: 2026-04-04
 
 This Product Book intentionally reflects the implementation currently present in code. If behavior changes, update this document together with:
 
