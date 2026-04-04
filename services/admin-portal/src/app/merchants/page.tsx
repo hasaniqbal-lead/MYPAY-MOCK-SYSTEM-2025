@@ -338,10 +338,10 @@ export default function MerchantsPage() {
                     <TableRow key={merchant.id}>
                       <TableCell className="font-mono text-xs">{merchant.merchant_id}</TableCell>
                       <TableCell>
-                        <div>
-                          <p className="font-medium">{merchant.company_name}</p>
+                        <a href={`/merchants/${merchant.id}`} className="block hover:underline">
+                          <p className="font-medium text-primary">{merchant.company_name}</p>
                           <p className="text-xs text-muted-foreground">{merchant.name}</p>
-                        </div>
+                        </a>
                       </TableCell>
                       <TableCell className="text-sm">{merchant.email}</TableCell>
                       <TableCell>
