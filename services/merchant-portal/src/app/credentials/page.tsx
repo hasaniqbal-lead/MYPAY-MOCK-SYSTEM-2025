@@ -6,7 +6,9 @@ import Layout from '@/components/Layout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Copy, Check, Eye, EyeOff, Plus, Zap, Trash2, Power } from 'lucide-react'
+import { ArrowLeft, Copy, Check, Eye, EyeOff, Plus, Zap, Trash2, Power, RefreshCw } from 'lucide-react'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
 
@@ -81,16 +83,47 @@ export default function CredentialsPage() {
     } catch {}
   }
 
+  const [newKeyLabel, setNewKeyLabel] = useState('')
+  const [showNewKeyForm, setShowNewKeyForm] = useState(false)
+  const [regenSk, setRegenSk] = useState(false)
+  const [newSkKey, setNewSkKey] = useState('')
+
   const handleGenerateNew = async () => {
+    const label = newKeyLabel.trim() || 'Default'
     setGenerating(true)
     try {
-      await merchantAPI.generateApiKey()
-      await loadKeys()
+      const res = await fetch(`${apiUrl}/api/v1/portal/merchant/credentials`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+        body: JSON.stringify({ label }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setShowNewKeyForm(false)
+        setNewKeyLabel('')
+        await loadKeys()
+      } else { alert(data.error) }
     } catch {
       alert('Failed to generate new key')
     } finally {
       setGenerating(false)
     }
+  }
+
+  const handleRegenPayoutKey = async () => {
+    if (!confirm('Regenerate payout key? The current key will stop working immediately.')) return
+    setRegenSk(true)
+    try {
+      const res = await fetch(`${apiUrl}/api/v1/portal/merchant/payout-key/regenerate`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${getToken()}` },
+      })
+      const data = await res.json()
+      if (data.success) {
+        setNewSkKey(data.payoutKey)
+        loadKeys()
+      } else { alert(data.error) }
+    } catch {} finally { setRegenSk(false) }
   }
 
   const handleToggleKey = async (id: number) => {
@@ -144,9 +177,9 @@ export default function CredentialsPage() {
             {showKeys ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             {showKeys ? 'Hide' : 'Show'}
           </Button>
-          <Button className="gap-2 bg-darpay-primary hover:bg-darpay-primary-dark text-white" onClick={handleGenerateNew} disabled={generating}>
+          <Button className="gap-2 bg-darpay-primary hover:bg-darpay-primary-dark text-white" onClick={() => setShowNewKeyForm(!showNewKeyForm)}>
             <Plus className="h-4 w-4" />
-            {generating ? 'Creating...' : 'New Key'}
+            New Key
           </Button>
         </div>
 
@@ -156,6 +189,25 @@ export default function CredentialsPage() {
           </div>
         ) : (
           <>
+            {/* New Key Form */}
+            {showNewKeyForm && (
+              <Card>
+                <CardContent className="pt-4 space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-xs">Key Label / Name</Label>
+                      <Input placeholder="e.g. Production, Client A, Testing" value={newKeyLabel} onChange={e => setNewKeyLabel(e.target.value)} className="h-9" />
+                    </div>
+                    <div className="flex items-end">
+                      <Button onClick={handleGenerateNew} disabled={generating} className="bg-darpay-primary text-white h-9 w-full">
+                        {generating ? 'Creating...' : 'Generate Key'}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Payment API Keys */}
             <Card>
               <CardHeader>
@@ -167,7 +219,8 @@ export default function CredentialsPage() {
                   <div key={key.id} className={`flex items-center gap-3 p-3 border rounded-lg ${key.isActive ? 'border-blue-200 bg-blue-50/30' : 'border-gray-200 bg-gray-50/30 opacity-60'}`}>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-mono text-muted-foreground">{key.vendorId}</span>
+                        <span className="text-sm font-medium">{(key as any).label || 'Default'}</span>
+                        <span className="text-[10px] font-mono text-muted-foreground">{key.vendorId}</span>
                         <Badge variant={key.isActive ? 'default' : 'secondary'} className={key.isActive ? 'bg-green-500 text-white text-[10px]' : 'text-[10px]'}>
                           {key.isActive ? 'Active' : 'Disabled'}
                         </Badge>
@@ -177,6 +230,7 @@ export default function CredentialsPage() {
                       </div>
                       <div className="text-[10px] text-muted-foreground mt-1">
                         Created: {new Date(key.createdAt).toLocaleDateString()}
+                        {(key as any).allowedMethods && <span className="ml-2">Methods: {((key as any).allowedMethods as string[]).join(', ')}</span>}
                       </div>
                     </div>
                     <CopyBtn text={key.apiKeyFull} field={`pk-${key.id}`} />
@@ -220,10 +274,14 @@ export default function CredentialsPage() {
                         <Badge className="bg-purple-500 text-white text-[10px]">Active</Badge>
                       </div>
                       <div className="font-mono text-sm truncate">
-                        {showKeys ? payoutKeyFull : payoutKey}
+                        {showKeys ? (newSkKey || payoutKeyFull) : payoutKey}
                       </div>
+                      {newSkKey && <p className="text-[10px] text-green-600 mt-1 font-semibold">New key generated — copy it now!</p>}
                     </div>
-                    <CopyBtn text={payoutKeyFull} field="sk" />
+                    <CopyBtn text={newSkKey || payoutKeyFull} field="sk" />
+                    <Button variant="outline" size="sm" className="text-xs h-8" onClick={handleRegenPayoutKey} disabled={regenSk}>
+                      {regenSk ? '...' : 'Regenerate'}
+                    </Button>
                   </div>
                 ) : (
                   <p className="text-center py-4 text-muted-foreground text-sm">No payout key configured</p>

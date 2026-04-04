@@ -211,7 +211,7 @@ class PortalMerchantController {
   async generateApiKey(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const merchantId = req.merchantId;
-      const { label } = req.body || {};
+      const { label, allowedMethods } = req.body || {};
       const orgSlug = process.env.ORG_SLUG || 'pay';
 
       // Count existing keys (limit to 10 per merchant)
@@ -233,6 +233,8 @@ class PortalMerchantController {
           api_secret: apiSecret,
           merchant_id: merchantId!,
           is_active: true,
+          label: label || 'Default',
+          allowed_methods: allowedMethods || ['easypaisa', 'jazzcash', 'card'],
         },
       });
 
@@ -242,7 +244,8 @@ class PortalMerchantController {
           id: created.id,
           vendorId: vendorId,
           apiKey: apiKey,
-          label: label || 'Default',
+          label: created.label || 'Default',
+          allowedMethods: created.allowed_methods,
           isActive: true,
           createdAt: created.created_at,
         },
@@ -273,7 +276,9 @@ class PortalMerchantController {
           id: k.id,
           vendorId: k.vendor_id,
           apiKey: k.api_key.substring(0, 12) + '...' + k.api_key.slice(-4),
-          apiKeyFull: k.api_key, // Only shown once ideally, but needed for copy
+          apiKeyFull: k.api_key,
+          label: k.label || 'Default',
+          allowedMethods: k.allowed_methods || ['easypaisa', 'jazzcash', 'card'],
           isActive: k.is_active,
           createdAt: k.created_at,
         })),
@@ -295,6 +300,7 @@ class PortalMerchantController {
     try {
       const merchantId = req.merchantId;
       const { id } = req.params;
+      const { isActive, label, allowedMethods } = req.body || {};
 
       const key = await prisma.apiKey.findFirst({
         where: { id: Number(id), merchant_id: merchantId },
@@ -305,18 +311,51 @@ class PortalMerchantController {
         return;
       }
 
+      const data: any = {};
+      if (isActive !== undefined) data.is_active = isActive;
+      else data.is_active = !key.is_active; // Toggle if not explicitly set
+      if (label !== undefined) data.label = label;
+      if (allowedMethods !== undefined) data.allowed_methods = allowedMethods;
+
       const updated = await prisma.apiKey.update({
         where: { id: Number(id) },
-        data: { is_active: !key.is_active },
+        data,
       });
 
       res.json({
         success: true,
-        key: { id: updated.id, isActive: updated.is_active },
+        key: { id: updated.id, isActive: updated.is_active, label: updated.label, allowedMethods: updated.allowed_methods },
       });
     } catch (error) {
       console.error('Toggle key error:', error);
       res.status(500).json({ success: false, error: 'Failed to toggle key' });
+    }
+  }
+
+  /**
+   * Regenerate payout (sk) key
+   */
+  async regeneratePayoutKey(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const merchantId = req.merchantId;
+      const orgSlug = process.env.ORG_SLUG || 'pay';
+
+      const newSk = `${orgSlug}_sk_${crypto.randomBytes(32).toString('hex')}`;
+      const skHash = crypto.createHash('sha256').update(newSk).digest('hex');
+
+      await prisma.merchant.update({
+        where: { id: merchantId! },
+        data: { apiKey: skHash, apiKeyPlain: newSk },
+      });
+
+      res.json({
+        success: true,
+        payoutKey: newSk,
+        message: 'Payout key regenerated. Old key is now invalid.',
+      });
+    } catch (error) {
+      console.error('Regenerate payout key error:', error);
+      res.status(500).json({ success: false, error: 'Failed to regenerate payout key' });
     }
   }
 

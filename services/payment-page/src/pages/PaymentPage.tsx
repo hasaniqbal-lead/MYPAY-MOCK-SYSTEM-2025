@@ -164,6 +164,7 @@ function PaymentPage() {
             <ChannelSelection
               config={config!}
               onSelect={handleChannelSelect}
+              allowedMethods={(session as any).allowedMethods || null}
             />
           )}
 

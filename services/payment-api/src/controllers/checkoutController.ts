@@ -29,19 +29,23 @@ class CheckoutController {
       // Generate checkout ID
       const checkoutId = uuidv4();
 
-      // Get merchant_id from API key if available
+      // Get merchant_id and allowed methods from API key
       let merchantId: number | null = null;
+      let allowedMethods: string[] | null = null;
       if (req.vendor?.vendor_id) {
-        const apiKey = await prisma.apiKey.findFirst({
+        const apiKeyRecord = await prisma.apiKey.findFirst({
           where: { vendor_id: req.vendor.vendor_id },
         });
-        if (apiKey?.merchant_id) {
-          merchantId = apiKey.merchant_id;
+        if (apiKeyRecord?.merchant_id) {
+          merchantId = apiKeyRecord.merchant_id;
+        }
+        if (apiKeyRecord?.allowed_methods) {
+          allowedMethods = apiKeyRecord.allowed_methods as string[];
         }
       }
 
-      // Prepare user_data - store as JSON if provided
-      const userData = user ? user : undefined;
+      // Prepare user_data — include allowed methods for payment page filtering
+      const userData = user ? { ...user, allowedMethods } : (allowedMethods ? { allowedMethods } : undefined);
 
       // Save transaction to database
       await prisma.paymentTransaction.create({

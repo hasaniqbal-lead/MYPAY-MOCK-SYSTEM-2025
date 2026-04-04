@@ -57,10 +57,15 @@ const channelData: Record<PaymentMethod, { name: string; description: string; Ic
 interface ChannelSelectionProps {
   config: ThemeConfiguration;
   onSelect: (channel: PaymentMethod) => void;
+  allowedMethods?: string[] | null;
 }
 
-function ChannelSelection({ config, onSelect }: ChannelSelectionProps) {
-  const enabledChannels = config.channels.enabled || ['easypaisa', 'jazzcash', 'card'];
+function ChannelSelection({ config, onSelect, allowedMethods }: ChannelSelectionProps) {
+  // Filter by allowed methods from API key (if set)
+  const configChannels = config.channels.enabled || ['easypaisa', 'jazzcash', 'card'];
+  const enabledChannels = allowedMethods
+    ? configChannels.filter(c => allowedMethods.includes(c))
+    : configChannels;
   const showIcons = config.channels.showIcons !== false;
   const visibility = config.visibility?.channels;
 

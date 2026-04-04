@@ -201,6 +201,13 @@ apiRouter.delete(
   (req: Request, res: Response) => portalMerchantController.deleteKey(req as AuthenticatedRequest, res)
 );
 
+// Payout key regeneration
+apiRouter.post(
+  '/portal/merchant/payout-key/regenerate',
+  requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => portalMerchantController.regeneratePayoutKey(req as AuthenticatedRequest, res)
+);
+
 // Transactions routes (auth required)
 apiRouter.get(
   '/portal/transactions',
@@ -778,6 +785,7 @@ apiRouter.get('/payment-page/session/:checkoutId', async (req: Request, res: Res
       amount: Number(transaction.amount),
       currency: 'PKR',
       paymentMethod: transaction.payment_method,
+      allowedMethods: (transaction.user_data as any)?.allowedMethods || null,
       status: transaction.status,
       merchantId: transaction.merchant_id,
       merchantName: transaction.merchant?.company_name || transaction.merchant?.name || process.env.ORG_BRAND_NAME || 'Payment',
