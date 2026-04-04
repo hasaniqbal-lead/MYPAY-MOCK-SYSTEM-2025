@@ -182,7 +182,7 @@ function PaymentPage() {
               mobileNumber={mobileNumber}
               onSubmit={handleOTPSubmit}
               onBack={handleBack}
-              onResend={() => handleFormSubmit(mobileNumber)}
+              onResend={() => handleFormSubmit({ mobileNumber })}
             />
           )}
 
