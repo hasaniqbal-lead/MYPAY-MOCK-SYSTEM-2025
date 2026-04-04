@@ -66,13 +66,13 @@ function PaymentPage() {
   };
 
   // Handle form submission
-  const handleFormSubmit = async (phone: string) => {
-    setMobileNumber(phone);
+  const handleFormSubmit = async (data: { mobileNumber?: string; cardNumber?: string }) => {
+    if (data.mobileNumber) setMobileNumber(data.mobileNumber);
     setStage('processing');
     setError(null);
 
     try {
-      const result = await completePayment(checkoutId!, { mobileNumber: phone });
+      const result = await completePayment(checkoutId!, data);
 
       if (result.requiresOTP) {
         setStage('otp_verification');

@@ -296,7 +296,8 @@ export interface SessionResponse {
 }
 
 export interface CompletePaymentRequest {
-  mobileNumber: string;
+  mobileNumber?: string;
+  cardNumber?: string;
   otp?: string;
 }
 
