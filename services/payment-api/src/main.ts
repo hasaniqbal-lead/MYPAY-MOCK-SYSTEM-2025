@@ -29,6 +29,7 @@ import { ticketController } from './controllers/ticketController';
 import { settlementController } from './controllers/settlementController';
 import { operationsController } from './controllers/operationsController';
 import { pspController } from './controllers/pspController';
+import { financeController } from './controllers/financeController';
 
 dotenv.config();
 
@@ -668,6 +669,17 @@ apiRouter.post('/admin/merchants/:merchantId/rates', requireAdminAuth as express
 // Margins calculator
 apiRouter.get('/admin/margins', requireAdminAuth as express.RequestHandler,
   (req: Request, res: Response) => pspController.getMargins(req as AuthenticatedRequest, res));
+
+// ============================================
+// Admin Finance Routes
+// ============================================
+
+apiRouter.get('/admin/finance/overview', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => financeController.getOverview(req as AuthenticatedRequest, res));
+apiRouter.get('/admin/finance/by-method', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => financeController.getRevenueByMethod(req as AuthenticatedRequest, res));
+apiRouter.get('/admin/finance/by-merchant', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => financeController.getRevenueByMerchant(req as AuthenticatedRequest, res));
 
 // ============================================
 // Admin Operations Routes

@@ -17,6 +17,7 @@ import {
   MessageSquare,
   Banknote,
   Server,
+  BarChart3,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { brandConfig } from '@/lib/brand-config'
@@ -32,6 +33,7 @@ const allNavItems = [
   { href: '/refunds', label: 'Refunds', icon: RefreshCcw },
   { href: '/settlements', label: 'Settlements', icon: Banknote },
   { href: '/tickets', label: 'Support', icon: MessageSquare },
+  { href: '/finance', label: 'Finance', icon: BarChart3 },
   { href: '/psp', label: 'PSP', icon: Server },
   { href: '/payment-page', label: 'Payment Page', icon: Palette },
   { href: '/settings', label: 'Settings', icon: Settings },
