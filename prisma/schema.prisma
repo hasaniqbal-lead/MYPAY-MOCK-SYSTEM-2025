@@ -52,6 +52,7 @@ model Merchant {
   teamMembers        MerchantTeamMember[]
   supportTickets     SupportTicket[]
   settlements        Settlement[]
+  merchantRates      MerchantRate[]
 
   @@map("merchants")
 }
@@ -570,4 +571,80 @@ model ActivityLog2 {
   @@index([entity_type])
   @@index([created_at])
   @@map("activity_logs_v2")
+}
+
+// ============================================
+// Phase 3: PSP Management Models
+// ============================================
+
+// Payment Service Provider
+model PSP {
+  id          Int       @id @default(autoincrement())
+  name        String
+  code        String    @unique  // "easypaisa_psp", "jazzcash_psp", "card_mastercard"
+  logo_url    String?
+  is_active   Boolean   @default(true)
+  environment String    @default("sandbox") // "sandbox" or "production"
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  credentials PSPCredential[]
+  rates       PSPRate[]
+
+  @@map("psps")
+}
+
+// PSP Credentials (per environment)
+model PSPCredential {
+  id            Int       @id @default(autoincrement())
+  psp_id        Int
+  environment   String    @default("sandbox")
+  api_key       String?   @db.Text
+  api_secret    String?   @db.Text
+  merchant_id   String?   // PSP-assigned merchant ID
+  webhook_url   String?
+  extra_config  Json?     // Additional PSP-specific config
+  is_active     Boolean   @default(true)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  psp           PSP       @relation(fields: [psp_id], references: [id], onDelete: Cascade)
+
+  @@unique([psp_id, environment])
+  @@map("psp_credentials")
+}
+
+// PSP Rates (what PSP charges us)
+model PSPRate {
+  id              Int       @id @default(autoincrement())
+  psp_id          Int
+  payment_method  String    // "easypaisa", "jazzcash", "card"
+  rate_percent    Decimal   @db.Decimal(6, 4)  // e.g. 1.5000
+  fixed_fee       Decimal   @default(0) @db.Decimal(10, 2) // Fixed fee per transaction
+  currency        String    @default("PKR")
+  effective_from  DateTime  @default(now())
+  is_active       Boolean   @default(true)
+  created_at      DateTime  @default(now())
+
+  psp             PSP       @relation(fields: [psp_id], references: [id], onDelete: Cascade)
+
+  @@index([psp_id, payment_method])
+  @@map("psp_rates")
+}
+
+// Merchant-specific rates (what we charge merchants — overrides default)
+model MerchantRate {
+  id              Int       @id @default(autoincrement())
+  merchant_id     Int
+  payment_method  String
+  rate_percent    Decimal   @db.Decimal(6, 4)
+  fixed_fee       Decimal   @default(0) @db.Decimal(10, 2)
+  effective_from  DateTime  @default(now())
+  is_active       Boolean   @default(true)
+  created_at      DateTime  @default(now())
+
+  merchant        Merchant  @relation(fields: [merchant_id], references: [id], onDelete: Cascade)
+
+  @@index([merchant_id, payment_method])
+  @@map("merchant_rates")
 }

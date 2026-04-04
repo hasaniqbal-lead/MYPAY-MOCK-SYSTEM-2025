@@ -28,6 +28,7 @@ import { teamController } from './controllers/teamController';
 import { ticketController } from './controllers/ticketController';
 import { settlementController } from './controllers/settlementController';
 import { operationsController } from './controllers/operationsController';
+import { pspController } from './controllers/pspController';
 
 dotenv.config();
 
@@ -642,6 +643,31 @@ apiRouter.get('/admin/settlements', requireAdminAuth as express.RequestHandler,
 
 apiRouter.put('/admin/settlements/:id/status', requireAdminAuth as express.RequestHandler,
   (req: Request, res: Response) => settlementController.adminUpdateStatus(req as AuthenticatedRequest, res));
+
+// ============================================
+// Admin PSP Routes
+// ============================================
+
+apiRouter.get('/admin/psps', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => pspController.list(req as AuthenticatedRequest, res));
+apiRouter.post('/admin/psps', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => pspController.create(req as AuthenticatedRequest, res));
+apiRouter.put('/admin/psps/:id', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => pspController.update(req as AuthenticatedRequest, res));
+apiRouter.put('/admin/psps/:id/credentials', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => pspController.upsertCredential(req as AuthenticatedRequest, res));
+apiRouter.post('/admin/psps/:id/rates', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => pspController.setRate(req as AuthenticatedRequest, res));
+
+// Merchant rates
+apiRouter.get('/admin/merchants/:merchantId/rates', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => pspController.listMerchantRates(req as AuthenticatedRequest, res));
+apiRouter.post('/admin/merchants/:merchantId/rates', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => pspController.setMerchantRate(req as AuthenticatedRequest, res));
+
+// Margins calculator
+apiRouter.get('/admin/margins', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => pspController.getMargins(req as AuthenticatedRequest, res));
 
 // ============================================
 // Admin Operations Routes
