@@ -48,7 +48,7 @@ function PaymentPage() {
         setStage('expired');
       } else {
         // If a specific payment method was pre-selected (not "all"), skip channel selection
-        const method = sessionData.session.paymentMethod || sessionData.session.payment_method;
+        const method = (sessionData.session as any).paymentMethod;
         if (method && method !== 'all') {
           setSelectedChannel(method as PaymentMethod);
           setStage('user_input');
