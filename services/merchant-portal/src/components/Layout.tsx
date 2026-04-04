@@ -3,7 +3,7 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Home, ArrowUpDown, Shield, Settings, Palette, RotateCcw, Users, MessageSquare, Banknote, Bell } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { brandConfig } from '@/lib/brand-config'
