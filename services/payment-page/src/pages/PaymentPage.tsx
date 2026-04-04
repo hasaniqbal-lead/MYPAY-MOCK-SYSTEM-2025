@@ -47,7 +47,14 @@ function PaymentPage() {
       } else if (sessionData.session.status === 'expired') {
         setStage('expired');
       } else {
-        setStage('channel_selection');
+        // If a specific payment method was pre-selected (not "all"), skip channel selection
+        const method = sessionData.session.paymentMethod || sessionData.session.payment_method;
+        if (method && method !== 'all') {
+          setSelectedChannel(method as PaymentMethod);
+          setStage('user_input');
+        } else {
+          setStage('channel_selection');
+        }
       }
     }
   }, [sessionData]);
@@ -69,7 +76,7 @@ function PaymentPage() {
 
       if (result.requiresOTP) {
         setStage('otp_verification');
-      } else if (result.status === 'completed' || result.status === 'success') {
+      } else if (result.success || result.status === 'completed' || result.status === 'success') {
         setStage('success');
       } else {
         setError(result.message || 'Payment failed');
@@ -92,7 +99,7 @@ function PaymentPage() {
         otp,
       });
 
-      if (result.status === 'completed' || result.status === 'success') {
+      if (result.success || result.status === 'completed' || result.status === 'success') {
         setStage('success');
       } else {
         setError(result.message || 'OTP verification failed');
