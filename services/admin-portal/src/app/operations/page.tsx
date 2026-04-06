@@ -45,6 +45,16 @@ export default function OperationsPage() {
     await fetch(`${apiUrl}/api/v1/admin/users/${id}/toggle`, { method: 'POST', headers: headers() }); loadAdmins()
   }
 
+  const resetAdminPw = async (id: number) => {
+    if (!confirm('Reset password for this admin?')) return
+    try {
+      const res = await fetch(`${apiUrl}/api/v1/admin/users/${id}/reset-password`, { method: 'POST', headers: headers() })
+      const data = await res.json()
+      if (data.success) alert(`New password for ${data.email}:\n\n${data.password}\n\nCopy it now!`)
+      else alert(data.error)
+    } catch {}
+  }
+
   // === BLACKLIST ===
   const [blacklist, setBlacklist] = useState<any[]>([])
   const [blLoading, setBlLoading] = useState(true)
@@ -183,7 +193,12 @@ export default function OperationsPage() {
                       <TableCell><Badge variant="outline" className="capitalize">{a.role}</Badge></TableCell>
                       <TableCell><Badge className={a.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}>{a.isActive ? 'Active' : 'Disabled'}</Badge></TableCell>
                       <TableCell className="text-xs text-muted-foreground">{format(new Date(a.createdAt), 'MMM dd, yyyy')}</TableCell>
-                      <TableCell><Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toggleAdmin(a.id)}><Power className={`h-4 w-4 ${a.isActive ? 'text-green-500' : 'text-gray-400'}`} /></Button></TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toggleAdmin(a.id)} title={a.isActive ? 'Disable' : 'Enable'}><Power className={`h-4 w-4 ${a.isActive ? 'text-green-500' : 'text-gray-400'}`} /></Button>
+                          <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => resetAdminPw(a.id)}>Reset PW</Button>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))}
                   {admins.length === 0 && <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No admin users</TableCell></TableRow>}

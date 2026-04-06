@@ -191,6 +191,44 @@ class FinanceController {
       res.status(500).json({ success: false, error: 'Failed to get merchant breakdown' });
     }
   }
+  /**
+   * Get finance rules (from system_config)
+   */
+  async getRules(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const config = await prisma.systemConfig.findFirst({ where: { key: 'finance_rules' } });
+      const defaults = {
+        default_merchant_rate: 2.5,
+        settlement_period_days: 15,
+        min_settlement_amount: 100,
+        refund_deduction_percent: 0,
+        dispute_hold_days: 7,
+        max_transaction_amount: 500000,
+        min_transaction_amount: 1,
+      };
+      const rules = config?.value ? { ...defaults, ...(typeof config.value === 'string' ? JSON.parse(config.value) : config.value) } : defaults;
+      res.json({ success: true, rules });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get finance rules' });
+    }
+  }
+
+  /**
+   * Update finance rules
+   */
+  async updateRules(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const rules = req.body;
+      await prisma.systemConfig.upsert({
+        where: { key: 'finance_rules' },
+        update: { value: rules },
+        create: { key: 'finance_rules', value: rules },
+      });
+      res.json({ success: true, rules });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to update finance rules' });
+    }
+  }
 }
 
 export const financeController = new FinanceController();

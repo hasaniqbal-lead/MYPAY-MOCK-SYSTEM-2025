@@ -16,6 +16,8 @@ export default function FinancePage() {
   const [byMerchant, setByMerchant] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [period, setPeriod] = useState('30')
+  const [rules, setRules] = useState<any>({})
+  const [savingRules, setSavingRules] = useState(false)
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
   const headers = () => ({ Authorization: `Bearer ${Cookies.get('admin_token')}` })
@@ -23,15 +25,17 @@ export default function FinancePage() {
   const load = async () => {
     setLoading(true)
     try {
-      const [ovRes, methRes, merchRes] = await Promise.all([
+      const [ovRes, methRes, merchRes, rulesRes] = await Promise.all([
         fetch(`${apiUrl}/api/v1/admin/finance/overview?periodDays=${period}`, { headers: headers() }),
         fetch(`${apiUrl}/api/v1/admin/finance/by-method?periodDays=${period}`, { headers: headers() }),
         fetch(`${apiUrl}/api/v1/admin/finance/by-merchant?periodDays=${period}`, { headers: headers() }),
+        fetch(`${apiUrl}/api/v1/admin/finance/rules`, { headers: headers() }),
       ])
-      const [ovData, methData, merchData] = await Promise.all([ovRes.json(), methRes.json(), merchRes.json()])
+      const [ovData, methData, merchData, rulesData] = await Promise.all([ovRes.json(), methRes.json(), merchRes.json(), rulesRes.json()])
       if (ovData.success) setOverview(ovData.overview)
       if (methData.success) setByMethod(methData.breakdown || [])
       if (merchData.success) setByMerchant(merchData.merchants || [])
+      if (rulesData.success) setRules(rulesData.rules || {})
     } catch {} finally { setLoading(false) }
   }
 
@@ -132,6 +136,7 @@ export default function FinancePage() {
               <TabsList>
                 <TabsTrigger value="methods" className="gap-1"><CreditCard className="h-3 w-3" /> By Method</TabsTrigger>
                 <TabsTrigger value="merchants" className="gap-1"><Users className="h-3 w-3" /> By Merchant</TabsTrigger>
+                <TabsTrigger value="rules" className="gap-1"><DollarSign className="h-3 w-3" /> Rules</TabsTrigger>
               </TabsList>
 
               <TabsContent value="methods">
@@ -189,6 +194,55 @@ export default function FinancePage() {
                         {byMerchant.length === 0 && <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No merchant data</TableCell></TableRow>}
                       </TableBody>
                     </Table>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="rules">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">Finance Rules</CardTitle>
+                    <p className="text-xs text-muted-foreground">Configure default rates, limits, and settlement parameters</p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      {[
+                        { key: 'default_merchant_rate', label: 'Default Merchant Rate (%)', type: 'number', step: '0.01' },
+                        { key: 'settlement_period_days', label: 'Settlement Period (days)', type: 'number' },
+                        { key: 'min_settlement_amount', label: 'Min Settlement Amount (PKR)', type: 'number' },
+                        { key: 'refund_deduction_percent', label: 'Refund Deduction (%)', type: 'number', step: '0.01' },
+                        { key: 'dispute_hold_days', label: 'Dispute Hold (days)', type: 'number' },
+                        { key: 'max_transaction_amount', label: 'Max Transaction (PKR)', type: 'number' },
+                        { key: 'min_transaction_amount', label: 'Min Transaction (PKR)', type: 'number' },
+                      ].map(field => (
+                        <div key={field.key}>
+                          <label className="text-sm font-medium">{field.label}</label>
+                          <input
+                            type={field.type}
+                            step={field.step}
+                            value={rules[field.key] ?? ''}
+                            onChange={e => setRules({ ...rules, [field.key]: Number(e.target.value) })}
+                            className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm mt-1"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <Button
+                      disabled={savingRules}
+                      onClick={async () => {
+                        setSavingRules(true)
+                        try {
+                          await fetch(`${apiUrl}/api/v1/admin/finance/rules`, {
+                            method: 'PUT', headers: { ...headers(), 'Content-Type': 'application/json' },
+                            body: JSON.stringify(rules),
+                          })
+                          alert('Rules saved')
+                        } catch {} finally { setSavingRules(false) }
+                      }}
+                      className="bg-darpay-primary text-white"
+                    >
+                      {savingRules ? 'Saving...' : 'Save Rules'}
+                    </Button>
                   </CardContent>
                 </Card>
               </TabsContent>

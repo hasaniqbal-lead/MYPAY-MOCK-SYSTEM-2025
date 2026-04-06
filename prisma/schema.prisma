@@ -53,6 +53,7 @@ model Merchant {
   supportTickets     SupportTicket[]
   settlements        Settlement[]
   merchantRates      MerchantRate[]
+  documents          Document[]
 
   @@map("merchants")
 }
@@ -649,4 +650,33 @@ model MerchantRate {
 
   @@index([merchant_id, payment_method])
   @@map("merchant_rates")
+}
+
+// ============================================
+// Phase C: Document Management
+// ============================================
+
+model Document {
+  id            Int       @id @default(autoincrement())
+  merchant_id   Int?
+  title         String
+  description   String?   @db.Text
+  type          String    @default("general") // "policy", "form", "request", "kyc", "general"
+  file_url      String?
+  file_type     String?   // "pdf", "image", "csv", "doc"
+  file_size     Int?
+  uploaded_by   String    @default("admin") // "admin" or "merchant"
+  visibility    String    @default("both") // "admin", "merchant", "both"
+  status        String    @default("pending") // "pending", "approved", "rejected"
+  required      Boolean   @default(false)
+  upload_token  String?   @unique // For standalone upload links
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  merchant      Merchant? @relation(fields: [merchant_id], references: [id], onDelete: SetNull)
+
+  @@index([merchant_id])
+  @@index([status])
+  @@index([upload_token])
+  @@map("documents")
 }

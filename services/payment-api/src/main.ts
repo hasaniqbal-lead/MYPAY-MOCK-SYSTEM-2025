@@ -30,6 +30,7 @@ import { settlementController } from './controllers/settlementController';
 import { operationsController } from './controllers/operationsController';
 import { pspController } from './controllers/pspController';
 import { financeController } from './controllers/financeController';
+import { documentController } from './controllers/documentController';
 
 dotenv.config();
 
@@ -378,6 +379,15 @@ apiRouter.get('/portal/settlements', requireAuth as express.RequestHandler,
   (req: Request, res: Response) => settlementController.list(req as AuthenticatedRequest, res));
 
 // ============================================
+// Portal Document Routes
+// ============================================
+
+apiRouter.get('/portal/documents', requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => documentController.merchantList(req as AuthenticatedRequest, res));
+apiRouter.post('/portal/documents/upload', requireAuth as express.RequestHandler,
+  (req: Request, res: Response) => documentController.merchantUpload(req as AuthenticatedRequest, res));
+
+// ============================================
 // Portal Refund Routes
 // ============================================
 
@@ -678,6 +688,23 @@ apiRouter.get('/admin/margins', requireAdminAuth as express.RequestHandler,
   (req: Request, res: Response) => pspController.getMargins(req as AuthenticatedRequest, res));
 
 // ============================================
+// Admin Document Routes
+// ============================================
+
+apiRouter.get('/admin/documents', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => documentController.adminList(req as AuthenticatedRequest, res));
+apiRouter.post('/admin/documents', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => documentController.adminCreate(req as AuthenticatedRequest, res));
+apiRouter.post('/admin/documents/request/:merchantId', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => documentController.adminRequestUpload(req as AuthenticatedRequest, res));
+apiRouter.put('/admin/documents/:id/status', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => documentController.adminUpdateStatus(req as AuthenticatedRequest, res));
+
+// Public upload (no auth — uses token)
+apiRouter.get('/upload/:token', (req: Request, res: Response) => documentController.getUploadInfo(req, res));
+apiRouter.post('/upload/:token', (req: Request, res: Response) => documentController.publicUpload(req, res));
+
+// ============================================
 // Admin Finance Routes
 // ============================================
 
@@ -687,6 +714,10 @@ apiRouter.get('/admin/finance/by-method', requireAdminAuth as express.RequestHan
   (req: Request, res: Response) => financeController.getRevenueByMethod(req as AuthenticatedRequest, res));
 apiRouter.get('/admin/finance/by-merchant', requireAdminAuth as express.RequestHandler,
   (req: Request, res: Response) => financeController.getRevenueByMerchant(req as AuthenticatedRequest, res));
+apiRouter.get('/admin/finance/rules', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => financeController.getRules(req as AuthenticatedRequest, res));
+apiRouter.put('/admin/finance/rules', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => financeController.updateRules(req as AuthenticatedRequest, res));
 
 // ============================================
 // Admin Operations Routes
@@ -699,6 +730,8 @@ apiRouter.post('/admin/users', requireAdminAuth as express.RequestHandler,
   (req: Request, res: Response) => operationsController.createAdmin(req as AuthenticatedRequest, res));
 apiRouter.post('/admin/users/:id/toggle', requireAdminAuth as express.RequestHandler,
   (req: Request, res: Response) => operationsController.toggleAdmin(req as AuthenticatedRequest, res));
+apiRouter.post('/admin/users/:id/reset-password', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => operationsController.resetAdminPassword(req as AuthenticatedRequest, res));
 
 // Blacklist
 apiRouter.get('/admin/blacklist', requireAdminAuth as express.RequestHandler,

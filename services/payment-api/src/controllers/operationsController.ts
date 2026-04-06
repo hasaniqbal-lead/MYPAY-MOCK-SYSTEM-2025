@@ -51,6 +51,22 @@ class OperationsController {
     }
   }
 
+  async resetAdminPassword(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const admin = await prisma.adminUser.findUnique({ where: { id: Number(id) } });
+      if (!admin) { res.status(404).json({ success: false, error: 'Admin not found' }); return; }
+      const crypto = require('crypto');
+      const bcrypt = require('bcryptjs');
+      const newPassword = crypto.randomBytes(6).toString('hex') + '!A';
+      const hash = await bcrypt.hash(newPassword, 10);
+      await prisma.adminUser.update({ where: { id: Number(id) }, data: { password_hash: hash } });
+      res.json({ success: true, email: admin.email, password: newPassword });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to reset password' });
+    }
+  }
+
   // ============ BLACKLIST ============
 
   async listBlacklist(req: AuthenticatedRequest, res: Response): Promise<void> {
