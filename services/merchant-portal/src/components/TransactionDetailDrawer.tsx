@@ -64,39 +64,12 @@ export default function TransactionDetailDrawer({ transaction, isOpen, onClose, 
         headers: { Authorization: `Bearer ${token}` },
       })
       const html = await res.text()
-
-      // Create hidden iframe, render receipt, capture as image
-      const iframe = document.createElement('iframe')
-      iframe.style.cssText = 'position:fixed;left:-9999px;width:600px;height:800px;border:none;'
-      document.body.appendChild(iframe)
-      iframe.contentDocument!.write(html)
-      iframe.contentDocument!.close()
-
-      setTimeout(async () => {
-        try {
-          // Use html2canvas-like approach via SVG foreignObject
-          const body = iframe.contentDocument!.body
-          const svgData = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="${body.scrollHeight}">
-            <foreignObject width="100%" height="100%">
-              <div xmlns="http://www.w3.org/1999/xhtml">${body.outerHTML}</div>
-            </foreignObject>
-          </svg>`
-          const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' })
-          const url = URL.createObjectURL(svgBlob)
-          const a = document.createElement('a')
-          a.href = url
-          a.download = `receipt-${transaction.reference}.svg`
-          a.click()
-          URL.revokeObjectURL(url)
-        } catch {
-          // Fallback: open as printable page
-          const win = window.open('', '_blank')
-          if (win) { win.document.write(html); win.document.close(); win.print() }
-        }
-        document.body.removeChild(iframe)
-      }, 500)
+      // Open receipt in new tab — auto-triggers print/save as PDF
+      const win = window.open('', '_blank')
+      if (win) { win.document.write(html); win.document.close() }
     } catch { alert('Failed to download receipt') }
   }
+
 
   const rows = [
     { label: 'Transaction ID', value: transaction.checkout_id, copyable: true },

@@ -1,6 +1,17 @@
 import { Response } from 'express';
+import fs from 'fs';
+import path from 'path';
 import { prisma } from '../config/database';
 import { AuthenticatedRequest, PaginationParams } from '../types';
+
+// Load receipt logo as base64 at startup
+let receiptLogoBase64 = '';
+try {
+  const logoPath = path.join(__dirname, '..', 'assets', 'receipt-logo.png');
+  if (fs.existsSync(logoPath)) {
+    receiptLogoBase64 = fs.readFileSync(logoPath).toString('base64');
+  }
+} catch {}
 
 class PortalTransactionsController {
   /**
@@ -257,13 +268,15 @@ class PortalTransactionsController {
       const status = transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1);
       const method = (transaction.payment_method || 'N/A').charAt(0).toUpperCase() + (transaction.payment_method || 'N/A').slice(1);
 
+      const logoImg = receiptLogoBase64 ? `<img src="data:image/png;base64,${receiptLogoBase64}" alt="${brandName}" style="height:40px;margin-bottom:8px;" />` : '';
+
       const html = `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Receipt - ${transaction.reference}</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #fff; color: #1a1a1a; padding: 40px; max-width: 600px; margin: 0 auto; }
   .header { text-align: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 20px; margin-bottom: 24px; }
-  .header h1 { font-size: 20px; font-weight: 600; color: #111; }
+  .header h1 { font-size: 20px; font-weight: 600; color: #111; margin-top: 8px; }
   .header p { font-size: 12px; color: #6b7280; margin-top: 4px; }
   .amount { text-align: center; padding: 24px 0; }
   .amount .value { font-size: 36px; font-weight: 700; }
@@ -271,14 +284,16 @@ class PortalTransactionsController {
   .status-completed, .status-success { background: #dcfce7; color: #166534; }
   .status-pending { background: #fef9c3; color: #854d0e; }
   .status-failed { background: #fee2e2; color: #991b1b; }
+  .status-refunded { background: #f3e8ff; color: #7c3aed; }
   .details { margin: 24px 0; }
   .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f3f4f6; }
   .row .label { color: #6b7280; font-size: 13px; }
   .row .val { font-size: 13px; font-weight: 500; text-align: right; max-width: 300px; word-break: break-all; }
   .footer { text-align: center; margin-top: 32px; padding-top: 16px; border-top: 1px solid #e5e7eb; font-size: 11px; color: #9ca3af; }
-  @media print { body { padding: 20px; } }
+  @media print { body { padding: 20px; } .no-print { display: none; } }
+  @page { size: A5; margin: 10mm; }
 </style></head><body>
-<div class="header"><h1>${brandName}</h1><p>Transaction Receipt</p></div>
+<div class="header">${logoImg}<h1>${brandName}</h1><p>Transaction Receipt</p></div>
 <div class="amount"><div class="value">PKR ${Number(transaction.amount).toLocaleString()}</div><div class="status status-${transaction.status.toLowerCase()}">${status}</div></div>
 <div class="details">
 <div class="row"><span class="label">Transaction ID</span><span class="val">${transaction.checkout_id}</span></div>
@@ -287,7 +302,8 @@ class PortalTransactionsController {
 <div class="row"><span class="label">Date</span><span class="val">${date}</span></div>
 <div class="row"><span class="label">Merchant</span><span class="val">${transaction.merchant?.company_name || transaction.merchant?.name || brandName}</span></div>
 </div>
-<div class="footer"><p>This is a system-generated receipt.</p><p>${brandName} &mdash; ${new Date().getFullYear()}</p></div>
+<div class="footer">${logoImg ? `<img src="data:image/png;base64,${receiptLogoBase64}" alt="${brandName}" style="height:20px;margin-bottom:4px;opacity:0.5;" /><br/>` : ''}<p>This is a system-generated receipt.</p><p>${brandName} &mdash; ${new Date().getFullYear()}</p></div>
+<script>window.onload=function(){window.print()}</script>
 </body></html>`;
 
       res.setHeader('Content-Type', 'text/html');

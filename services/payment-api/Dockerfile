@@ -24,6 +24,9 @@ RUN pnpm exec prisma generate
 WORKDIR /app/services/payment-api
 RUN pnpm build
 
+# Copy assets to dist (for receipt logo etc.)
+RUN cp -r src/assets dist/assets 2>/dev/null || true
+
 # Go back to root
 WORKDIR /app
 
