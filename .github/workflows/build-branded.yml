@@ -88,5 +88,4 @@ jobs:
             VITE_BRAND_NAME=${{ inputs.brand_name }}
             VITE_PRIMARY_COLOR=${{ inputs.primary_color }}
             VITE_SUPPORT_EMAIL=${{ inputs.support_email }}
-          cache-from: type=gha,scope=${{ matrix.service }}-${{ inputs.brand_slug }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.service }}-${{ inputs.brand_slug }}
+          no-cache: true
