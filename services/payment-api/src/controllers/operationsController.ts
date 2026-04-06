@@ -67,6 +67,42 @@ class OperationsController {
     }
   }
 
+  // ============ KEY APPROVAL ============
+
+  async listPendingKeys(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const keys = await prisma.apiKey.findMany({
+        where: { approval_status: 'pending_approval' },
+        include: { merchant: { select: { name: true, company_name: true, email: true } } },
+        orderBy: { created_at: 'desc' },
+      });
+      res.json({
+        success: true,
+        keys: keys.map(k => ({
+          id: k.id, vendorId: k.vendor_id, label: k.label, keyType: k.key_type,
+          merchantName: k.merchant?.company_name || k.merchant?.name,
+          merchantEmail: k.merchant?.email, createdAt: k.created_at,
+        })),
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to list pending keys' });
+    }
+  }
+
+  async approveKey(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { approve } = req.body; // true or false
+      await prisma.apiKey.update({
+        where: { id: Number(id) },
+        data: { approval_status: approve ? 'approved' : 'rejected', is_active: approve ? true : false },
+      });
+      res.json({ success: true, message: approve ? 'Key approved' : 'Key rejected' });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to update key' });
+    }
+  }
+
   // ============ BLACKLIST ============
 
   async listBlacklist(req: AuthenticatedRequest, res: Response): Promise<void> {

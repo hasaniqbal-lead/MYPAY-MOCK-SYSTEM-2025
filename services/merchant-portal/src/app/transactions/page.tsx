@@ -501,7 +501,19 @@ export default function TransactionsPage() {
                               {format(new Date(payout.createdAt), 'MMM dd, yyyy HH:mm')}
                             </TableCell>
                             <TableCell>
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <Button variant="ghost" size="icon" className="h-8 w-8"
+                                onClick={() => {
+                                  setSelectedTransaction({
+                                    checkout_id: payout.id,
+                                    reference: payout.merchantReference,
+                                    amount: Number(payout.amount),
+                                    status: payout.status,
+                                    payment_method: payout.destType === 'BANK' ? (payout.bankCode || 'BANK') : (payout.walletCode || 'WALLET'),
+                                    created_at: payout.createdAt,
+                                    customer_email: `${payout.accountTitle} (${payout.accountNumber})`,
+                                  } as any)
+                                  setDrawerOpen(true)
+                                }}>
                                 <Eye className="h-4 w-4" />
                               </Button>
                             </TableCell>

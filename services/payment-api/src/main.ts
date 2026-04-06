@@ -733,6 +733,12 @@ apiRouter.post('/admin/users/:id/toggle', requireAdminAuth as express.RequestHan
 apiRouter.post('/admin/users/:id/reset-password', requireAdminAuth as express.RequestHandler,
   (req: Request, res: Response) => operationsController.resetAdminPassword(req as AuthenticatedRequest, res));
 
+// Key approvals
+apiRouter.get('/admin/key-approvals', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => operationsController.listPendingKeys(req as AuthenticatedRequest, res));
+apiRouter.put('/admin/key-approvals/:id', requireAdminAuth as express.RequestHandler,
+  (req: Request, res: Response) => operationsController.approveKey(req as AuthenticatedRequest, res));
+
 // Blacklist
 apiRouter.get('/admin/blacklist', requireAdminAuth as express.RequestHandler,
   (req: Request, res: Response) => operationsController.listBlacklist(req as AuthenticatedRequest, res));

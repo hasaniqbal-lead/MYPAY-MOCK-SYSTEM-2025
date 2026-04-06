@@ -214,16 +214,25 @@ class PortalMerchantController {
       const { label, allowedMethods } = req.body || {};
       const orgSlug = process.env.ORG_SLUG || 'pay';
 
-      // Count existing keys (limit to 10 per merchant)
-      const keyCount = await prisma.apiKey.count({ where: { merchant_id: merchantId } });
+      const keyType = req.body.keyType || 'pk';
+      const validTypes = ['pk', 'sk'];
+      if (!validTypes.includes(keyType)) {
+        res.status(400).json({ success: false, error: 'keyType must be "pk" or "sk"' });
+        return;
+      }
+
+      // Count existing keys by type (limit 3 auto-approved per type)
+      const keyCount = await prisma.apiKey.count({ where: { merchant_id: merchantId, key_type: keyType } });
+      const needsApproval = keyCount >= 3;
       if (keyCount >= 10) {
-        res.status(400).json({ success: false, error: 'Maximum 10 API keys per merchant' });
+        res.status(400).json({ success: false, error: `Maximum 10 ${keyType} keys per merchant` });
         return;
       }
 
       // Generate new key with proper format
-      const vendorId = `MERCHANT_${merchantId!.toString().padStart(6, '0')}_K${keyCount + 1}`;
-      const apiKey = `${orgSlug}_pk_${crypto.randomBytes(32).toString('hex')}`;
+      const prefix = keyType === 'sk' ? 'sk' : 'pk';
+      const vendorId = `MERCHANT_${merchantId!.toString().padStart(6, '0')}_${prefix.toUpperCase()}${keyCount + 1}`;
+      const apiKey = `${orgSlug}_${prefix}_${crypto.randomBytes(32).toString('hex')}`;
       const apiSecret = `${orgSlug}_secret_${crypto.randomBytes(16).toString('hex')}`;
 
       const created = await prisma.apiKey.create({
@@ -232,9 +241,11 @@ class PortalMerchantController {
           api_key: apiKey,
           api_secret: apiSecret,
           merchant_id: merchantId!,
-          is_active: true,
+          is_active: !needsApproval,
           label: label || 'Default',
-          allowed_methods: allowedMethods || ['easypaisa', 'jazzcash', 'card'],
+          key_type: keyType,
+          allowed_methods: keyType === 'pk' ? (allowedMethods || ['easypaisa', 'jazzcash', 'card']) : null,
+          approval_status: needsApproval ? 'pending_approval' : 'approved',
         },
       });
 
@@ -243,12 +254,16 @@ class PortalMerchantController {
         key: {
           id: created.id,
           vendorId: vendorId,
-          apiKey: apiKey,
+          apiKey: needsApproval ? null : apiKey, // Don't show key until approved
           label: created.label || 'Default',
+          keyType: created.key_type,
           allowedMethods: created.allowed_methods,
-          isActive: true,
+          isActive: created.is_active,
+          approvalStatus: created.approval_status,
           createdAt: created.created_at,
         },
+        needsApproval,
+        message: needsApproval ? 'Key request submitted for admin approval (exceeded 3 keys)' : 'Key created successfully',
       });
     } catch (error) {
       console.error('Generate API key error:', error);
@@ -270,18 +285,29 @@ class PortalMerchantController {
 
       const merchant = await prisma.merchant.findUnique({ where: { id: merchantId! } });
 
+      const pkKeys = keys.filter(k => (k.key_type || 'pk') === 'pk');
+      const skKeys = keys.filter(k => k.key_type === 'sk');
+
       res.json({
         success: true,
-        keys: keys.map(k => ({
-          id: k.id,
-          vendorId: k.vendor_id,
+        keys: pkKeys.map(k => ({
+          id: k.id, vendorId: k.vendor_id,
           apiKey: k.api_key.substring(0, 12) + '...' + k.api_key.slice(-4),
-          apiKeyFull: k.api_key,
-          label: k.label || 'Default',
+          apiKeyFull: k.approval_status === 'approved' ? k.api_key : null,
+          label: k.label || 'Default', keyType: 'pk',
           allowedMethods: k.allowed_methods || ['easypaisa', 'jazzcash', 'card'],
-          isActive: k.is_active,
+          isActive: k.is_active, approvalStatus: k.approval_status || 'approved',
           createdAt: k.created_at,
         })),
+        sendKeys: skKeys.map(k => ({
+          id: k.id, vendorId: k.vendor_id,
+          apiKey: k.api_key.substring(0, 12) + '...' + k.api_key.slice(-4),
+          apiKeyFull: k.approval_status === 'approved' ? k.api_key : null,
+          label: k.label || 'Default', keyType: 'sk',
+          isActive: k.is_active, approvalStatus: k.approval_status || 'approved',
+          createdAt: k.created_at,
+        })),
+        // Legacy: also return the merchant-level payout key
         payoutKey: merchant?.apiKeyPlain
           ? merchant.apiKeyPlain.substring(0, 12) + '...' + merchant.apiKeyPlain.slice(-4)
           : null,

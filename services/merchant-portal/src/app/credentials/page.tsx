@@ -28,6 +28,7 @@ interface RateLimitInfo {
 
 export default function CredentialsPage() {
   const [keys, setKeys] = useState<ApiKeyItem[]>([])
+  const [sendKeys, setSendKeys] = useState<ApiKeyItem[]>([])
   const [payoutKey, setPayoutKey] = useState('')
   const [payoutKeyFull, setPayoutKeyFull] = useState('')
   const [loading, setLoading] = useState(true)
@@ -53,6 +54,7 @@ export default function CredentialsPage() {
       const data = await res.json()
       if (data.success) {
         setKeys(data.keys || [])
+        setSendKeys(data.sendKeys || [])
         setPayoutKey(data.payoutKey || '')
         setPayoutKeyFull(data.payoutKeyFull || '')
       }
@@ -84,6 +86,7 @@ export default function CredentialsPage() {
   }
 
   const [newKeyLabel, setNewKeyLabel] = useState('')
+  const [newKeyType, setNewKeyType] = useState('pk')
   const [showNewKeyForm, setShowNewKeyForm] = useState(false)
   const [regenSk, setRegenSk] = useState(false)
   const [newSkKey, setNewSkKey] = useState('')
@@ -95,7 +98,7 @@ export default function CredentialsPage() {
       const res = await fetch(`${apiUrl}/api/v1/portal/merchant/credentials`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
-        body: JSON.stringify({ label }),
+        body: JSON.stringify({ label, keyType: newKeyType }),
       })
       const data = await res.json()
       if (data.success) {
@@ -193,10 +196,17 @@ export default function CredentialsPage() {
             {showNewKeyForm && (
               <Card>
                 <CardContent className="pt-4 space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-3">
                     <div>
-                      <Label className="text-xs">Key Label / Name</Label>
-                      <Input placeholder="e.g. Production, Client A, Testing" value={newKeyLabel} onChange={e => setNewKeyLabel(e.target.value)} className="h-9" />
+                      <Label className="text-xs">Key Type</Label>
+                      <select value={newKeyType} onChange={e => setNewKeyType(e.target.value)} className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm">
+                        <option value="pk">Payment Key (pk)</option>
+                        <option value="sk">Send Key (sk)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <Label className="text-xs">Label / Name</Label>
+                      <Input placeholder="e.g. Production, Client A" value={newKeyLabel} onChange={e => setNewKeyLabel(e.target.value)} className="h-9" />
                     </div>
                     <div className="flex items-end">
                       <Button onClick={handleGenerateNew} disabled={generating} className="bg-darpay-primary text-white h-9 w-full">
@@ -204,6 +214,7 @@ export default function CredentialsPage() {
                       </Button>
                     </div>
                   </div>
+                  <p className="text-[10px] text-muted-foreground">First 3 keys per type are auto-approved. Additional keys require admin approval.</p>
                 </CardContent>
               </Card>
             )}
@@ -260,31 +271,55 @@ export default function CredentialsPage() {
               </CardContent>
             </Card>
 
-            {/* Payout (Send) Key */}
+            {/* Send Keys (sk) */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Send Key (sk)</CardTitle>
-                <p className="text-xs text-muted-foreground">Used for payout/disbursement API requests</p>
+                <CardTitle className="text-base">Send Keys (sk)</CardTitle>
+                <p className="text-xs text-muted-foreground">{sendKeys.length} key{sendKeys.length !== 1 ? 's' : ''} — Used for payout/disbursement API requests</p>
               </CardHeader>
-              <CardContent>
-                {payoutKeyFull ? (
+              <CardContent className="space-y-3">
+                {sendKeys.map((key) => (
+                  <div key={key.id} className={`flex items-center gap-3 p-3 border rounded-lg ${key.isActive ? 'border-purple-200 bg-purple-50/30' : 'border-gray-200 bg-gray-50/30 opacity-60'}`}>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-sm font-medium">{(key as any).label || 'Default'}</span>
+                        <span className="text-[10px] font-mono text-muted-foreground">{key.vendorId}</span>
+                        <Badge variant={key.isActive ? 'default' : 'secondary'} className={key.isActive ? 'bg-purple-500 text-white text-[10px]' : 'text-[10px]'}>
+                          {(key as any).approvalStatus === 'pending_approval' ? 'Pending Approval' : key.isActive ? 'Active' : 'Disabled'}
+                        </Badge>
+                      </div>
+                      <div className="font-mono text-sm truncate">
+                        {key.apiKeyFull && showKeys ? key.apiKeyFull : key.apiKey}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground mt-1">Created: {new Date(key.createdAt).toLocaleDateString()}</div>
+                    </div>
+                    {key.apiKeyFull && <CopyBtn text={key.apiKeyFull} field={`sk-${key.id}`} />}
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleToggleKey(key.id)}>
+                      <Power className={`h-3.5 w-3.5 ${key.isActive ? 'text-purple-500' : 'text-gray-400'}`} />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleDeleteKey(key.id)}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                ))}
+                {/* Legacy payout key (from merchant table) */}
+                {payoutKeyFull && sendKeys.length === 0 && (
                   <div className="flex items-center gap-3 p-3 border rounded-lg border-purple-200 bg-purple-50/30">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
+                        <span className="text-sm font-medium">Legacy Key</span>
                         <Badge className="bg-purple-500 text-white text-[10px]">Active</Badge>
                       </div>
-                      <div className="font-mono text-sm truncate">
-                        {showKeys ? (newSkKey || payoutKeyFull) : payoutKey}
-                      </div>
-                      {newSkKey && <p className="text-[10px] text-green-600 mt-1 font-semibold">New key generated — copy it now!</p>}
+                      <div className="font-mono text-sm truncate">{showKeys ? payoutKeyFull : payoutKey}</div>
                     </div>
-                    <CopyBtn text={newSkKey || payoutKeyFull} field="sk" />
+                    <CopyBtn text={payoutKeyFull} field="sk-legacy" />
                     <Button variant="outline" size="sm" className="text-xs h-8" onClick={handleRegenPayoutKey} disabled={regenSk}>
                       {regenSk ? '...' : 'Regenerate'}
                     </Button>
                   </div>
-                ) : (
-                  <p className="text-center py-4 text-muted-foreground text-sm">No payout key configured</p>
+                )}
+                {sendKeys.length === 0 && !payoutKeyFull && (
+                  <p className="text-center py-4 text-muted-foreground text-sm">No send keys. Use "New Key" → "Send Key (sk)" to create one.</p>
                 )}
               </CardContent>
             </Card>

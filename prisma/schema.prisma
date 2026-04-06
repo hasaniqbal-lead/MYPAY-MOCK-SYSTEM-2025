@@ -211,11 +211,14 @@ model ApiKey {
   merchant_id     Int?
   is_active       Boolean  @default(true)
   label           String?  @default("Default")
+  key_type        String   @default("pk")  // "pk" (payment) or "sk" (send/payout)
   allowed_methods Json?    // ["easypaisa","jazzcash","card"] or null for all
+  approval_status String   @default("approved") // "approved", "pending_approval", "rejected"
   created_at      DateTime @default(now())
 
   merchant    Merchant? @relation(fields: [merchant_id], references: [id], onDelete: SetNull)
 
+  @@index([merchant_id, key_type])
   @@map("payment_api_keys")
 }
 
